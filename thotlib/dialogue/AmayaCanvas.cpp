@@ -96,10 +96,15 @@ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
 #endif /* FORUMLARY_WIDGET_DEMO */
 
 #ifdef _GL
-  /* wx 3.x: independent context per canvas (shared context causes BadMatch).
-   * Font textures are recreated per-context on first use. */
-  (void)p_shared_context;
-  m_glContext = new wxGLContext(this);
+  /* wx 3.x: create a new context sharing display lists and textures
+   * with the first canvas's context. This allows GL display lists compiled
+   * in context A to be called in context B (split windows, source view).
+   * Each canvas still has its OWN context (own viewport, matrix state),
+   * so glXMakeCurrent with different windows works correctly. */
+  if (p_shared_context)
+    m_glContext = new wxGLContext(this, p_shared_context);
+  else
+    m_glContext = new wxGLContext(this);
 #endif /* _GL */
 
   SetAutoLayout(TRUE);
@@ -477,6 +482,9 @@ void AmayaCanvas::Init()
     return;
   }
   SetGlPipelineState ();
+  /* Ensure viewport is set for this canvas */
+  { int w, h; GetClientSize(&w, &h);
+    if (w > 0 && h > 0) GLResize(w, h, 0, 0); }
 #endif /* _GL */
 
   /* 

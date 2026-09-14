@@ -386,6 +386,12 @@ bool AmayaFrame::SwapBuffers()
       return FALSE;
     }
 }
+
+void AmayaFrame::RefreshCanvas()
+{
+  if (m_pCanvas)
+    m_pCanvas->Refresh();
+}
 #endif /* _GL */
 
 /*----------------------------------------------------------------------
@@ -652,6 +658,9 @@ void AmayaFrame::SetActive( bool active )
   frame_id = GetFrameId();
   // update internal thotlib global var : ActiveFrame
   ChangeSelFrame(frame_id);
+  /* wx 3.x: force repaint when frame becomes active (source view, split windows) */
+  if (m_pCanvas)
+    m_pCanvas->Refresh();
   
   // refresh the document's menu bar
   doc_id = FrameTable[frame_id].FrDoc;

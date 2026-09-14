@@ -112,6 +112,7 @@ public:
 #ifdef _GL
   bool SetCurrent();
   bool SwapBuffers();
+  void RefreshCanvas();
 #endif // #ifdef _GL
 
 protected:

@@ -2592,16 +2592,16 @@ void DisplayBox (PtrBox box, int frame, int xmin, int xmax, int ymin,
                         glIsList(box->DisplayList),
                         _T("GLBUG - DisplayBox : glIsList returns false"));
 #endif /* _WX */
-          if (!box->VisibleModification &&
-              box->DisplayList && glIsList (box->DisplayList))
+          /* wx 3.x: GL display lists are not reliably shared between
+           * contexts even with wxGLContext sharing. Force redraw every time.
+           * This is correct behaviour -- display lists are an optimisation
+           * that requires a single shared context. */
+          if (box->DisplayList && glIsList (box->DisplayList))
+            glDeleteLists (box->DisplayList, 1);
+          box->DisplayList = 0;
+          /* Always recompile: */
+          if (GL_NotInFeedbackMode ())
             {
-              glCallList (box->DisplayList);
-              return;
-            }
-          else if (box->VisibleModification || GL_NotInFeedbackMode ())
-            {
-              if (glIsList (box->DisplayList))
-                glDeleteLists (box->DisplayList, 1);
               box->DisplayList = glGenLists (1);
               glNewList (box->DisplayList, GL_COMPILE_AND_EXECUTE);
               isOpenList = TRUE;

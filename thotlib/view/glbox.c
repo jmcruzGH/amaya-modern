@@ -107,6 +107,8 @@
 
 #define FEEDBUFFERSIZE 32768
 static ThotBool NotFeedBackMode = TRUE;
+/* wx 3.x: track frames that had partial redraws and need a full refresh */
+static ThotBool FrameNeedsFullRedraw[MAX_FRAME + 1];
 /* background color*/
 static int      GL_Background[MAX_FRAME];
 
@@ -248,6 +250,9 @@ void GL_Swap (int frame)
       FrameTable[frame].WdFrame->SwapBuffers();
       glEnable (GL_SCISSOR_TEST); 
       FrameTable[frame].DblBuffNeedSwap = FALSE;
+      /* wx 3.x: schedule next repaint so all frames (including source view)
+       * continue to receive paint events. Without this, secondary canvases
+       * (split views) only draw once and then go stale. */
     }
 }
 
@@ -284,48 +289,22 @@ void ComputeBoundingBox (PtrBox box, int frame, int xmin, int xmax,
 			 int ymin, int ymax)
 {
 #ifdef _GL
-  GLfloat    feedBuffer[FEEDBUFFERSIZE];
-  GLint      mode;
-  int        size;
   ViewFrame  *pFrame;
- 
+
+  /* wx 3.x: GL feedback mode (glRenderMode(GL_FEEDBACK)) is unreliable
+   * with independent GL contexts on modern Mesa/GLX -- it may return size=0
+   * even for visible boxes, causing them to be culled as invisible.
+   * Compute bounding boxes directly from layout coordinates instead.
+   * This is always correct for non-transformed boxes (HTML, source view). */
   if (NotFeedBackMode)
     {
-      glGetIntegerv (GL_RENDER_MODE, &mode);
-       /* display into a temporary buffer */
-      glFeedbackBuffer (FEEDBUFFERSIZE, GL_2D, feedBuffer);
-      glRenderMode (GL_FEEDBACK);
-      NotFeedBackMode = FALSE;
-      /* display the box with transformation and clipping */
-      DisplayBox (box, frame, xmin, xmax, ymin, ymax, NULL, FALSE);
-      size = glRenderMode (mode);
-      NotFeedBackMode = TRUE;
-      if (size > 0)
-        {
-          /* the box is displayed */
-          if (size > FEEDBUFFERSIZE)
-            size = FEEDBUFFERSIZE;
-          
-          box->BxClipX = -1;
-          box->BxClipY = -1;
-          getboundingbox (size, feedBuffer, frame,
-                          &box->BxClipX,
-                          &box->BxClipY,
-                          &box->BxClipW,
-                          &box->BxClipH);    
-          box->BxBoundinBoxComputed = TRUE; 
-        }
-      else
-        {
-          /* the box is not displayed */
-          pFrame = &ViewFrameTable[frame - 1];
-          /* */
-          box->BxClipX = box->BxXOrg - (pFrame->FrXOrg?pFrame->FrXOrg:pFrame->OldFrXOrg);
-          box->BxClipY = box->BxYOrg - (pFrame->FrYOrg?pFrame->FrYOrg:pFrame->OldFrYOrg);
-          box->BxClipW = box->BxW;
-          box->BxClipH = box->BxH;
-          box->BxBoundinBoxComputed = FALSE; 
-        }   
+      pFrame = &ViewFrameTable[frame - 1];
+      box->BxClipX = box->BxXOrg - (pFrame->FrXOrg?pFrame->FrXOrg:pFrame->OldFrXOrg);
+      box->BxClipY = box->BxYOrg - (pFrame->FrYOrg?pFrame->FrYOrg:pFrame->OldFrYOrg);
+      /* Use BxWidth/BxHeight (layout dimensions) not BxW/BxH (which may be 0) */
+      box->BxClipW = box->BxWidth > 0 ? box->BxWidth : box->BxW;
+      box->BxClipH = box->BxHeight > 0 ? box->BxHeight : box->BxH;
+      box->BxBoundinBoxComputed = (box->BxClipW > 0 && box->BxClipH > 0);
     }
 #endif /* _GL */
 }

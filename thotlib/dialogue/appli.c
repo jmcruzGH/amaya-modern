@@ -313,10 +313,20 @@ ThotBool FrameExposeCallback ( int frame, int x, int y, int w, int h)
           //g_NeedRedisplayAllTheFrame[frame] = FALSE;
           
           // refresh the invalide frame content
-          x += pFrame->FrXOrg;
-          y += pFrame->FrYOrg;
-          DefClip (frame, x, y, x + w, y + h);
+          /* wx 3.x + GL: always use full frame for clip region.
+           * This ensures the complete backbuffer is redrawn each expose. */
+          { int fw, fh; GetSizesFrame (frame, &fw, &fh);
+            DefClip (frame, pFrame->FrXOrg, pFrame->FrYOrg,
+                     pFrame->FrXOrg + fw, pFrame->FrYOrg + fh); }
           RedrawFrameBottom (frame, 0, NULL);
+          /* After full redraw, also trigger sibling frames (source view) */
+          { extern ThotBool FrameNeedsFullRedraw[];
+            int doc = FrameTable[frame].FrDoc, f2;
+            for (f2 = 1; f2 < MAX_FRAME; f2++)
+              if (f2 != frame && FrameTable[f2].FrDoc == doc &&
+                  FrameTable[f2].WdFrame != NULL)
+                FrameTable[f2].WdFrame->RefreshCanvas();
+          }
           GL_SwapEnable (frame);
         }
       // display the backbuffer

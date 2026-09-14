@@ -290,8 +290,9 @@ void GL_SetClipping (int x, int y, int width, int height)
 #endif /* _WX */
   TTALOGDEBUG_4( TTA_LOG_DRAW, _T("GL_SetClipping : x=%d y=%d w=%d h=%d"),
                  x, y, width, height );
-  glEnable (GL_SCISSOR_TEST);
-  glScissor (x, y, width, height);
+  /* wx 3.x: disable scissor -- double buffering requires full redraws */
+  glDisable (GL_SCISSOR_TEST);
+  (void)x; (void)y; (void)width; (void)height;
   if (Width_Clip == 0 && Height_Clip == 0)
     {
       X_Clip = x;
