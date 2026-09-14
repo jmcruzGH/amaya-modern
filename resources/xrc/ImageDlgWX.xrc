@@ -72,7 +72,7 @@
               <object class="sizeritem">
                 <object class="wxTextCtrl" name="wxID_ALT"/>
                 <option>1</option>
-                <flag>wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+                <flag>wxEXPAND</flag>
               </object>
             </object>
             <flag>wxALL|wxEXPAND</flag>
@@ -133,7 +133,7 @@
         <border>5</border>
       </object>
       <object class="sizeritem">
-        <flag>wxALL|wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxADJUST_MINSIZE</flag>
+        <flag>wxALL|wxEXPAND|wxADJUST_MINSIZE</flag>
         <border>5</border>
         <object class="wxBoxSizer">
           <orient>wxHORIZONTAL</orient>

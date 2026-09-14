@@ -218,7 +218,7 @@ void AmayaNormalWindow::RegisterThotToolPanels()
   // detect an old panel configuration
   if (s == NULL || strstr (s, "AmayaXHTMLToolPanel"))
     TtaSetEnvString("CLASSIC_PANEL_ORDER",
-                    "AmayaElementToolPanel;AmayaStyleToolPanel;AmayaApplyClassToolPanel;"
+                    "AmayaElementToolPanel;AmayaApplyClassToolPanel;"
                     "AmayaAttributeToolPanel;AmayaSpeCharToolPanel;"
                     "StyleListToolPanel;AmayaExplorerToolPanel",
                     TRUE);
@@ -227,7 +227,7 @@ void AmayaNormalWindow::RegisterThotToolPanels()
   RegisterToolPanelClass(CLASSINFO(AmayaElementToolPanel));
   RegisterToolPanelClass(CLASSINFO(AmayaAttributeToolPanel));
   RegisterToolPanelClass(CLASSINFO(AmayaApplyClassToolPanel));
-  RegisterToolPanelClass(CLASSINFO(AmayaStyleToolPanel));
+  // RegisterToolPanelClass(CLASSINFO(AmayaStyleToolPanel)); // disabled: wx3 color button crash
   RegisterToolPanelClass(CLASSINFO(AmayaSpeCharToolPanel));
 }
 
@@ -309,7 +309,7 @@ void AmayaNormalWindow::SaveConfig()
       TtaSetEnvBoolean("EDIT_TOOLBAR", TRUE, TRUE);
       // and set the default order
       TtaSetEnvString("CLASSIC_PANEL_ORDER",
-                      "AmayaElementToolPanel;AmayaStyleToolPanel;AmayaApplyClassToolPanel;"
+                      "AmayaElementToolPanel;AmayaApplyClassToolPanel;"
                       "StyleListToolPanel;AmayaExplorerToolPanel;AmayaAttributeToolPanel;"
                       "AmayaSpeCharToolPanel",
                        TRUE);
@@ -1058,7 +1058,7 @@ void AmayaNormalWindow::OnRecentDocMenu(wxCommandEvent& event)
   if(id < (int)m_URLs.GetCount())
     {
       wxString str = m_URLs[id];
-      if(str)
+      if(!str.IsEmpty())
         {
           SetURL(str);
           GotoSelectedURL (TRUE);

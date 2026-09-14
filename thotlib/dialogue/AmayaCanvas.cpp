@@ -66,22 +66,26 @@ IMPLEMENT_DYNAMIC_CLASS(AmayaCanvas, wxGLCanvas)
   -----------------------------------------------------------------------*/
 #ifdef _GL
 AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
-                          AmayaFrame * p_parent_frame,
-                          wxGLContext * p_shared_context )
-  : wxGLCanvas( p_parent_window,
-                p_shared_context,
-                -1,
-                wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS , _T("AmayaCanvas"),
-                AmayaApp::GetGL_AttrList() ),
-#else // #ifdef _GL  
+                         AmayaFrame * p_parent_frame,
+                         wxGLContext * p_shared_context )
+ : wxGLCanvas( p_parent_window,
+               wxID_ANY,
+               AmayaApp::GetGL_AttrList(),
+               wxDefaultPosition, wxDefaultSize,
+               wxWANTS_CHARS, _T("AmayaCanvas") ),
+#else // #ifdef _GL   
 AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
-                          AmayaFrame * p_parent_frame )
-  : wxPanel( p_parent_window ),
-#endif // #ifdef _GL
-    m_pAmayaFrame( p_parent_frame ),
-    m_Init( false ),
-    m_IsMouseSelecting( false ),
-    m_MouseGrab (false)
+                         AmayaFrame * p_parent_frame )
+ : wxPanel( p_parent_window ),
+#endif // #ifdef _GL 
+   m_pAmayaFrame( p_parent_frame ),
+   m_Init( false ),
+#ifdef _GL
+   m_glContext( NULL ),
+   m_pSharedContext( p_shared_context ),
+#endif
+   m_IsMouseSelecting( false ),
+   m_MouseGrab (false)
 {
 #ifdef FORUMLARY_WIDGET_DEMO
   // demo de comment afficher des widgets dans une fenetre opengl
@@ -90,6 +94,13 @@ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
   wxWindow * p_button = new wxButton( p_panel, -1, _T("Submit"), wxPoint(0,0) );
   p_panel->SetSize( p_button->GetSize() );
 #endif /* FORUMLARY_WIDGET_DEMO */
+
+#ifdef _GL
+  /* wx 3.x: independent context per canvas (shared context causes BadMatch).
+   * Font textures are recreated per-context on first use. */
+  (void)p_shared_context;
+  m_glContext = new wxGLContext(this);
+#endif /* _GL */
 
   SetAutoLayout(TRUE);
   Layout();
@@ -125,7 +136,7 @@ void AmayaCanvas::OnSize( wxSizeEvent& event )
 {
 #ifdef _GL
   // this is also necessary to update the context on some platforms
-  wxGLCanvas::OnSize(event);
+  // wxGLCanvas::OnSize removed in wx 3.x -- base class handles this
 #endif /* _GL */
 
   // do not resize while opengl is not initialized
@@ -178,20 +189,16 @@ void AmayaCanvas::OnPaint( wxPaintEvent& event )
   // get the current frame id
   int frame = m_pAmayaFrame->GetFrameId();
 
-  int x,y,w,h;                             // Dimensions of client area in pixels
-  wxRegionIterator upd(GetUpdateRegion()); // get the update rect list
-  while (upd)
+  /* wx 3.x + OpenGL: with double buffering the back buffer is undefined
+   * after SwapBuffers, so partial region redraws cause blanking.
+   * Always redraw the entire canvas. */
+  int x = 0, y = 0;
+  int w, h;
+  GetClientSize(&w, &h);
+  if (w > 0 && h > 0)
     {
-      x = upd.GetX();
-      y = upd.GetY();
-      w = upd.GetW();
-      h = upd.GetH();
-    
-      // call the generic callback to really display the frame
       FrameExposeCallback ( frame, x, y, w, h );
       TTALOGDEBUG_5( TTA_LOG_DRAW, _T("AmayaCanvas::OnPaint : frame=%d [x=%d, y=%d, w=%d, h=%d]"), m_pAmayaFrame->GetFrameId(), x, y, w, h );
-    
-      upd ++ ;
     }
 
   // not necesarry : cf cube.cpp sample
@@ -460,7 +467,15 @@ void AmayaCanvas::Init()
                  GetSize().GetHeight() );
 
 #ifdef _GL
-  SetCurrent();
+  /* wx 3.x: guard against BadMatch */
+  if (!IsShownOnScreen() || GetSize().GetWidth() <= 0 || !m_glContext) {
+    m_Init = false;  /* not ready yet -- retry next paint */
+    return;
+  }
+  if (!SetCurrent(*m_glContext)) {
+    m_Init = false;  /* retry next paint */
+    return;
+  }
   SetGlPipelineState ();
 #endif /* _GL */
 

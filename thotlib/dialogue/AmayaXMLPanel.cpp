@@ -76,8 +76,12 @@ bool AmayaXMLPanel::Create(wxWindow* parent, wxWindowID id, const wxPoint& pos,
     return false;
   
   m_pXMLList = XRCCTRL(*this,"wxID_LIST_XML",wxListBox);
-  XRCCTRL(*this,"wxID_REFRESH",wxBitmapButton)->SetToolTip(TtaConvMessageToWX(TtaGetMessage(LIB,TMSG_REFRESH)));
-  XRCCTRL(*this,"wxID_APPLY",wxBitmapButton)->SetToolTip(TtaConvMessageToWX(TtaGetMessage(LIB,TMSG_APPLY)));
+  { wxBitmapButton* b;
+    b = XRCCTRL(*this,"wxID_REFRESH",wxBitmapButton);
+    if(b) b->SetToolTip(TtaConvMessageToWX(TtaGetMessage(LIB,TMSG_REFRESH)));
+    b = XRCCTRL(*this,"wxID_APPLY",wxBitmapButton);
+    if(b) b->SetToolTip(TtaConvMessageToWX(TtaGetMessage(LIB,TMSG_APPLY)));
+  }
   return true;
 }
 

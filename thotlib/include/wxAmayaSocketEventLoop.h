@@ -20,10 +20,13 @@ class wxAmayaSocketEventLoop : public wxTimer
 
   static void InitSocketLib();
   static void CleanupSocketLib();
+  void SetCurlPoll(void (*fn)(void), int interval_ms);
+  void ClearCurlPoll();
 
  protected:
   bool m_Started;
   int m_PollingDelay;
+  void (*m_curlPollFn)(void);
 };
 
 #endif /* __WXAMAYASOCKETEVENTLOOP_H__ */

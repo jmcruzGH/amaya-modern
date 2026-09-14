@@ -288,7 +288,7 @@
                 <object class="wxStaticText">
                   <label>stroke-width</label>
                 </object>
-                <flag>wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+                <flag>wxALIGN_RIGHT</flag>
               </object>
               <object class="spacer"/>
               <object class="spacer"/>
@@ -306,7 +306,7 @@
                 <flag>wxALIGN_CENTRE_VERTICAL</flag>
               </object>
               <cols>5</cols>
-              <rows>2</rows>
+              <rows>0</rows>
               <vgap>4</vgap>
               <hgap>4</hgap>
             </object>

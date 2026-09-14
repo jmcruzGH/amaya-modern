@@ -75,8 +75,8 @@ protected:
 
     void UpdateSelectedPage(size_t newsel);
 
-    wxBookCtrlBaseEvent* CreatePageChangingEvent() const;
-    void MakeChangedEvent(wxBookCtrlBaseEvent &event);
+    wxBookCtrlEvent* CreatePageChangingEvent() const;
+    void MakeChangedEvent(wxBookCtrlEvent &event);
 
     // event handlers
     void OnListSelected(wxCommandEvent& event);
@@ -97,17 +97,17 @@ private:
 // listboxbook event class and related stuff
 // ----------------------------------------------------------------------------
 
-class wxListBoxBookEvent : public wxBookCtrlBaseEvent
+class wxListBoxBookEvent : public wxBookCtrlEvent
 {
 public:
   wxListBoxBookEvent(wxEventType commandType = wxEVT_NULL, int id = 0,
                     int nSel = wxNOT_FOUND, int nOldSel = wxNOT_FOUND)
-        : wxBookCtrlBaseEvent(commandType, id, nSel, nOldSel)
+        : wxBookCtrlEvent(commandType, id, nSel, nOldSel)
     {
     }
 
   wxListBoxBookEvent(const wxListbookEvent& event)
-        : wxBookCtrlBaseEvent(event)
+        : wxBookCtrlEvent(event)
     {
     }
 

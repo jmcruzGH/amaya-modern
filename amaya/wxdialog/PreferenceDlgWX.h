@@ -1,3 +1,4 @@
+#include <wx/colordlg.h>
 #ifdef _WX
 
 #ifndef __PREFERENCEDLGWX_H__

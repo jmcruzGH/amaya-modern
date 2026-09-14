@@ -63,7 +63,7 @@
                         <object class="wxStaticText" name="wxID_ATTR_LABEL_NEW_ATTR">
                           <label>*nouvel attribut :*</label>
                         </object>
-                        <flag>wxRIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+                        <flag>wxRIGHT</flag>
                         <border>4</border>
                       </object>
                       <object class="sizeritem">
@@ -127,7 +127,7 @@
           <default></default>
         </object>
         <option>0</option>
-        <flag>wxRIGHT|wxEXPAND|wxALIGN_RIGHT</flag>
+        <flag>wxRIGHT|wxEXPAND</flag>
         <border>2</border>
       </object>
     </object>
@@ -149,7 +149,7 @@
           <default></default>
         </object>
         <option>0</option>
-        <flag>wxRIGHT|wxEXPAND|wxALIGN_RIGHT</flag>
+        <flag>wxRIGHT|wxEXPAND</flag>
         <border>2</border>
       </object>
     </object>

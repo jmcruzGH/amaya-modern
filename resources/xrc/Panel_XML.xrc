@@ -25,7 +25,7 @@
                   <tooltip>*Apply*</tooltip>
                 </object>
                 <option>1</option>
-                <flag>wxRIGHT|wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+                <flag>wxRIGHT|wxEXPAND</flag>
                 <border>4</border>
               </object>
               <object class="sizeritem">
@@ -34,7 +34,7 @@
                   <tooltip>*ReFresh*</tooltip>
                 </object>
                 <option>1</option>
-                <flag>wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+                <flag>wxEXPAND</flag>
               </object>
             </object>
             <option>0</option>

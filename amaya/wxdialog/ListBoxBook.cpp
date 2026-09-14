@@ -177,12 +177,12 @@ int wxListBoxBook::GetSelection() const
     return m_selection;
 }
 
-wxBookCtrlBaseEvent* wxListBoxBook::CreatePageChangingEvent() const
+wxBookCtrlEvent* wxListBoxBook::CreatePageChangingEvent() const
 {
   return new wxListBoxBookEvent(wxEVT_COMMAND_LISTBOXBOOK_PAGE_CHANGING, m_windowId);
 }
 
-void wxListBoxBook::MakeChangedEvent(wxBookCtrlBaseEvent &event)
+void wxListBoxBook::MakeChangedEvent(wxBookCtrlEvent &event)
 {
   event.SetEventType(wxEVT_COMMAND_LISTBOXBOOK_PAGE_CHANGED);
 }

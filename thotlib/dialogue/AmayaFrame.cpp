@@ -166,25 +166,17 @@ AmayaCanvas * AmayaFrame::CreateDrawingArea()
   AmayaCanvas * p_canvas = NULL;
 
 #ifdef _GL
-#ifdef _NOSHARELIST
-  p_canvas = new AmayaCanvas( this, this );
-#else /*_NOSHARELIST*/
-  // If opengl is used then try to share the context
-  if ( GetSharedContext () == -1/* || GetSharedContext () == m_FrameId */)
+  if ( GetSharedContext() == -1 )
     {
-      /* there is no existing context, I need to create a first one and share it with others canvas */
       p_canvas = new AmayaCanvas( this, this );
       SetSharedContext( m_FrameId );
     }
   else
     {
-      wxASSERT( FrameTable[GetSharedContext()].WdFrame != NULL );
-      wxGLContext * p_SharedContext = FrameTable[GetSharedContext()].WdFrame->GetCanvas()->GetContext();
-      wxASSERT( p_SharedContext );
-      // create the new canvas with the opengl shared context
+      wxGLContext * p_SharedContext =
+          FrameTable[GetSharedContext()].WdFrame->GetCanvas()->GetGLContext();
       p_canvas = new AmayaCanvas( this, this, p_SharedContext );
     }
-#endif /* _NOSHARELIST */
 #endif /* _GL */
   return p_canvas;
 }
@@ -352,7 +344,7 @@ bool AmayaFrame::SetCurrent()
   if ( DisplayIsReady() )
     {
       TTALOGDEBUG_1( TTA_LOG_DRAW, _T("AmayaFrame::SetCurrent()[OK] - frame_id=%d"), m_FrameId );
-      m_pCanvas->SetCurrent();
+      m_pCanvas->SetCurrent(*m_pCanvas->GetGLContext());
       return TRUE;
     }
   else

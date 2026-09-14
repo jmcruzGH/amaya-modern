@@ -52,7 +52,7 @@
           </object>
           <orient>wxHORIZONTAL</orient>
         </object>
-        <flag>wxALL|wxALIGN_RIGHT|wxADJUST_MINSIZE</flag>
+        <flag>wxALL|wxADJUST_MINSIZE</flag>
         <border>4</border>
       </object>
     </object>

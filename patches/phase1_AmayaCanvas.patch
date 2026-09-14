@@ -1,0 +1,60 @@
+--- a/thotlib/dialogue/AmayaCanvas.cpp
++++ b/thotlib/dialogue/AmayaCanvas.cpp
+@@ -52,6 +52,12 @@
+ /* PHASE 1 NOTE: AmayaCanvas.cpp
+  *
+  * wxGLCanvas API changed between wx 2.8 and wx 3.0:
++ *
++ * wx 2.8 constructor:
++ *   wxGLCanvas(parent, sharedContext, id, pos, size, style, name, attribs)
++ *   -- the sharedContext was passed IN to the constructor.
++ *   -- GetContext() returned the internally-created wxGLContext.
++ *   -- SetCurrent() required no argument.
+  *
+  * wx 3.x constructor:
+  *   wxGLCanvas(parent, id, attribs, pos, size, style, name)
+@@ -54,6 +60,7 @@
+  *   -- sharedContext is no longer a constructor argument.
+  *   -- The application owns a wxGLContext and passes it to SetCurrent().
+  *   -- GetContext() no longer exists; use the owned wxGLContext directly.
++ *   -- AmayaCanvas now owns m_glContext and shares it via GetGLContext().
+  */
+ 
+ #ifdef _GL
+@@ -66,11 +73,11 @@
+ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
+                           AmayaFrame * p_parent_frame,
+-                          wxGLContext * p_shared_context )
+-  : wxGLCanvas( p_parent_window,
+-                p_shared_context,
+-                -1,
+-                wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS , _T("AmayaCanvas"),
+-                AmayaApp::GetGL_AttrList() ),
++                          wxGLContext * p_shared_context )   /* kept for API compat */
++  : wxGLCanvas( p_parent_window,
++                wxID_ANY,
++                AmayaApp::GetGL_AttrList(),
++                wxDefaultPosition, wxDefaultSize,
++                wxWANTS_CHARS, _T("AmayaCanvas") ),
+ #else // #ifdef _GL  
+ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
+                           AmayaFrame * p_parent_frame )
+@@ -80,6 +87,12 @@
+     m_pAmayaFrame( p_parent_frame ),
+     m_Init( false ),
++#ifdef _GL
++    m_glContext( NULL ),
++    m_pSharedContext( p_shared_context ),
++#endif
+     m_IsMouseSelecting( false ),
+     m_MouseGrab (false)
+ {
++#ifdef _GL
++  /* Create (or share) the GL context after the canvas is constructed. */
++  if ( p_shared_context )
++    m_glContext = p_shared_context;   /* share: do NOT own it */
++  else
++    m_glContext = new wxGLContext(this);  /* first canvas: own it */
++#endif
++
+ #ifdef FORUMLARY_WIDGET_DEMO

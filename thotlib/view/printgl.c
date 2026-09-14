@@ -208,7 +208,7 @@ void GetGLContext ()
 			      wxDefaultPosition, wxDefaultSize,
 			      0, _T("AmayaCanvas"),
 			      AmayaApp::GetGL_AttrList() );
-  wx_canvas->SetCurrent();
+  wx_canvas->SetCurrent(*wx_canvas->GetGLContext());
 #endif /* _WX */
 
   SetGlPipelineState ();
@@ -463,7 +463,7 @@ ThotBool GL_prepare (int frame)
 #endif 
 
 #ifdef _WX
-  wx_canvas->SetCurrent();
+  wx_canvas->SetCurrent(*wx_canvas->GetGLContext());
 #endif /* _WX */
   
 #ifdef _WINGUI

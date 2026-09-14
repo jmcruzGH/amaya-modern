@@ -308,7 +308,7 @@ static int AmayaPopupDocContextMenu (int doc, int view, int window,
                   // new insert entry
                   if (do_insert)
                     {
-                      itemTemplateInsert = new wxMenuItem (p_menu, oldInsert->GetId(), oldInsert->GetLabel(),
+                      itemTemplateInsert = new wxMenuItem (p_menu, oldInsert->GetId(), oldInsert->GetItemLabel(),
                                                            wxT(""), wxITEM_NORMAL, menuTemplateInsert);
                       itemTemplateInsert->SetBitmap(oldInsert->GetBitmap());
                       p_menu->Append(itemTemplateInsert);
@@ -319,7 +319,7 @@ static int AmayaPopupDocContextMenu (int doc, int view, int window,
                   // new append entry
                    if (do_append)
                     {
-                      itemTemplateAppend = new wxMenuItem(p_menu, oldAppend->GetId(), oldAppend->GetLabel(),
+                      itemTemplateAppend = new wxMenuItem(p_menu, oldAppend->GetId(), oldAppend->GetItemLabel(),
                                                       wxT(""), wxITEM_NORMAL, menuTemplateAppend); 
                       itemTemplateAppend->SetBitmap(oldAppend->GetBitmap());
                       p_menu->Append(itemTemplateAppend);

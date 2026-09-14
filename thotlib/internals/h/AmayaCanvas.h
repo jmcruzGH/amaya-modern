@@ -97,6 +97,15 @@ protected:
   
   AmayaFrame *  m_pAmayaFrame;  // amaya frame reference (parent)
 
+#ifdef _GL
+  wxGLContext *  m_glContext;       /* owned when first canvas; shared otherwise */
+  wxGLContext *  m_pSharedContext;  /* non-NULL when sharing an existing context */
+public:
+  wxGLContext * GetGLContext() const { return m_glContext; }
+protected:
+#endif /* _GL */
+
+
   bool m_Init;
   void Init();
   void Render();

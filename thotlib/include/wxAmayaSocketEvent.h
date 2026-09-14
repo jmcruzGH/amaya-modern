@@ -48,6 +48,10 @@ class wxAmayaSocketEvent
   static bool UnregisterSocket( int register_id );  
   static bool CheckSocketStatus( int bloking_time = 0 );
 
+  /* Phase 3: accessor for the singleton event loop (used by query.c to
+   * call SetCurlPoll/ClearCurlPoll without a static method on the loop). */
+  static wxAmayaSocketEventLoop * GetEventLoop() { return m_pEventLoop; }
+
  protected:
   static bool RemoveSocketEntry( int entry );
   static int  AddSocketEntry();

@@ -85,5 +85,25 @@ void wxAmayaSocketEventLoop::Stop()
 void wxAmayaSocketEventLoop::Notify()
 {
   wxAmayaSocketEvent::CheckSocketStatus();
+  if (m_curlPollFn)
+    m_curlPollFn();
 }
+
+void wxAmayaSocketEventLoop::SetCurlPoll(void (*fn)(void), int interval_ms)
+{
+  m_curlPollFn = fn;
+  if (interval_ms > 0 && interval_ms != m_PollingDelay) {
+    m_PollingDelay = interval_ms;
+    if (m_Started) {
+      wxTimer::Stop();
+      wxTimer::Start(m_PollingDelay, false);
+    }
+  }
+}
+
+void wxAmayaSocketEventLoop::ClearCurlPoll()
+{
+  m_curlPollFn = NULL;
+}
+
 #endif /* _WX */

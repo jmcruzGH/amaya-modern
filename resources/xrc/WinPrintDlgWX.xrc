@@ -72,7 +72,7 @@
       </object>
       <object class="sizeritem">
         <option>0</option>
-        <flag>wxALL|wxALIGN_RIGHT|wxADJUST_MINSIZE</flag>
+        <flag>wxALL|wxADJUST_MINSIZE</flag>
         <border>7</border>
         <object class="wxBoxSizer">
           <orient>wxHORIZONTAL</orient>

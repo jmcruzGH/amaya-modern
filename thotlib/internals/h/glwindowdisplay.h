@@ -2,6 +2,10 @@
 #ifndef _GLWINDOWDISPLAY_H_
 #define _GLWINDOWDISPLAY_H_
 
+#ifdef _GL
+#include "typeint.h"
+#endif
+
 #ifdef _WINGUI
 
 #pragma warning (disable: 4786)

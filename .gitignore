@@ -1,0 +1,13 @@
+# Build output
+build/
+*.o
+*.a
+
+# Runtime generated files
+*.pyc
+__pycache__/
+
+# Editor files
+*.swp
+*~
+.DS_Store

@@ -41,7 +41,7 @@
           <bitmapsize>24,24</bitmapsize>
           <style>wxTB_NODIVIDER|wxTB_FLAT</style>
         </object>
-        <flag>wxALIGN_LEFT|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+        <flag>wxALIGN_CENTRE_VERTICAL</flag>
         <border>2</border>
       </object>
     </object>

@@ -9,14 +9,14 @@
       <object class="sizeritem">
         <object class="wxFlexGridSizer">
           <cols>2</cols>
-          <rows>2</rows>
+          <rows>0</rows>
           <object class="sizeritem">
             <object class="wxStaticText" name="wxID_URL_LABEL">
               
               <label>*URL*</label>
             </object>
             
-            <flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             
             <border>5</border>
           </object>
@@ -40,7 +40,7 @@
               <label>*Document type*</label>
             </object>
             
-            <flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             
             <border>5</border>
           </object>
@@ -63,7 +63,7 @@
               <label>*MIME Type*</label>
             </object>
             
-            <flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             
             <border>5</border>
           </object>
@@ -85,7 +85,7 @@
               <label>*Charset*</label>
             </object>
             
-            <flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             
             <border>5</border>
           </object>
@@ -107,7 +107,7 @@
               <label>*Document length*</label>
             </object>
             
-            <flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             
             <border>5</border>
           </object>
@@ -129,7 +129,7 @@
               <label>*Location*</label>
             </object>
             
-            <flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             
             <border>5</border>
           </object>
@@ -151,7 +151,7 @@
               <label></label>
             </object>
             
-            <flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             
             <border>5</border>
           </object>
@@ -161,7 +161,7 @@
               <label>OK</label>
             </object>
             
-            <flag>wxALL|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             
             <border>5</border>
           </object>
@@ -184,7 +184,7 @@
           </object>
         </object>
         
-        <flag>wxALL|wxALIGN_RIGHT</flag>
+        <flag>wxALL</flag>
         
         <border>5</border>
       </object>

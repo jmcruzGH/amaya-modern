@@ -25,7 +25,7 @@
               <selection>1</selection>
             </object>
             <option>2</option>
-            <flag>wxALL|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             <border>2</border>
           </object>
           <object class="spacer">
@@ -68,7 +68,7 @@
               <selection>6</selection>
             </object>
             <option>1</option>
-            <flag>wxALL|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             <border>2</border>
           </object>
           <object class="spacer">
@@ -101,7 +101,7 @@
           <orient>wxHORIZONTAL</orient>
         </object>
         <option>1</option>
-        <flag>wxALL|wxALIGN_RIGHT|wxADJUST_MINSIZE</flag>
+        <flag>wxALL|wxADJUST_MINSIZE</flag>
         <border>2</border>
       </object>
     </object>

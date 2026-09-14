@@ -205,12 +205,25 @@ ThotBool GL_prepare (int frame)
 {  
   if (frame >= 0 && frame < MAX_FRAME && NotFeedBackMode)
     {
-      //#ifdef _TESTSWAP
-      //FrameTable[frame].DblBuffNeedSwap = TRUE;
-      //#endif /*_TESTSWAP*/
-
-    if (FrameTable[frame].WdFrame)
-      return FrameTable[frame].WdFrame->SetCurrent();
+    if (FrameTable[frame].WdFrame &&
+        FrameTable[frame].WdFrame->SetCurrent())
+      {
+        /* After switching to this frame's GL context, reset the viewport
+         * and projection matrix. With independent GL contexts each context
+         * has its own viewport state which may be uninitialized. */
+        int w = FrameTable[frame].FrWidth;
+        int h = FrameTable[frame].FrHeight;
+        if (w > 0 && h > 0)
+          {
+            glViewport (0, 0, w, h);
+            glMatrixMode (GL_PROJECTION);
+            glLoadIdentity ();
+            glOrtho (0, w, h, 0, -1, 1);
+            glMatrixMode (GL_MODELVIEW);
+            glLoadIdentity ();
+          }
+        return TRUE;
+      }
     }
   return FALSE;
 }

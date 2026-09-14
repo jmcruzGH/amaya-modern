@@ -44,19 +44,19 @@
       </object>
       <object class="sizeritem">
         <option>0</option>
-        <flag>wxALL|wxALIGN_RIGHT|wxADJUST_MINSIZE</flag>
+        <flag>wxALL|wxADJUST_MINSIZE</flag>
         <border>5</border>
         <object class="wxBoxSizer">
           <orient>wxHORIZONTAL</orient>
           <object class="sizeritem">
-            <flag>wxALL|wxALIGN_RIGHT</flag>
+            <flag>wxALL</flag>
             <border>5</border>
             <object class="wxButton" name="wxID_CANCEL">
               <label>*Cancel*</label>
             </object>
           </object>
           <object class="sizeritem">
-            <flag>wxALL|wxALIGN_RIGHT</flag>
+            <flag>wxALL</flag>
             <border>5</border>
             <object class="wxButton" name="wxID_OK">
               <label>*Close tabs*</label>

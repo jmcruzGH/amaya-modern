@@ -149,7 +149,7 @@
           </object>
           <object class="sizeritem">
             <option>0</option>
-            <flag>wxTOP|wxALIGN_RIGHT|wxADJUST_MINSIZE</flag>
+            <flag>wxTOP|wxADJUST_MINSIZE</flag>
             <object class="wxBoxSizer">
               <orient>wxHORIZONTAL</orient>
               <object class="sizeritem">

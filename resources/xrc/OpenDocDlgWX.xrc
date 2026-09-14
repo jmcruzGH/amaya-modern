@@ -147,7 +147,7 @@
                   </object>
                 </object>
                 <option>1</option>
-                <flag>wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+                <flag>wxEXPAND</flag>
               </object>
             </object>
             <flag>wxBOTTOM|wxEXPAND</flag>
@@ -210,7 +210,7 @@
         <option>1</option>
       </object>
       <object class="sizeritem">
-        <flag>wxALL|wxALIGN_RIGHT|wxADJUST_MINSIZE</flag>
+        <flag>wxALL|wxADJUST_MINSIZE</flag>
         <object class="wxBoxSizer">
           <orient>wxHORIZONTAL</orient>
           <object class="sizeritem">

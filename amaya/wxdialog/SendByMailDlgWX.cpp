@@ -246,7 +246,7 @@ void SendByMailDlgWX::LoadRecentList()
   if(lastRcpt)
   {
     wxString rcpts(lastRcpt, wxConvUTF8);
-    m_rcptArray = ::wxStringTokenize(wxString(rcpts, wxConvUTF8), wxT("|"));
+    m_rcptArray = ::wxStringTokenize(wxString::FromUTF8(rcpts), wxT("|"));
   }
   if(m_rcptArray.GetCount()==0)
     m_rcptArray.Add(wxString(TtaGetEnvString ("EMAILS_FROM_ADDRESS"), wxConvUTF8));

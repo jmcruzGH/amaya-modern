@@ -1,3 +1,4 @@
+#include <wx/colordlg.h>
 #ifdef _WX
 
 #ifndef AMAYACOLORBUTTON_H_

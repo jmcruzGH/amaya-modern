@@ -1,3 +1,4 @@
+#include <wx/colordlg.h>
 #ifdef _WX
 
 #ifndef __STYLEDLGWX_H__

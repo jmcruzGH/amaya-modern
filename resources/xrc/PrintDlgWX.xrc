@@ -12,7 +12,7 @@
           <object class="sizeritem">
             <object class="wxGridSizer">
               <cols>2</cols>
-              <rows>1</rows>
+              <rows>0</rows>
               <object class="sizeritem">
                 <object class="wxRadioBox" name="wxID_PAPER_FORMAT_BOX">
                   
@@ -71,7 +71,7 @@
           <object class="sizeritem">
             <object class="wxGridSizer">
               <cols>2</cols>
-              <rows>1</rows>
+              <rows>0</rows>
               <object class="sizeritem">
                 <object class="wxStaticText" name="wxID_NONE">
                   
@@ -112,7 +112,7 @@
           <object class="sizeritem">
             <object class="wxGridSizer">
               <cols>2</cols>
-              <rows>1</rows>
+              <rows>0</rows>
               <object class="sizeritem">
                 <object class="wxBoxSizer">
                   <orient>wxVERTICAL</orient>
@@ -285,7 +285,7 @@
       </object>
       <object class="sizeritem">
         <option>0</option>
-        <flag>wxALL|wxALIGN_RIGHT|wxADJUST_MINSIZE</flag>
+        <flag>wxALL|wxADJUST_MINSIZE</flag>
         <border>7</border>
         <object class="wxBoxSizer">
           <orient>wxHORIZONTAL</orient>

@@ -3,7 +3,7 @@
   <object class="wxDialog" name="StyleDlgWX">
     <title>CSS Style</title>
     <centered>1</centered>
-    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxNO_3D|wxTAB_TRAVERSAL|wxCLIP_CHILDREN</style>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTAB_TRAVERSAL|wxCLIP_CHILDREN</style>
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
       <object class="sizeritem">
@@ -656,7 +656,7 @@
                         </object>
                       </object>
                       <option>1</option>
-                      <flag>wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+                      <flag>wxEXPAND</flag>
                     </object>
                     <object class="spacer">
                       <size>10,10</size>
@@ -2079,7 +2079,7 @@
                             <size>70,-1</size>
                             <focused>1</focused>
                           </object>
-                          <flag>wxALL|wxALIGN_CENTRE_VERTICAL</flag>
+                          <flag>wxALL</flag>
                           <border>5</border>
                         </object>
                         <object class="spacer">

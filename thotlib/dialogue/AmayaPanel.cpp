@@ -91,9 +91,11 @@ bool AmayaToolPanelBar::Create(wxWindow* parent, wxWindowID id, const wxPoint& p
   if(!wxXmlResource::Get()->LoadPanel((wxPanel*)this, parent, wxT("wxID_PANEL")))
     return false;
   
-  XRCCTRL(*this, "wxID_LABEL_TOOLS", wxStaticText)->SetLabel(TtaConvMessageToWX(TtaGetMessage(LIB,TMSG_TOOLS)));
-  XRCCTRL(*this, "wxID_BUTTON_CLOSE", wxBitmapButton)->SetToolTip(TtaConvMessageToWX(TtaGetMessage(LIB,TMSG_DONE)));
-
+  { wxStaticText* lbl = XRCCTRL(*this, "wxID_LABEL_TOOLS", wxStaticText);
+    if(lbl) lbl->SetLabel(TtaConvMessageToWX(TtaGetMessage(LIB,TMSG_TOOLS)));
+    wxBitmapButton* btn = XRCCTRL(*this, "wxID_BUTTON_CLOSE", wxBitmapButton);
+    if(btn) btn->SetToolTip(TtaConvMessageToWX(TtaGetMessage(LIB,TMSG_DONE)));
+  }
   m_scwin = XRCCTRL(*this, "wxID_PANEL_SWIN", wxScrolledWindow);
   
   // Hide bar title.
@@ -306,7 +308,9 @@ m_bMinimized(false)
   wxXmlResource::Get()->LoadPanel((wxPanel*)this, parent, 
                                         wxT("wxID_DOCKED_TOOL_PANEL_CONTAINER"));
   
-  XRCCTRL(*this, "wxID_LABEL_TITLE", wxStaticText)->SetLabel(panel->GetToolPanelName());
+  { wxStaticText* lbl = XRCCTRL(*this, "wxID_LABEL_TITLE", wxStaticText);
+    if(lbl) lbl->SetLabel(panel->GetToolPanelName());
+  }
   
   panel->Create(this, wxID_ANY);  
   GetSizer()->Add(panel, 0, wxEXPAND);
@@ -333,10 +337,12 @@ bool AmayaToolPanelItem::Minimize(bool bMinimize)
       m_bMinimized = bMinimize;
       sz->Show((size_t)1, !bMinimize);
       if (bMinimize)
-        XRCCTRL(*this, "wxID_BUTTON_EXPAND", wxBitmapButton)->SetBitmapLabel( s_Bitmap_Minimized );
+        { wxBitmapButton* b = XRCCTRL(*this, "wxID_BUTTON_EXPAND", wxBitmapButton);
+          if(b) b->SetBitmapLabel( s_Bitmap_Minimized ); }
       else
         {
-        XRCCTRL(*this, "wxID_BUTTON_EXPAND", wxBitmapButton)->SetBitmapLabel( s_Bitmap_Expanded );
+        { wxBitmapButton* b = XRCCTRL(*this, "wxID_BUTTON_EXPAND", wxBitmapButton);
+          if(b) b->SetBitmapLabel( s_Bitmap_Expanded ); }
         // test if the attribute panel should be updated
         if (m_panel && m_panel->GetToolPanelType() == WXAMAYA_PANEL_ATTRIBUTE)
           {

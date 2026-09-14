@@ -992,7 +992,7 @@ PtrTSchema ReadTranslationSchema (const char* fileName, PtrSSchema pSS)
   file = TtaReadOpen (buf);
   if (file == 0)
     {
-      strncpy (buf, fileName, MAX_PATH);
+      strncpy (buf, fileName, MAX_TXT_LEN - 1);
       strcat (buf, ".TRA");
       TtaDisplayMessage (INFO, TtaGetMessage (LIB, TMSG_TRA_FILE_INCORRECT),
                          buf);

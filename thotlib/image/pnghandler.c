@@ -128,7 +128,7 @@ static unsigned char *ReadPng (FILE *pfFile, unsigned int *width, unsigned int *
   png_byte      **ppbRowPointers;
   unsigned char  *pixels;
   unsigned int    i, j, passes;
-  unsigned long   lw, lh;
+  png_uint_32     lw, lh;
   int             iBitDepth, iColorType;
   double          dGamma;
 
@@ -149,7 +149,7 @@ static unsigned char *ReadPng (FILE *pfFile, unsigned int *width, unsigned int *
         png_destroy_read_struct (&png_ptr, NULL, NULL);
         return NULL;
       }   
-    if (setjmp (png_ptr->jmpbuf))
+    if (setjmp (png_jmpbuf(png_ptr)))
       {
         /* Free all of the memory associated with the png_ptr and info_ptr */
         png_destroy_read_struct (&png_ptr, &info_ptr, (png_infopp)NULL);
@@ -175,7 +175,7 @@ static unsigned char *ReadPng (FILE *pfFile, unsigned int *width, unsigned int *
       png_set_palette_to_rgb (png_ptr);
     /* 8 bits / channel is needed */
     if (iColorType == PNG_COLOR_TYPE_GRAY && iBitDepth < 8) 
-      png_set_gray_1_2_4_to_8(png_ptr);
+      png_set_expand_gray_1_2_4_to_8(png_ptr);
     /* all transparency type : 1 color, indexed => alpha channel*/
     if (png_get_valid (png_ptr, info_ptr,PNG_INFO_tRNS)) 
       png_set_tRNS_to_alpha (png_ptr);
@@ -207,8 +207,8 @@ static unsigned char *ReadPng (FILE *pfFile, unsigned int *width, unsigned int *
     ppbRowPointers = (png_bytepp) TtaGetMemory  (lh * sizeof(png_bytep));
     /* Opengl Texture inversion */   
     for (i = 0; i < lh; i++)
-      ppbRowPointers[i] = pixels + ((lh - (i+1)) * ulRowBytes * sizeof(png_byte));    
-    png_start_read_image (png_ptr); 
+      ppbRowPointers[i] = pixels + ((lh - (i+1)) * ulRowBytes * sizeof(png_byte));
+    /* png_start_read_image removed: redundant after png_read_update_info (libpng 1.6) */
     /* depending on interlacing, reading the data*/
     for (i = 0; i < passes; i++)
       for (j = 0; j < lh; j++)
@@ -232,7 +232,7 @@ static unsigned char *ReadPng (FILE *pfFile, unsigned int *width, unsigned int *
 static void PError (png_struct *png_ptr, char *message)
 {
    fprintf(stderr,"libpng error: %s\n", message);
-   longjmp(png_ptr->jmpbuf, 1);
+   longjmp(png_jmpbuf(png_ptr), 1);
 }
 
 /*----------------------------------------------------------------------
@@ -306,7 +306,7 @@ static unsigned char *ReadPng (FILE *infile, int *width, int *height,
   pixels = NULL;
   isgrey = FALSE;
   cr = cg = cb = 0;
-  if (setjmp (png_ptr->jmpbuf))
+  if (setjmp (png_jmpbuf(png_ptr)))
     {
       /* Free all of the memory associated with the png_ptr and info_ptr */
       png_destroy_read_struct (&png_ptr, &info_ptr, (png_infopp)NULL);
@@ -336,8 +336,8 @@ static unsigned char *ReadPng (FILE *infile, int *width, int *height,
   png_set_expand (png_ptr);
     
   /* tell libpng to handle the gamma conversion for you */
-  if (info_ptr->valid & PNG_INFO_gAMA) 
-    gamma_correction = info_ptr->gamma;
+  if (png_get_valid(png_ptr, info_ptr, PNG_INFO_gAMA)) 
+    { double g; if (png_get_gAMA(png_ptr, info_ptr, &g)) gamma_correction = g; }
   else 
     gamma_correction = (double)0.45;
 
@@ -356,8 +356,8 @@ static unsigned char *ReadPng (FILE *infile, int *width, int *height,
   
   png_read_update_info (png_ptr, info_ptr);
   /* setup other stuff using the fields of png_info. */
-  *width  = (int) png_ptr->width;
-  *height = (int) png_ptr->height;
+  *width  = (int) png_get_image_width(png_ptr, info_ptr);
+  *height = (int) png_get_image_height(png_ptr, info_ptr);
   /* calculate the bytes per line (if the pixels were expanded to 1 pixel/byte */ 
   bytesPerExpandedLine = (*width) * info_ptr->channels;
   png_pixels = (png_byte*) TtaGetMemory (bytesPerExpandedLine * (*height) * sizeof (png_byte));
@@ -858,7 +858,7 @@ ThotBool SavePng (const char *filename,
       png_destroy_write_struct(&png, (png_infopp) NULL);
       return FALSE;
     }
-  if (setjmp(png->jmpbuf)) 
+  if (setjmp(png_jmpbuf(png))) 
     {
         png_destroy_write_struct(&png, &pngInfo);
         TtaWriteClose (pngFile);

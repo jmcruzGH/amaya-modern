@@ -1,0 +1,35 @@
+/* cmake/config.h.in -- processed by CMake into config.h */
+#ifndef AMAYA_CONFIG_H
+#define AMAYA_CONFIG_H
+
+/* Version */
+#define AMAYA_VERSION "@PROJECT_VERSION@"
+#define VERSION       "@PROJECT_VERSION@"
+
+/* Platform */
+#define _UNIX  1
+#define AMAYA_UNIX 1
+
+/* C89 standard headers available (suppresses varargs.h fallback in sysdep.h) */
+#define STDC_HEADERS 1
+#define HAVE_STDINT_H 1
+#define HAVE_INTTYPES_H 1
+
+/* Standard headers */
+#cmakedefine HAVE_UNISTD_H  1
+#cmakedefine HAVE_SYS_STAT_H 1
+#cmakedefine HAVE_DIRENT_H  1
+
+/* String functions */
+#cmakedefine HAVE_STRCASECMP  1
+#cmakedefine HAVE_STRNCASECMP 1
+
+/* Optional features */
+#cmakedefine HAVE_LIBCURL 1
+
+/* Disable features not ported yet */
+/* #undef SSL    -- Phase 3 will re-enable via libcurl */
+/* #undef DAV    -- dropped */
+/* #undef ANNOT  -- dropped */
+
+#endif /* AMAYA_CONFIG_H */

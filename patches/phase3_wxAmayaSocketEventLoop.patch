@@ -1,0 +1,64 @@
+--- a/thotlib/include/wxAmayaSocketEventLoop.h
++++ b/thotlib/include/wxAmayaSocketEventLoop.h
+@@ -6,6 +6,8 @@
+ #define __WXAMAYASOCKETEVENTLOOP_H__
+ 
+ #include "wx/timer.h"
++/* Phase 3: libcurl poll function pointer type */
++typedef void (*CurlPollFn)(void);
+ 
+ class wxAmayaSocketEventLoop : public wxTimer
+ {
+@@ -18,8 +20,16 @@ class wxAmayaSocketEventLoop : public wx
+   static void InitSocketLib();
+   static void CleanupSocketLib();
+ 
++  /* Phase 3: register/clear the libcurl poll callback (non-static:
++   * called via wxAmayaSocketEvent::m_pEventLoop singleton pointer).
++   * SetCurlPoll also adjusts the timer interval if interval_ms > 0. */
++  void SetCurlPoll(CurlPollFn fn, int interval_ms);
++  void ClearCurlPoll();
++
+  protected:
+   bool m_Started;
+   int m_PollingDelay;
++  CurlPollFn m_curlPollFn;   /* NULL when no libcurl transfer active */
+ };
+ 
+ #endif /* __WXAMAYASOCKETEVENTLOOP_H__ */
+--- a/thotlib/base/wxAmayaSocketEventLoop.cpp
++++ b/thotlib/base/wxAmayaSocketEventLoop.cpp
+@@ -23,6 +23,7 @@ wxAmayaSocketEventLoop::wxAmayaSocketEve
+   : wxTimer(),
+     m_Started(false),
+-    m_PollingDelay(polling_delay)
++    m_PollingDelay(polling_delay),
++    m_curlPollFn(NULL)
+ {
+ }
+ 
++void wxAmayaSocketEventLoop::SetCurlPoll(CurlPollFn fn, int interval_ms)
++{
++  m_curlPollFn = fn;
++  if (interval_ms > 0 && interval_ms != m_PollingDelay) {
++    m_PollingDelay = interval_ms;
++    if (m_Started) {
++      wxTimer::Stop();
++      wxTimer::Start(m_PollingDelay, false);
++    }
++  }
++}
++
++void wxAmayaSocketEventLoop::ClearCurlPoll()
++{
++  m_curlPollFn = NULL;
++}
++
+ @@ -85,4 +101,7 @@ void wxAmayaSocketEventLoop::Notify()
+ void wxAmayaSocketEventLoop::Notify()
+ {
+   wxAmayaSocketEvent::CheckSocketStatus();
++  /* Phase 3: drive libcurl I/O on each timer tick */
++  if (m_curlPollFn)
++    m_curlPollFn();
+ }

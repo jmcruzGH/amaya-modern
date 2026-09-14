@@ -719,4 +719,18 @@ THOT_EXPORT LoadedImageDesc *LoadedResources;
 #define SVG_VERSION "1.0" /* version of the SVG specificatrion implemented
 			     by the Amaya SVG editor */
 
+/* Undef short names that clash with wx member function names.
+ * Fires only when wx is being compiled (defined via wxWidgets_USE_FILE). */
+#if defined(AMAYA_UNDEF_WX_CLASHES) && defined(_WX_WX_H_)
+#  ifdef Align
+#    undef Align
+#  endif
+#  ifdef Inline
+#    undef Inline
+#  endif
+#  ifdef Block
+#    undef Block
+#  endif
+#endif
+
 #endif /* AMAYA_H */

@@ -528,7 +528,7 @@ bool wxEndOfLineOutputStream::Close()
   ----------------------------------------------------------------------*/
 size_t wxEndOfLineOutputStream::OnSysWrite(const void *buffer, size_t size)
 {
-  const char*  buff = (const char*)buffer;
+  const char*  buff = static_cast<const char*>(buffer);
   size_t sz = size;
 
   while (m_len+(int)sz>=m_size)

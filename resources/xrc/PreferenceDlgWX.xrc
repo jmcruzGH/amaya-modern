@@ -3,7 +3,7 @@
   <object class="wxDialog" name="PreferenceDlgWX">
     <title>PreferenceDlgWX</title>
     <size>480,200</size>
-    <style>wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL|wxCLIP_CHILDREN|wxNO_3D</style>
+    <style>wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL|wxCLIP_CHILDREN</style>
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
       <object class="sizeritem">
@@ -125,7 +125,7 @@
                     <item>zh-tw (Traditional Chinese)</item>
                   </content>
                 </object>
-                <flag>wxLEFT|wxALIGN_CENTRE_VERTICAL</flag>
+                <flag>wxLEFT</flag>
                 <border>5</border>
               </object>
             </object>
@@ -149,7 +149,7 @@
                   <min>10</min>
                   <max>1000</max>
                 </object>
-                <flag>wxLEFT|wxALIGN_CENTRE_VERTICAL</flag>
+                <flag>wxLEFT</flag>
                 <border>5</border>
               </object>
             </object>
@@ -414,7 +414,7 @@
               <label>*Urls number in history :*</label>
               <size>250,-1</size>
             </object>
-            <flag>wxRIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxRIGHT</flag>
             <border>5</border>
           </object>
           <object class="sizeritem">
@@ -431,7 +431,7 @@
               <label>*Clear all entries in the history of urls*</label>
               <size>200,-1</size>
             </object>
-            <flag>wxLEFT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxLEFT</flag>
             <border>5</border>
           </object>
         </object>
@@ -839,7 +839,7 @@
       <object class="sizeritem">
         <object class="wxFlexGridSizer">
           <cols>3</cols>
-          <rows>4</rows>
+          <rows>0</rows>
           <object class="sizeritem">
             <object class="wxStaticText" name="wxID_LABEL_TEXTCOLOR">
               <label>*Couleur du texte*</label>
@@ -1345,7 +1345,7 @@
       <object class="sizeritem">
         <object class="wxFlexGridSizer">
           <cols>2</cols>
-          <rows>2</rows>
+          <rows>0</rows>
           <object class="sizeritem">
             <object class="wxStaticText" name="wxID_LABEL_EMAIL_SERVER_ADDRESS">
               <label>*Adresse du serveur :*</label>
@@ -1353,7 +1353,7 @@
               <style>wxALIGN_RIGHT</style>
             </object>
             <option>1</option>
-            <flag>wxALL|wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL|wxEXPAND</flag>
             <border>4</border>
           </object>
           <object class="sizeritem">
@@ -1372,7 +1372,7 @@
               <style>wxALIGN_RIGHT</style>
             </object>
             <option>1</option>
-            <flag>wxALL|wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL|wxEXPAND</flag>
             <border>4</border>
           </object>
           <object class="sizeritem">
@@ -1392,7 +1392,7 @@
                   <size>150,-1</size>
                 </object>
                 <option>0</option>
-                <flag>wxALL|wxALIGN_CENTRE_VERTICAL</flag>
+                <flag>wxALL</flag>
                 <border>4</border>
               </object>
             </object>
@@ -1409,7 +1409,7 @@
               <style>wxALIGN_RIGHT</style>
             </object>
             <option>1</option>
-            <flag>wxALL|wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL|wxEXPAND</flag>
             <border>4</border>
           </object>
           <object class="sizeritem">

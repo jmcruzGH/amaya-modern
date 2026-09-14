@@ -87,25 +87,41 @@ AmayaStyleToolPanel::~AmayaStyleToolPanel()
 bool AmayaStyleToolPanel::Create(wxWindow* parent, wxWindowID id, const wxPoint& pos, 
           const wxSize& size, long style, const wxString& name, wxObject* extra)
 {
+  /* wx 3.x fix: skip AttachUnknownControl entirely.
+   * Load the panel first, then find the placeholder "unknown" sizeritem
+   * and replace it by reparenting a newly created AmayaColorButton into
+   * the same sizer position. */
   if(!wxXmlResource::Get()->LoadPanel((wxPanel*)this, parent, wxT("wxID_TOOLPANEL_STYLE")))
     return false;
+
+  /* Helper: find a sizeritem by XRCID and replace its window.
+   * We walk the sizer tree looking for any wxWindow whose id matches,
+   * then reparent a new AmayaColorButton in its place. */
+  /* wx 3.x: create color buttons using 'parent' (AmayaToolPanelItem, already
+   * GTK-realized by its own LoadPanel call) then reparent into our sizer.
+   * 'this' (AmayaStyleToolPanel) is not yet realized at this point. */
+  auto replaceWithColorButton = [this, parent](const char* name, const wxColour& col) {
+    int xid = XRCID(name);
+    wxWindow* placeholder = this->FindWindowById(xid);
+    wxSizer* sizer = placeholder ? placeholder->GetContainingSizer() : nullptr;
+    AmayaColorButton* btn = new AmayaColorButton(parent, xid, col,
+        wxDefaultPosition, wxSize(16,16), wxBORDER_RAISED);
+    if (sizer) {
+      sizer->Replace(placeholder, btn);
+      if (placeholder) placeholder->Destroy();
+      sizer->Layout();
+    }
+    btn->Reparent(this);
+  };
+
+  replaceWithColorButton("wxID_SVG_STROKE_COLOR",   wxColour(0,0,0));
+  replaceWithColorButton("wxID_SVG_FILL_COLOR",     wxColour(255,255,255));
+  replaceWithColorButton("wxID_PANEL_CSS_COLOR",    wxColour(0,0,0));
+  replaceWithColorButton("wxID_PANEL_CSS_BK_COLOR", wxColour(255,255,255));
   
 #ifdef _WINDOWS
   SetFont(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
 #endif /* _WINDOWS */
-
-  /* SVG Style Panel */
-  wxXmlResource::Get()->AttachUnknownControl(wxT("wxID_SVG_STROKE_COLOR"),
-      new AmayaColorButton(this, XRCID("wxID_SVG_STROKE_COLOR"), wxColour(0,0,0), wxDefaultPosition, wxSize(16,16), wxBORDER_RAISED));
-  wxXmlResource::Get()->AttachUnknownControl(wxT("wxID_SVG_FILL_COLOR"),
-      new AmayaColorButton(this, XRCID("wxID_SVG_FILL_COLOR"), wxColour(255,255,255), wxDefaultPosition, wxSize(16,16), wxBORDER_RAISED));
-
-  /* HTML Style Panel */
-  wxXmlResource::Get()->AttachUnknownControl(wxT("wxID_PANEL_CSS_COLOR"),
-      new AmayaColorButton(this, XRCID("wxID_PANEL_CSS_COLOR"), wxColour(0,0,0), wxDefaultPosition, wxSize(16,16), wxBORDER_RAISED));
-
-  wxXmlResource::Get()->AttachUnknownControl(wxT("wxID_PANEL_CSS_BK_COLOR"),
-      new AmayaColorButton(this, XRCID("wxID_PANEL_CSS_BK_COLOR"), wxColour(255,255,255), wxDefaultPosition, wxSize(16,16), wxBORDER_RAISED));
  
   m_tbar1 = XRCCTRL(*this,"wxID_TOOLBAR_CSS_1", AmayaBaseToolBar);
   m_tbar2 = XRCCTRL(*this,"wxID_TOOLBAR_CSS_2", AmayaBaseToolBar);

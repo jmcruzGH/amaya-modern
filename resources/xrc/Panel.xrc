@@ -58,7 +58,7 @@
               <bitmap>../icons/misc/expand_on.png</bitmap>
               <style>wxNO_BORDER</style>
             </object>
-            <flag>wxALL|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             <border>0</border>
           </object>
           <object class="sizeritem">
@@ -74,7 +74,7 @@
               <style>wxALIGN_LEFT</style>
             </object>
             <option>1</option>
-            <flag>wxALL|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL</flag>
             <border>0</border>
           </object>
           <orient>wxHORIZONTAL</orient>

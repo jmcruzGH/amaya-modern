@@ -19,6 +19,7 @@
 #endif /* _WX */
 
 #include "thot_gui.h"
+#include <sys/time.h>
 #include "ustring.h"
 #include "math.h"
 #include "thot_sys.h"
@@ -1253,7 +1254,7 @@ AnimTime ComputeThotCurrentTime (int frame)
   struct timeb	after;
 #else /* _WINDOWS */
   struct timeval tv;
-  struct timezone tz;
+  /* struct timezone removed */
 #endif /* _WINDOWS */
 #endif /* _WX */
   AnimTime current_time = 0; 
@@ -1266,7 +1267,7 @@ AnimTime ComputeThotCurrentTime (int frame)
       ftime (&after);
       current_time = (double)after.time + (((double)after.millitm)/1000.);
 #else /* _WINDOWS */
-      gettimeofday (&tv, &tz);
+      gettimeofday (&tv, NULL);
       current_time = (double)tv.tv_sec + (((double)tv.tv_usec)/1000000.);
 #endif /* _WINDOWS */
 #endif /* _WX */

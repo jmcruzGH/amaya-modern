@@ -10,7 +10,7 @@
               <label>*Sujet :*</label>
             </object>
             <option>0</option>
-            <flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTRE_VERTICAL</flag>
+            <flag>wxALL|wxALIGN_LEFT</flag>
             <border>4</border>
           </object>
           <object class="spacer">
@@ -86,7 +86,7 @@
           </object>
           <orient>wxHORIZONTAL</orient>
         </object>
-        <flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+        <flag>wxALL</flag>
         <border>4</border>
       </object>
     </object>
