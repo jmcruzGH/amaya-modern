@@ -99,7 +99,15 @@ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
   /* wx 3.x: independent context per canvas (shared context causes BadMatch).
    * Font textures are recreated per-context on first use. */
   (void)p_shared_context;
-  m_glContext = new wxGLContext(this);
+  /* Real GL context sharing: each canvas keeps its OWN context object
+   * (required on modern Mesa -- one context object cannot be handed to
+   * two different windows without triggering BadMatch), but when a
+   * sibling context is given, the new context shares its textures and
+   * display lists with it via wx's standard share-list constructor. */
+  if (p_shared_context)
+    m_glContext = new wxGLContext(this, p_shared_context);
+  else
+    m_glContext = new wxGLContext(this);
 #endif /* _GL */
 
   SetAutoLayout(TRUE);

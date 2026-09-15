@@ -926,7 +926,24 @@ static void MakeBitmapGlyph (GL_font *font, unsigned int g, GL_glyph *BitmapGlyp
       BitmapGlyph->data_type = GL_GLYPH_DATATYPE_FTBITMAP; /* must be freed with TtaFreeMemory */
       BitmapGlyph->advance = advance;
       BitmapGlyph->pos.x = bitmap->left;
-      BitmapGlyph->pos.y = source->rows - bitmap->top;   
+      /* bitmap->top (FT_Int, signed) is subtracted from source->rows
+       * (unsigned int) in the original code. C's usual arithmetic
+       * conversions silently convert a negative bitmap->top to a huge
+       * unsigned value first, so the subtraction wraps around instead
+       * of failing. That corrupted value then propagates as a huge
+       * positive pos.y, gets negated in UnicodeFontRender, and rounds
+       * to a huge negative float there -- corrupting that glyph's
+       * height computation and causing the whole text run containing
+       * it to silently not render. Do the subtraction in a signed,
+       * sufficiently wide type to avoid the wraparound entirely. */
+      {
+        long top_signed  = (long) bitmap->top;
+        long rows_signed = (long) source->rows;
+        long pos_y = rows_signed - top_signed;
+        if (pos_y < 0)
+          pos_y = 0;
+        BitmapGlyph->pos.y = (FT_Pos) pos_y;
+      }
       BitmapGlyph->dimension.x = w;
       BitmapGlyph->dimension.y = h;  	  
       FT_Done_Glyph (Glyph);
