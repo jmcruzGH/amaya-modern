@@ -482,9 +482,6 @@ void AmayaCanvas::Init()
     return;
   }
   SetGlPipelineState ();
-  /* Ensure viewport is set for this canvas */
-  { int w, h; GetClientSize(&w, &h);
-    if (w > 0 && h > 0) GLResize(w, h, 0, 0); }
 #endif /* _GL */
 
   /* 

@@ -107,8 +107,6 @@
 
 #define FEEDBUFFERSIZE 32768
 static ThotBool NotFeedBackMode = TRUE;
-/* wx 3.x: track frames that had partial redraws and need a full refresh */
-static ThotBool FrameNeedsFullRedraw[MAX_FRAME + 1];
 /* background color*/
 static int      GL_Background[MAX_FRAME];
 

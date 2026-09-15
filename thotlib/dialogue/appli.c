@@ -294,44 +294,39 @@ ThotBool FrameExposeCallback ( int frame, int x, int y, int w, int h)
   Current_Expose = TRUE;
   pFrame = &ViewFrameTable[frame - 1];
 #ifdef _GL
-  /* THIS JUST DOESN'T WORK !!!
-     even when storing successive x,y and so on...
-     it's just gtk and opengl mix bad...
-     so the Xfree and gtk guys that tells us 
-     it work, just have to come here and code it here
-     with an hardware opengl implementation on their PC...
-     They will see the Speed problem...*/
+  /* wx 3.x + modern Mesa: always clear and redraw the COMPLETE frame.
+   * Double buffering means the backbuffer is undefined after SwapBuffers.
+   * Partial redraws leave stale content. We clear and redraw everything. */
   if (GL_prepare (frame))
     {
-//      if ( g_NeedRedisplayAllTheFrame[frame] || glhard() || GetBadCard() )
-        {
-          /* prevent flickering*/
-          GL_SwapStop (frame);
-          // we need to recalculate the glcanvas only once : after the RESIZE event
-          // because GTK&GL clear automaticaly the GL canvas just after the frame is resized.
-          // (it appends only on some hardware opengl implementations on Linux)
-          //g_NeedRedisplayAllTheFrame[frame] = FALSE;
-          
-          // refresh the invalide frame content
-          /* wx 3.x + GL: always use full frame for clip region.
-           * This ensures the complete backbuffer is redrawn each expose. */
-          { int fw, fh; GetSizesFrame (frame, &fw, &fh);
-            DefClip (frame, pFrame->FrXOrg, pFrame->FrYOrg,
-                     pFrame->FrXOrg + fw, pFrame->FrYOrg + fh); }
-          RedrawFrameBottom (frame, 0, NULL);
-          /* After full redraw, also trigger sibling frames (source view) */
-          { extern ThotBool FrameNeedsFullRedraw[];
-            int doc = FrameTable[frame].FrDoc, f2;
-            for (f2 = 1; f2 < MAX_FRAME; f2++)
-              if (f2 != frame && FrameTable[f2].FrDoc == doc &&
-                  FrameTable[f2].WdFrame != NULL)
-                FrameTable[f2].WdFrame->RefreshCanvas();
-          }
-          GL_SwapEnable (frame);
-        }
-      // display the backbuffer
+      GL_SwapStop (frame);
+
+      /* Set clip region to full frame */
+      { int fw, fh;
+        GetSizesFrame (frame, &fw, &fh);
+        DefClip (frame, pFrame->FrXOrg, pFrame->FrYOrg,
+                 pFrame->FrXOrg + fw, pFrame->FrYOrg + fh);
+      }
+
+      /* Clear full backbuffer (no scissor) */
+      glDisable (GL_SCISSOR_TEST);
+      ClearAll (frame);
+      glEnable (GL_SCISSOR_TEST);
+
+      /* Redraw complete frame */
+      RedrawFrameBottom (frame, 0, NULL);
+
+      GL_SwapEnable (frame);
       GL_Swap (frame);
-     }
+
+      /* Trigger sibling frames (source view, split views) */
+      { int doc = FrameTable[frame].FrDoc, f2;
+        for (f2 = 1; f2 < MAX_FRAME; f2++)
+          if (f2 != frame && FrameTable[f2].FrDoc == doc &&
+              FrameTable[f2].WdFrame != NULL)
+            FrameTable[f2].WdFrame->RefreshCanvas();
+      }
+    }
 #else /* _GL */
   x += pFrame->FrXOrg;
   y += pFrame->FrYOrg;

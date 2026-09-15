@@ -1234,6 +1234,11 @@ int UnicodeFontRender (void *gl_font, wchar_t *text, float x, float y, int size)
     }
   
   maxy = maxy - miny;
+  /* Cap maxy to prevent p2() integer overflow on corrupt glyph metrics */
+  if (maxy <= 0 || maxy > 4096) {
+    if (data && bitmap_alloc >= MAX_BITMAP_ALLOC) TtaFreeMemory(data);
+    return 0;
+  }
   h = (p2 ((int) maxy));
   w = 0;
   

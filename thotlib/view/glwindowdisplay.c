@@ -225,7 +225,12 @@ void ClearAll (int frame)
     TTALOGDEBUG_5( TTA_LOG_DRAW, _T("glClear CLEAR_VALUE(%f,%f,%f,%f) - frame=%d"),tmp[0],tmp[1],tmp[2],tmp[3], frame );
   }
 #endif /* _GL_COLOR_DEBUG */
+  /* wx 3.x: always clear the FULL backbuffer by disabling scissor first.
+   * DefineClipping may have set a small scissor region before calling us,
+   * but with double buffering we must clear everything. */
+  glDisable (GL_SCISSOR_TEST);
   glClear( GL_COLOR_BUFFER_BIT );
+  glEnable (GL_SCISSOR_TEST);
 }
 
 #ifdef _GTK
@@ -701,8 +706,10 @@ int GL_DrawString (int fg,  CHAR_T *str, float x, float y,  int hyphen,
 {
   int width;
 
-  if (end <= 0 || fg < 0 || GL_font == NULL)
-    return 0; 
+  if (end <= 0 || fg < 0 || GL_font == NULL) {
+    if (GL_font == NULL) fprintf(stderr, "GL_DrawString: NULL font fg=%d end=%d\n", fg, end);
+    return 0;
+  } 
   str[end] = EOS; 
   if (Printing)
     {      
