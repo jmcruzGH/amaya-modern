@@ -1287,7 +1287,7 @@ void ChangeSelFrame (int frame)
   PtrDocument         docsel;
   PtrElement          first, last;
   View                view;
-  //AmayaFrame         *p_frame;
+  AmayaFrame          *p_frame;
   int                 oldframe, firstChar, lastChar;
 
   if (ActiveFrame != frame)

@@ -382,6 +382,7 @@ void AmayaCanvas::OnMouseUp( wxMouseEvent& event )
   -----------------------------------------------------------------------*/
 void AmayaCanvas::OnMouseDown( wxMouseEvent& event )
 {
+
   int thot_mod_mask = THOT_NO_MOD;
 
   m_IsMouseSelecting = true;

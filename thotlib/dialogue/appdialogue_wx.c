@@ -2336,7 +2336,24 @@ ThotBool TtaIsSpecialKey( int wx_keycode )
              wx_keycode == WXK_ESCAPE ||
              /*wx_keycode == WXK_INSERT  ||*/
              wx_keycode == WXK_DELETE ||
-             (wx_keycode >= WXK_START && wx_keycode <= WXK_COMMAND)
+             (wx_keycode >= WXK_START && wx_keycode <= WXK_COMMAND) ||
+             /* wx-3.x: on this build WXK_COMMAND == WXK_CONTROL (308),
+              * which leaves every navigation key (311 and up) outside
+              * the range check above. TtaHandleSpecialKey's proceed_key
+              * list explicitly wants these, so recognise them here too. */
+             wx_keycode == WXK_CAPITAL ||
+             wx_keycode == WXK_END ||
+             wx_keycode == WXK_HOME ||
+             wx_keycode == WXK_LEFT ||
+             wx_keycode == WXK_UP ||
+             wx_keycode == WXK_RIGHT ||
+             wx_keycode == WXK_DOWN ||
+             wx_keycode == WXK_INSERT ||
+             wx_keycode == WXK_PRIOR ||
+             wx_keycode == WXK_NEXT ||
+             wx_keycode == WXK_PAGEUP ||
+             wx_keycode == WXK_PAGEDOWN ||
+             wx_keycode == WXK_NUMPAD_ENTER
            );
 }
 #endif /* _WX */
