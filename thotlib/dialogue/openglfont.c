@@ -940,7 +940,14 @@ static void MakeBitmapGlyph (GL_font *font, unsigned int g, GL_glyph *BitmapGlyp
         long top_signed  = (long) bitmap->top;
         long rows_signed = (long) source->rows;
         long pos_y = rows_signed - top_signed;
-        if (pos_y < 0)
+        /* Only guard against bitmap->top itself being negative -- that is
+         * the genuinely corrupt case that used to unsigned-underflow and
+         * poison the whole text run. A negative pos_y is otherwise the
+         * correct, expected value for glyphs that float entirely above
+         * the baseline without touching it (e.g. " * =), and must be
+         * preserved rather than flattened to 0, or those characters
+         * render dragged down onto the baseline. */
+        if (top_signed < 0)
           pos_y = 0;
         BitmapGlyph->pos.y = (FT_Pos) pos_y;
       }

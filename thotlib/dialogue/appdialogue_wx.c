@@ -1975,7 +1975,12 @@ ThotBool TtaHandleUnicodeKey (wxKeyEvent& event)
 	  !TtaIsSpecialKey(thot_keycode)) &&
       (!event.CmdDown() || event.AltDown())
 #if !defined(_MACOS) && !defined(_WINDOWS)
-       && !event.AltDown()
+       /* wx-3.x on Linux/GTK reports AltGr as Alt+Control held together
+        * (wxMOD_ALTGR == wxMOD_ALT | wxMOD_CONTROL). Only reject a plain
+        * Alt press (menu accelerator, e.g. Alt+F); let AltGr-composed
+        * characters (needed for @ # $ ^ et al. on European keyboards)
+        * through. */
+       && !(event.AltDown() && !event.ControlDown())
 #endif /* _MACOS */
        )
     {
