@@ -300,8 +300,18 @@ ThotBool GL_DrawAll ()
 #endif /* _WX */
                         if (GL_prepare (frame))
                           {
-                            if (BadGLCard)
-                              DefClip (frame, -1, -1, -1, -1);
+                            /* Always redraw the full frame here, not just
+                             * whatever narrow region the original edit
+                             * event set. This is a deferred redraw (the
+                             * triggering event has already finished), so
+                             * the clip region left over from it may no
+                             * longer match everything that actually needs
+                             * to be shown (e.g. a table reflowing several
+                             * cells after one was edited). This used to
+                             * be gated behind BadGLCard, a legacy
+                             * bad-hardware auto-detect that defaults to
+                             * off on every normal system. */
+                            DefClip (frame, -1, -1, -1, -1);
                             /* prevent flickering*/
                             GL_SwapStop (frame);
                             RedrawFrameBottom (frame, 0, NULL); 

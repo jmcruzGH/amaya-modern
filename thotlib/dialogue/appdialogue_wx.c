@@ -123,7 +123,7 @@ void TtaShowWindow( int window_id, ThotBool show )
   AmayaWindow * p_window = WindowTable[window_id].WdWindow;
   if (p_window == NULL)
     return;
-
+  fprintf(stderr, "DIAG2 TtaShowWindow: window_id=%d show=%d\n", window_id, (int)show);
   p_window->Show( show );
 }
 

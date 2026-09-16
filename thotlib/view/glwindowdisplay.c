@@ -1203,6 +1203,7 @@ void getboundingbox (int size, float *buffer, int frame,
   ----------------------------------------------------------------------*/
 void GL_realize (int frame)
 {
+  fprintf(stderr, "DIAG2 GL_realize: frame=%d\n", frame);
 #ifdef _TESTSWAP
   GL_Swap (frame);
   FrameTable[frame].DblBuffNeedSwap = FALSE;
