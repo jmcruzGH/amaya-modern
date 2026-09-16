@@ -440,20 +440,19 @@ void AmayaCanvas::OnMouseDown( wxMouseEvent& event )
   -----------------------------------------------------------------------*/
 void AmayaCanvas::OnIdle( wxIdleEvent& event )
 {
-  // idle events are no more used for animation. 
-  // animation is managed by a timer
-#if 0
-  // Do not treat this event if the canvas is not active (hidden)
-  if (!IsParentFrameActive())
-    {
-      event.Skip();
-      return;
-    }
-
+  /* Flush any pending redraw (FrameTable[].DblBuffNeedSwap), from any
+   * source -- not just the keyboard handlers, which each already have
+   * their own explicit GL_DrawAll() call right after ThotInput(). Mouse-
+   * driven edits (clicking to move the cursor, drag-selecting text,
+   * toolbar/menu actions) have no other mechanism to reach the screen,
+   * otherwise, until something unrelated (e.g. a window resize) happens
+   * to trigger a repaint. GL_DrawAll() is a cheap per-frame flag check
+   * when nothing is pending, so calling it on every idle tick is safe --
+   * this was previously disabled only because it called a function,
+   * IsParentFrameActive(), that does not exist anywhere in the codebase. */
 #ifdef _GL
   GL_DrawAll();
 #endif /* _GL */
-#endif /* 0 */
   event.Skip();
 }
 /*----------------------------------------------------------------------
