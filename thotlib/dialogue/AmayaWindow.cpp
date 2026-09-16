@@ -514,9 +514,13 @@ void AmayaWindow::OnChar(wxKeyEvent& event)
 {
   TTALOGDEBUG_0( TTA_LOG_KEYINPUT, _T("AmayaWindow::OnChar key=")+wxString(event.GetUnicodeKey()) );
 
-  if (!TtaHandleUnicodeKey(event))
-    if (!TtaHandleSpecialKey(event))
-      if (!TtaHandleShortcutKey(event))
+  /* Character input (TtaHandleUnicodeKey) is handled on AmayaCanvas's own
+   * EVT_CHAR instead of here -- wx's GetUnicodeKey() is only documented to
+   * return the correct, shift/layout-processed character on wxEVT_CHAR,
+   * not on wxEVT_CHAR_HOOK. Arrow keys and shortcuts use GetKeyCode(),
+   * which is reliable at this stage, so they stay here. */
+  if (!TtaHandleSpecialKey(event))
+    if (!TtaHandleShortcutKey(event))
          {
 #ifdef _MACOS
            int thot_keysym = event.GetKeyCode(); 

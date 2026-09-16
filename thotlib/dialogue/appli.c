@@ -1317,10 +1317,13 @@ void ChangeSelFrame (int frame)
         TtaSetStatusSelectedElement (doc, 1, NULL);
       else
         TtaSetStatusSelectedElement (doc, 1, (Element)first);
-      /* the active frame changed so update the application focus */
-      /*p_frame = TtaGetFrameFromId(frame);
-      if (p_frame)
-      p_frame->GetCanvas()->SetFocus();*/
+      /* the active frame changed so update the application focus.
+       * Needed for keyboard input: TtaHandleSpecialKey (arrow keys, Home,
+       * End, Delete...) only acts when the canvas itself holds keyboard
+       * focus, and nothing else in wx3 gives it focus automatically. */
+      p_frame = TtaGetFrameFromId(frame);
+      if (p_frame && p_frame->GetCanvas())
+        p_frame->GetCanvas()->SetFocus();
     }
 }
 

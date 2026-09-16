@@ -521,8 +521,16 @@ bool AmayaCanvas::IsInit()
   -----------------------------------------------------------------------*/
 void AmayaCanvas::OnChar(wxKeyEvent& event)
 {
-  event.ResumePropagation(wxEVENT_PROPAGATE_MAX);
-  event.Skip();
+  /* This is where typed characters are actually read. wx's GetUnicodeKey()
+   * (used inside TtaHandleUnicodeKey) is only documented to return the
+   * correct, shift/layout-processed character here, on the focused
+   * widget's own wxEVT_CHAR -- not on the window-level wxEVT_CHAR_HOOK
+   * that used to be the only place this was called from. */
+  if (!TtaHandleUnicodeKey(event))
+    {
+      event.ResumePropagation(wxEVENT_PROPAGATE_MAX);
+      event.Skip();
+    }
 }
 
 /*----------------------------------------------------------------------
@@ -597,7 +605,7 @@ BEGIN_EVENT_TABLE(AmayaCanvas, wxGLCanvas)
   EVT_TIMER( -1,AmayaCanvas::OnTimerMouseMove)
   EVT_CONTEXT_MENU(AmayaCanvas::OnContextMenu)
   
-  //   EVT_CHAR(AmayaCanvas::OnChar )
+  EVT_CHAR(AmayaCanvas::OnChar )
 END_EVENT_TABLE()
 
 #endif // #ifdef _WX
