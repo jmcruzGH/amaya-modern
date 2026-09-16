@@ -123,8 +123,17 @@ void TtaShowWindow( int window_id, ThotBool show )
   AmayaWindow * p_window = WindowTable[window_id].WdWindow;
   if (p_window == NULL)
     return;
-  fprintf(stderr, "DIAG2 TtaShowWindow: window_id=%d show=%d\n", window_id, (int)show);
   p_window->Show( show );
+  if (show)
+    /* Guarantee one correct, complete repaint right when a newly loaded
+     * document's window first becomes visible. A genuine wx paint event
+     * (unlike the idle-driven DblBuffNeedSwap flush) always produces a
+     * full, correct redraw regardless of documentDisplayMode timing --
+     * this avoids a startup race where the very last piece of loaded
+     * content becomes ready right around when display mode switches
+     * back to immediate, and the next idle tick doesn't catch it before
+     * the user is already looking at the (still blank) window. */
+    p_window->Refresh(true);
 }
 
 /*----------------------------------------------------------------------

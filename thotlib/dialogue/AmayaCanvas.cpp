@@ -142,12 +142,7 @@ AmayaCanvas::~AmayaCanvas( )
   -----------------------------------------------------------------------*/
 void AmayaCanvas::OnSize( wxSizeEvent& event )
 {
-  {
-    int w, h;
-    GetClientSize(&w, &h);
-    fprintf(stderr, "DIAG2 OnSize: canvas=%p shown=%d w=%d h=%d\n",
-            (void*)this, (int)IsShownOnScreen(), w, h);
-  }
+
 #ifdef _GL
   // this is also necessary to update the context on some platforms
   // wxGLCanvas::OnSize removed in wx 3.x -- base class handles this
@@ -189,12 +184,7 @@ void AmayaCanvas::OnSize( wxSizeEvent& event )
   -----------------------------------------------------------------------*/
 void AmayaCanvas::OnPaint( wxPaintEvent& event )
 {
-  {
-    int w, h;
-    GetClientSize(&w, &h);
-    fprintf(stderr, "DIAG2 OnPaint: canvas=%p shown=%d w=%d h=%d\n",
-            (void*)this, (int)IsShownOnScreen(), w, h);
-  }
+
   /*
    * Note that In a paint event handler, the application must
    * always create a wxPaintDC object, even if you do not use it.
@@ -475,12 +465,6 @@ void AmayaCanvas::OnIdle( wxIdleEvent& event )
   -----------------------------------------------------------------------*/
 void AmayaCanvas::Init()
 {
-  {
-    int w, h;
-    GetClientSize(&w, &h);
-    fprintf(stderr, "DIAG2 Init: canvas=%p shown=%d w=%d h=%d already_init=%d\n",
-            (void*)this, (int)IsShownOnScreen(), w, h, (int)m_Init);
-  }
   // do not initialize twice
   if (m_Init)
     return;
