@@ -1,4 +1,4 @@
 [testcase] Start timer.
-[testcase] TtcLineDown	Elapsed time=395 ms	Delta time=395 ms.
-[testcase] TtcLineUp	Elapsed time=646 ms	Delta time=251 ms.
-[testcase] Stop timer	Elapsed time=646 ms.
+[testcase] TtcLineDown	Elapsed time=4967 ms	Delta time=4967 ms.
+[testcase] TtcLineUp	Elapsed time=8944 ms	Delta time=3976 ms.
+[testcase] Stop timer	Elapsed time=8944 ms.

@@ -284,49 +284,24 @@ void ComputeBoundingBox (PtrBox box, int frame, int xmin, int xmax,
 			 int ymin, int ymax)
 {
 #ifdef _GL
-  GLfloat    feedBuffer[FEEDBUFFERSIZE];
-  GLint      mode;
-  int        size;
   ViewFrame  *pFrame;
- 
+
+  /* wx 3.x / modern Mesa: glRenderMode(GL_FEEDBACK) is unreliable and
+   * can report "nothing drawn" for boxes that are genuinely visible,
+   * which used to leave BxClipX/Y/W/H wrong or stale (see fix commit
+   * for the full explanation). Always compute them directly from the
+   * box's own layout coordinates instead, which the layout engine
+   * always sets correctly regardless of any GL quirks. */
   if (NotFeedBackMode)
     {
-      glGetIntegerv (GL_RENDER_MODE, &mode);
-       /* display into a temporary buffer */
-      glFeedbackBuffer (FEEDBUFFERSIZE, GL_2D, feedBuffer);
-      glRenderMode (GL_FEEDBACK);
-      NotFeedBackMode = FALSE;
-      /* display the box with transformation and clipping */
-      DisplayBox (box, frame, xmin, xmax, ymin, ymax, NULL, FALSE);
-      size = glRenderMode (mode);
-      NotFeedBackMode = TRUE;
-      if (size > 0)
-        {
-          /* the box is displayed */
-          if (size > FEEDBUFFERSIZE)
-            size = FEEDBUFFERSIZE;
-          
-          box->BxClipX = -1;
-          box->BxClipY = -1;
-          getboundingbox (size, feedBuffer, frame,
-                          &box->BxClipX,
-                          &box->BxClipY,
-                          &box->BxClipW,
-                          &box->BxClipH);    
-          box->BxBoundinBoxComputed = TRUE; 
-        }
-      else
-        {
-          /* the box is not displayed */
-          pFrame = &ViewFrameTable[frame - 1];
-          /* */
-          box->BxClipX = box->BxXOrg - (pFrame->FrXOrg?pFrame->FrXOrg:pFrame->OldFrXOrg);
-          box->BxClipY = box->BxYOrg - (pFrame->FrYOrg?pFrame->FrYOrg:pFrame->OldFrYOrg);
-          box->BxClipW = box->BxW;
-          box->BxClipH = box->BxH;
-          box->BxBoundinBoxComputed = FALSE; 
-        }   
+      pFrame = &ViewFrameTable[frame - 1];
+      box->BxClipX = box->BxXOrg - (pFrame->FrXOrg?pFrame->FrXOrg:pFrame->OldFrXOrg);
+      box->BxClipY = box->BxYOrg - (pFrame->FrYOrg?pFrame->FrYOrg:pFrame->OldFrYOrg);
+      box->BxClipW = box->BxWidth > 0 ? box->BxWidth : box->BxW;
+      box->BxClipH = box->BxHeight > 0 ? box->BxHeight : box->BxH;
+      box->BxBoundinBoxComputed = (box->BxClipW > 0 && box->BxClipH > 0);
     }
+  (void)xmin; (void)xmax; (void)ymin; (void)ymax;
 #endif /* _GL */
 }
 
@@ -340,34 +315,21 @@ void ComputeBoundingBox (PtrBox box, int frame, int xmin, int xmax,
 void ComputeFilledBox (PtrBox box, int frame, int xmin, int xmax,
                        int ymin, int ymax, ThotBool show_bgimage)
 {
-  GLfloat feedBuffer[4096];
-  GLint   mode;
-  int     size;
-  
+  ViewFrame *pFrame;
+
+  /* Same fix as ComputeBoundingBox above -- this function previously had
+   * NO fallback at all for a failed feedback-mode read, leaving
+   * BxClipX/Y/W/H completely untouched (stale/garbage) in that case. */
   if (NotFeedBackMode)
     {
-      glGetIntegerv (GL_RENDER_MODE, &mode);
-      box->BxBoundinBoxComputed = TRUE; 
-      glFeedbackBuffer (4096, GL_2D, feedBuffer);
-      glRenderMode (GL_FEEDBACK);
-      NotFeedBackMode = FALSE;
-      DrawFilledBox (box, box->BxAbstractBox, frame, NULL,
-		     xmin, xmax, ymin, ymax, FALSE, TRUE, TRUE, show_bgimage);
-      size = glRenderMode (mode);
-      NotFeedBackMode = TRUE;
-      if (size > 0)
-        {
-          box->BxClipX = -1;
-          box->BxClipY = -1;
-          getboundingbox (size, feedBuffer, frame,
-                          &box->BxClipX,
-                          &box->BxClipY,
-                          &box->BxClipW,
-                          &box->BxClipH);     
-          box->BxBoundinBoxComputed = TRUE; 
-          /* printBuffer (size, feedBuffer); */
-        }
+      pFrame = &ViewFrameTable[frame - 1];
+      box->BxClipX = box->BxXOrg - (pFrame->FrXOrg?pFrame->FrXOrg:pFrame->OldFrXOrg);
+      box->BxClipY = box->BxYOrg - (pFrame->FrYOrg?pFrame->FrYOrg:pFrame->OldFrYOrg);
+      box->BxClipW = box->BxWidth > 0 ? box->BxWidth : box->BxW;
+      box->BxClipH = box->BxHeight > 0 ? box->BxHeight : box->BxH;
+      box->BxBoundinBoxComputed = (box->BxClipW > 0 && box->BxClipH > 0);
     }
+  (void)xmin; (void)xmax; (void)ymin; (void)ymax; (void)show_bgimage;
 }
 
 /*----------------------------------------------------------------------
