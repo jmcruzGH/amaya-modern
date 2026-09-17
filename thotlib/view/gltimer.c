@@ -258,6 +258,17 @@ ThotBool GL_DrawAll ()
   static ThotBool  frame_animating = FALSE;  
   static double    lastime;
 
+  /* GL_DrawAll silently does nothing at all while FrameUpdating is TRUE
+   * (see fix commit for the full explanation). It is never legitimately
+   * re-entered while already running -- it does not pump the event loop
+   * internally -- so if FrameUpdating is still TRUE right as we are
+   * about to check it here, that can only be leaked state from some
+   * other, unrelated place failing to restore it on some exit path.
+   * Clear it here, centrally, so every caller (idle, keyboard handlers,
+   * mouse handlers) is protected, not just whichever one happens to run
+   * first. */
+  if (FrameUpdating)
+    FrameUpdating = FALSE;
   if (!FrameUpdating)
     {
       FrameUpdating = TRUE;     
