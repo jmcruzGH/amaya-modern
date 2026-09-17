@@ -242,6 +242,10 @@ void AmayaCanvas::OnMouseDbClick( wxMouseEvent& event )
                              event.GetButton(),
                              thot_mod_mask,
                              event.GetX(), event.GetY() );
+#ifdef _GL
+  /* Redraw immediately -- see OnMouseDown for why. */
+  GL_DrawAll();
+#endif /* _GL */
 
 #ifndef _WINDOWS
   // force the focus because on debian woody, the focus do not come in when clicking on the canvas
@@ -296,6 +300,12 @@ void AmayaCanvas::OnTimerMouseMove( wxTimerEvent& event )
                        m_LastMouseMoveModMask,
                        m_LastMouseMoveX,
                        m_LastMouseMoveY );
+#ifdef _GL
+  /* Redraw immediately so the live selection highlight tracks the drag
+   * without lag. This handler is already throttled to roughly once per
+   * 10ms by the one-shot timer that calls it, so this is cheap. */
+  GL_DrawAll();
+#endif /* _GL */
 }
 
 /*----------------------------------------------------------------------
@@ -333,7 +343,13 @@ void AmayaCanvas::OnMouseWheel( wxMouseEvent& event )
                            direction,
                            delta,
                            event.GetX(), event.GetY() );
-  //GL_Swap( frame );
+#ifdef _GL
+  /* Restores the original (disabled) intent of the line this replaces --
+   * GL_DrawAll() is used instead of a bare GL_Swap so the scrolled
+   * content is actually freshly redrawn, not just whatever was already
+   * in the backbuffer. */
+  GL_DrawAll();
+#endif /* _GL */
 }
 
 /*----------------------------------------------------------------------
@@ -370,6 +386,12 @@ void AmayaCanvas::OnMouseUp( wxMouseEvent& event )
         event.Skip(false);
       else
         event.Skip();
+#ifdef _GL
+      /* Redraw immediately -- see OnMouseDown for why. This is the end
+       * of a click or drag-selection, exactly when the user most needs
+       * to trust what is on screen. */
+      GL_DrawAll();
+#endif /* _GL */
       // force the focus when clicking on the canvas because the focus is locked on panel buttons
       TtaRedirectFocus();
     }
@@ -417,6 +439,13 @@ void AmayaCanvas::OnMouseDown( wxMouseEvent& event )
                            event.GetButton(),
                            thot_mod_mask,
                            event.GetX(), event.GetY() );
+#ifdef _GL
+  /* Redraw immediately so the cursor position is trustworthy right
+   * away, matching what the keyboard handlers already do -- otherwise
+   * this waits for the next idle tick, which can visibly lag for
+   * heavier content (e.g. tables needing layout recalculation). */
+  GL_DrawAll();
+#endif /* _GL */
 
 #if !defined (_MACOS)
   if (!(event.GetButton() == THOT_LEFT_BUTTON &&
