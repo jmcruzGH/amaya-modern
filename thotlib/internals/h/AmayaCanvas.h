@@ -90,6 +90,7 @@ protected:
   void OnIdle( wxIdleEvent& event );
   void OnChar( wxKeyEvent& event );  
   void OnTimerMouseMove( wxTimerEvent& event );
+  void OnTimerWheelRedraw( wxTimerEvent& event );
   void OnEraseBackground( wxEraseEvent& WXUNUSED(event) );
 
   void OnContextMenu( wxContextMenuEvent & event );
@@ -112,6 +113,7 @@ protected:
 
  protected:
   wxTimer m_MouseMoveTimer;
+  wxTimer m_WheelRedrawTimer;
   int     m_LastMouseMoveModMask;
   int     m_LastMouseMoveX;
   int     m_LastMouseMoveY;

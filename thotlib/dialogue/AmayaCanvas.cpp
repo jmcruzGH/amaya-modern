@@ -45,6 +45,8 @@
 #endif /*_GL*/
 
 #include "AmayaApp.h"
+
+#define ID_WHEEL_REDRAW_TIMER (wxID_HIGHEST + 9001)
 #include "AmayaCanvas.h"
 #include "AmayaFrame.h"
 #include "AmayaPage.h"
@@ -115,6 +117,7 @@ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
 
   // we want this class receives timer events
   m_MouseMoveTimer.SetOwner(this);
+  m_WheelRedrawTimer.SetOwner(this, ID_WHEEL_REDRAW_TIMER);
 }
 
 /*----------------------------------------------------------------------
@@ -280,7 +283,7 @@ void AmayaCanvas::OnMouseMove( wxMouseEvent& event )
       m_LastMouseMoveY = event.GetY();
       
       // start the timer
-      m_MouseMoveTimer.Start( 10, wxTIMER_ONE_SHOT );
+      m_MouseMoveTimer.Start( 40, wxTIMER_ONE_SHOT );  /* was 10ms; widened for slower hardware */
     }
 }
 
@@ -301,9 +304,26 @@ void AmayaCanvas::OnTimerMouseMove( wxTimerEvent& event )
                        m_LastMouseMoveX,
                        m_LastMouseMoveY );
 #ifdef _GL
-  /* Redraw immediately so the live selection highlight tracks the drag
-   * without lag. This handler is already throttled to roughly once per
-   * 10ms by the one-shot timer that calls it, so this is cheap. */
+  /* Redraw immediately so the live selection highlight tracks the drag.
+   * This handler is throttled by the one-shot timer that calls it (see
+   * the Start() call in OnMouseMove) so this does not run on every raw
+   * mouse-move event. */
+  GL_DrawAll();
+#endif /* _GL */
+}
+
+/*----------------------------------------------------------------------
+  Class:  AmayaCanvas
+  Method:  OnTimerWheelRedraw
+  Description:  fires shortly after wheel activity, coalescing any
+                number of raw wheel events in that window into a single
+                redraw -- mirrors OnTimerMouseMove's existing throttle
+                for drag-selection, applied to wheel-scroll, which
+                previously had no throttling at all.
+  -----------------------------------------------------------------------*/
+void AmayaCanvas::OnTimerWheelRedraw( wxTimerEvent& WXUNUSED(event) )
+{
+#ifdef _GL
   GL_DrawAll();
 #endif /* _GL */
 }
@@ -344,11 +364,13 @@ void AmayaCanvas::OnMouseWheel( wxMouseEvent& event )
                            delta,
                            event.GetX(), event.GetY() );
 #ifdef _GL
-  /* Restores the original (disabled) intent of the line this replaces --
-   * GL_DrawAll() is used instead of a bare GL_Swap so the scrolled
-   * content is actually freshly redrawn, not just whatever was already
-   * in the backbuffer. */
-  GL_DrawAll();
+  /* Coalesce rapid wheel events (a single physical scroll gesture can
+   * generate many) into at most one redraw per throttle window, instead
+   * of a full expensive redraw per tick -- this was the direct cause of
+   * flicker and the renderer falling behind during scrolling. Mirrors
+   * the same, already-proven pattern used for drag-selection motion. */
+  if (!m_WheelRedrawTimer.IsRunning())
+    m_WheelRedrawTimer.Start( 40, wxTIMER_ONE_SHOT );
 #endif /* _GL */
 }
 
@@ -633,6 +655,7 @@ BEGIN_EVENT_TABLE(AmayaCanvas, wxGLCanvas)
   EVT_MOUSEWHEEL(AmayaCanvas::OnMouseWheel) // Process a wxEVT_MOUSEWHEEL event. 
 
   EVT_IDLE(AmayaCanvas::OnIdle) // Process a wxEVT_IDLE event
+  EVT_TIMER( ID_WHEEL_REDRAW_TIMER, AmayaCanvas::OnTimerWheelRedraw)
   EVT_TIMER( -1,AmayaCanvas::OnTimerMouseMove)
   EVT_CONTEXT_MENU(AmayaCanvas::OnContextMenu)
   
