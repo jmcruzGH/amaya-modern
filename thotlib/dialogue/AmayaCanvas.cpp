@@ -504,6 +504,18 @@ void AmayaCanvas::OnIdle( wxIdleEvent& event )
    * this was previously disabled only because it called a function,
    * IsParentFrameActive(), that does not exist anywhere in the codebase. */
 #ifdef _GL
+  /* GL_DrawAll() silently does nothing at all while FrameUpdating is
+   * TRUE (a global "a redraw/rebuild is already in progress" guard set
+   * and restored in many different places). We only ever get here once
+   * wx's event queue is completely empty -- nothing should legitimately
+   * still be mid-update at that exact moment, so if the flag says
+   * otherwise it can only be leaked state from somewhere failing to
+   * restore it on some exit path. Clear it before proceeding, rather
+   * than leaving every subsequent redraw permanently inert until
+   * something unrelated happens to reset it elsewhere. */
+  extern ThotBool FrameUpdating;
+  if (FrameUpdating)
+    FrameUpdating = FALSE;
   GL_DrawAll();
 #endif /* _GL */
   event.Skip();
