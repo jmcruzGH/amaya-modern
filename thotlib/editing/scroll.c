@@ -107,10 +107,13 @@ void VerticalScroll (int frame, int delta, int selection)
                       else
                         width = lframe + 1;
                       Scroll (frame, width, height, 0, y, 0, 0);
-		      height = pFrame->FrYOrg + hframe;
-		      DefClip (frame, pFrame->FrXOrg, height,
-			       pFrame->FrXOrg + lframe, 
-			       height + delta);
+		      /* wx 3.x / modern GL: always redraw the full frame here, not
+		       * just the newly-revealed scroll strip -- with true double
+		       * buffering the untouched part of the backbuffer is stale,
+		       * not a preserved shifted copy of the previous frame. The
+		       * GL_Swap() right after this bypasses GL_DrawAll entirely,
+		       * so this is the only chance to get the full picture right. */
+		      DefClip (frame, -1, -1, -1, -1);
                       add = RedrawFrameBottom (frame, delta, NULL);
                     }
                   else
@@ -127,8 +130,9 @@ void VerticalScroll (int frame, int delta, int selection)
                       y = -delta;
                       Scroll (frame, width, height, 0, 0, 0, y);
                       height = pFrame->FrYOrg;
-                      DefClip (frame, pFrame->FrXOrg, height + delta,
-                               pFrame->FrXOrg + lframe, height);
+                      /* wx 3.x / modern GL: see comment on the forward-scroll
+                       * branch above -- always redraw the full frame. */
+                      DefClip (frame, -1, -1, -1, -1);
                       add = RedrawFrameTop (frame, -delta);
                     }
                   /* recompute scrolls */
@@ -214,8 +218,9 @@ void HorizontalScroll (int frame, int delta, int selection)
                   width = lframe - x + 1;
                   Scroll (frame, width, height, 0, 0, x, 0);
                   width = pFrame->FrXOrg;
-                  DefClip (frame, width - x, pFrame->FrYOrg, width,
-                           pFrame->FrYOrg + hframe);
+                  /* wx 3.x / modern GL: always redraw the full frame -- see
+                   * VerticalScroll above for the full explanation. */
+                  DefClip (frame, -1, -1, -1, -1);
                 }
               
               /* display the rest of the window */
