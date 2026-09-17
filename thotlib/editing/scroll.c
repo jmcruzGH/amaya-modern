@@ -148,6 +148,16 @@ void VerticalScroll (int frame, int delta, int selection)
 #ifdef _GL
 	      /* to be sure the scrolled page has been displayed */
 	      GL_Swap( frame );
+	      /* The redraw just above only covers the newly-revealed scroll
+	       * strip (a narrow clip region), not the full frame -- with true
+	       * double buffering on modern GL, whatever it didn't touch is
+	       * stale, not a preserved shifted copy. Rather than change this
+	       * function's own scroll/clip/redraw logic (risks breaking the
+	       * scroll math itself), separately request one more, deferred,
+	       * full-frame redraw on top: this does not affect what just
+	       * happened above, it only ensures a proper complete repaint
+	       * follows shortly after via the existing idle-driven mechanism. */
+	      GL_realize( frame );
 #endif /* _GL */
             }
         }
@@ -230,6 +240,10 @@ printf ("HorizontalScroll:GL_Swap frame=%d\n",frame);
 #endif /* DEBUG_MAC */
           /* to be sure the scrolled page has been displayed */
           GL_Swap( frame );
+          /* See the comment on the equivalent point in VerticalScroll
+           * above -- request a follow-up full-frame redraw without
+           * touching this function's own scroll/clip/redraw logic. */
+          GL_realize( frame );
 #endif /* _GL */
         }
     }
