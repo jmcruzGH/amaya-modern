@@ -137,6 +137,22 @@ void TtaShowWindow( int window_id, ThotBool show )
 }
 
 /*----------------------------------------------------------------------
+  TtaRefreshAllWindows: force a guaranteed correct repaint of every
+  currently open Amaya window. Safety net for sequences that show
+  several windows in a row followed by a modal dialog (e.g. the parsing-
+  error report), where a modal dialog's own nested event loop can leave
+  a just-scheduled repaint for windows shown right before it sitting
+  unprocessed well past the moment it was meant to happen.
+  ----------------------------------------------------------------------*/
+void TtaRefreshAllWindows( void )
+{
+  int i;
+  for (i = 1; i <= MAX_WINDOW; i++)
+    if (WindowTable[i].WdWindow)
+      WindowTable[i].WdWindow->Refresh(true);
+}
+
+/*----------------------------------------------------------------------
   TtaMakeWindow create a AmayaWindow object and place it
   into WindowTable array
   returns:

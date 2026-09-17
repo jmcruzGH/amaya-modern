@@ -90,11 +90,19 @@ AmayaWindow::AmayaWindow (  wxWindow* parent
   SetIcon( AmayaApp::GetAppIcon() );
 
 #ifdef __WXDEBUG__
+  /* Amaya's own developer debug-log window (toggles for Misc/Panels/
+   * Dialog/Init etc. log categories) used to auto-show here whenever
+   * the system wx library happens to have debug assertions enabled
+   * (__WXDEBUG__) -- common on Linux distro packages, unrelated to our
+   * own build settings, and not something an end user should see.
+   * Left disabled; uncomment the block below to bring it back for our
+   * own debugging of this project.
   AmayaLogDebug * p_logdebug = AmayaApp::GetAmayaLogDebug( wxDynamicCast(this,wxWindow) );
   wxPoint win_position = GetPosition();
   wxSize  win_size = GetSize();
   p_logdebug->SetPosition(wxPoint(win_position.x+win_size.GetWidth()+10,win_position.y));
   p_logdebug->Show();
+  */
 #endif /* __WXDEBUG__ */
 }
 

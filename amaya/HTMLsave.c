@@ -1698,6 +1698,12 @@ ThotBool ParseWithNewDoctype (Document doc, char *localFile, char *tempdir,
                      TtaGetMessage (AMAYA, AM_CHANGE_DOCTYPE2),
                      NULL,
                      TRUE);
+      /* The modal confirmation dialog above can leave a just-scheduled
+       * repaint for the log/source windows shown right before it
+       * unprocessed; force a guaranteed correct repaint of everything
+       * now that the whole sequence has settled. */
+      { extern void TtaRefreshAllWindows( void );
+        TtaRefreshAllWindows(); }
       ok =  UserAnswer;
       *error = TRUE;
       TtaFileUnlink (err_doc);
