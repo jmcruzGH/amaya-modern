@@ -228,7 +228,10 @@ void AmayaNormalWindow::RegisterThotToolPanels()
   RegisterToolPanelClass(CLASSINFO(AmayaAttributeToolPanel));
   RegisterToolPanelClass(CLASSINFO(AmayaApplyClassToolPanel));
   // RegisterToolPanelClass(CLASSINFO(AmayaStyleToolPanel)); // disabled: wx3 color button crash
-  RegisterToolPanelClass(CLASSINFO(AmayaSpeCharToolPanel));
+  // RegisterToolPanelClass(CLASSINFO(AmayaSpeCharToolPanel)); // disabled for Option B: uses the old
+  // FreeType-based font loader directly (GetCharacterGlyph/GL_font), which no longer matches what
+  // GL_LoadFont now returns (a real wxFont*) -- crashes in FT_Get_Char_Index reading it as the old
+  // structure. Special-character picker panel, not needed for core HTML/table editing.
 }
 
 /*----------------------------------------------------------------------

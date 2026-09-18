@@ -46,6 +46,20 @@ static wxPenStyle ThotStyleToWxPenStyle (int style)
     }
 }
 
+/* wxDC::DrawText's (x,y) is the TOP-LEFT corner of the text's bounding
+ * box. Every caller in displaybox.c, however, passes y as the BASELINE
+ * position -- the convention the original GL/FreeType renderer used.
+ * Without this adjustment, text is drawn shifted upward by roughly its
+ * own ascent, often enough to push it entirely out of its intended
+ * box while background/border rectangles render correctly -- exactly
+ * the "blank text, visible borders" symptom this fixes. */
+static int BaselineToTop (wxDC *dc, const wxString &text, int yBaseline)
+{
+  wxCoord w, h, descent, externalLeading;
+  dc->GetTextExtent (text, &w, &h, &descent, &externalLeading);
+  return yBaseline - (h - descent);
+}
+
 /* ------------------------------------------------------------------ */
 void DrawRectangle (int frame, int thick, int style,
                                 int x, int y, int width, int height,
@@ -188,7 +202,7 @@ int DrawString (unsigned char *buff, int lg, int frame,
   if (hyphen)
     text += wxT("-");
 
-  dc->DrawText (text, x, y);
+  dc->DrawText (text, x, BaselineToTop (dc, text, y));
   return dc->GetTextExtent (text).GetWidth ();
 }
 
@@ -215,7 +229,7 @@ int WDrawString (wchar_t *buff, int lg, int frame, int x, int y,
   if (hyphen)
     text += wxT("-");
 
-  dc->DrawText (text, x, y);
+  dc->DrawText (text, x, BaselineToTop (dc, text, y));
   return dc->GetTextExtent (text).GetWidth ();
 }
 
@@ -237,7 +251,8 @@ void DrawChar (wchar_t car, int frame, int x, int y,
   dc->SetTextForeground (ThotColourToWx (fg));
 
   wxUniChar uc ((wxUint32) (unsigned int) car);
-  dc->DrawText (wxString (uc), x, y);
+  wxString text (uc);
+  dc->DrawText (text, x, BaselineToTop (dc, text, y));
 }
 
 /* ------------------------------------------------------------------ */

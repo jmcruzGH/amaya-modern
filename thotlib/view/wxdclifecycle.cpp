@@ -97,6 +97,21 @@ ThotBool GL_SwapGet (int frame)
  * flag for other code to forget to clear correctly. */
 void GL_realize (int frame)
 {
+  /* If we're currently mid-paint for this frame (a DC is active via
+   * WxDC_SetCurrentFrameDC), do NOT trigger another Refresh() here.
+   * RedrawFrameBottom unconditionally calls GL_realize at the end of
+   * EVERY invocation, including the one OnPaint itself just made.
+   * Without this guard that creates an infinite self-perpetuating
+   * repaint loop: OnPaint -> RedrawFrameBottom -> GL_realize ->
+   * Refresh() -> schedules a NEW OnPaint -> repeat -- which is exactly
+   * why only the very first piece of content ever became visible
+   * (confirmed: diagnostic logging showed the same single text run
+   * being redrawn tens of thousands of times), and very likely the
+   * cause of the crashes too (runaway event flooding). Only trigger a
+   * real repaint request when called from OUTSIDE an active paint
+   * cycle -- e.g. directly from an edit/keyboard/mouse action. */
+  if (GetFrameDC(frame) != NULL)
+    return;
   if (frame >= 0 && frame <= MAX_FRAME &&
       FrameTable[frame].WdFrame && FrameTable[frame].WdFrame->GetCanvas ())
     FrameTable[frame].WdFrame->GetCanvas ()->Refresh ();

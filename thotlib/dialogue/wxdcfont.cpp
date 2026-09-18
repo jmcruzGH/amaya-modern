@@ -77,3 +77,29 @@ void *WxDC_LoadFont (const char *filename, char alphabet, int size)
   return (void *) newFont;
 }
 
+
+/*
+ * WxDC_CharWidth
+ *
+ * Replaces gl_font_char_width (openglfont.c) for text-layout width
+ * measurement -- a separate code path from actually drawing text
+ * (DrawString/DrawChar in wxdcdisplay.cpp, already replaced). This one
+ * is used constantly during layout (word wrap, box sizing) to ask "how
+ * wide is this character in this font", independent of any paint
+ * event, so it cannot rely on the per-frame DC that OnPaint sets up --
+ * needs its own small, reusable, standalone measurement DC, a standard
+ * wx pattern for measuring text without an active window.
+ */
+int WxDC_CharWidth (void *font, wchar_t c)
+{
+  wxFont *wxf = (wxFont *) font;
+  if (!wxf || !wxf->IsOk ())
+    return 0;
+
+  static wxBitmap   s_measureBitmap (1, 1);
+  static wxMemoryDC s_measureDC (s_measureBitmap);
+
+  s_measureDC.SetFont (*wxf);
+  wxUniChar uc ((wxUint32) c);
+  return s_measureDC.GetTextExtent (wxString (uc)).GetWidth ();
+}

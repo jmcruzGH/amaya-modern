@@ -466,6 +466,7 @@ int GetCharsCapacity (int volpixel, int frame)
 /*----------------------------------------------------------------------
   CharacterWidth returns the width of a char in a given font.
   ----------------------------------------------------------------------*/
+extern int WxDC_CharWidth (void *font, wchar_t c);
 int CharacterWidth (int c, ThotFont font)
 {
 #ifdef _WINARAB
@@ -605,7 +606,7 @@ int CharacterWidth (int c, ThotFont font)
           c == FOUR_PER_EM || c == SIX_PER_EM || c == PUNC_SPACE ||
           c == THIN_SPACE || c == HAIR_SPACE || c == MEDIUM_SPACE)
         {
-          l = gl_font_char_width ((void *) font, 32);
+          l = WxDC_CharWidth ((void *) font, 32);
           if (c == EM_QUAD || c == EM_SPACE)
             l = 2 * l;
           else if (c == THICK_SPACE)
@@ -620,12 +621,12 @@ int CharacterWidth (int c, ThotFont font)
         }
       else if (c > 256)
         {
-          l = gl_font_char_width ((void *) font, (CHAR_T) c);
+          l = WxDC_CharWidth ((void *) font, (CHAR_T) c);
           if (l == 0)
-            l = 7/*gl_font_char_width ((void *) font, 32)*/;
+            l = 7;
         }
       else
-        l = gl_font_char_width ((void *) font, (CHAR_T) c);
+        l = WxDC_CharWidth ((void *) font, (CHAR_T) c);
 #endif /* _GL */
       if (isTAB)
         l *= 8;

@@ -196,6 +196,16 @@ void AmayaCanvas::OnPaint( wxPaintEvent& event )
    * debugging -- there is no equivalent state left to get stuck. */
   wxBufferedPaintDC dc(this);
 
+  /* OnEraseBackground below deliberately does nothing (a GL-canvas
+   * optimisation to avoid flashing, since GL was expected to fully
+   * repaint everything itself). With a plain buffered DC, nothing else
+   * ever fills the background before content draws on top of it --
+   * without this, the buffer shows whatever was previously in that
+   * memory, typically appearing as a black/grey area with only the
+   * actually-drawn content visible. */
+  dc.SetBackground(*wxWHITE_BRUSH);
+  dc.Clear();
+
   // initialize the canvas context
   Init(); 
 
