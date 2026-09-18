@@ -7,6 +7,8 @@
 
 #ifdef _WX
 #include "wx/wx.h"
+#include "wx/dcbuffer.h"
+#include "wxdclifecycle.h"
 #include "wx/button.h"
 #include "wx/string.h"
 
@@ -183,13 +185,16 @@ void AmayaCanvas::OnSize( wxSizeEvent& event )
   -----------------------------------------------------------------------*/
 void AmayaCanvas::OnPaint( wxPaintEvent& event )
 {
-  /*
-   * Note that In a paint event handler, the application must
-   * always create a wxPaintDC object, even if you do not use it.
-   * Otherwise, under MS Windows, refreshing for this and
-   * other windows will go wrong.
-   */
-  wxPaintDC dc(this);
+  /* wxBufferedPaintDC handles double buffering correctly and
+   * automatically -- wx allocates a backing bitmap, every drawing
+   * primitive (DrawRectangle, DrawString, etc. in wxdcdisplay.cpp)
+   * draws into it via GetFrameDC(), and wx blits it to the screen when
+   * this function returns. This one line replaces the entire manual
+   * GL double-buffer management (FrameUpdating, DblBuffNeedSwap,
+   * GL_realize's old deferred-flag behaviour, GL_DrawAll, the
+   * idle-driven catch-up mechanism) this whole project spent so long
+   * debugging -- there is no equivalent state left to get stuck. */
+  wxBufferedPaintDC dc(this);
 
   // initialize the canvas context
   Init(); 
@@ -197,19 +202,17 @@ void AmayaCanvas::OnPaint( wxPaintEvent& event )
   // get the current frame id
   int frame = m_pAmayaFrame->GetFrameId();
 
-  /* wx 3.x + OpenGL: with double buffering the back buffer is undefined
-   * after SwapBuffers, so partial region redraws cause blanking.
-   * Always redraw the entire canvas. */
   int x = 0, y = 0;
   int w, h;
   GetClientSize(&w, &h);
   if (w > 0 && h > 0)
     {
+      WxDC_SetCurrentFrameDC(frame, &dc);
       FrameExposeCallback ( frame, x, y, w, h );
+      WxDC_SetCurrentFrameDC(frame, NULL);
       TTALOGDEBUG_5( TTA_LOG_DRAW, _T("AmayaCanvas::OnPaint : frame=%d [x=%d, y=%d, w=%d, h=%d]"), m_pAmayaFrame->GetFrameId(), x, y, w, h );
     }
 
-  // not necesarry : cf cube.cpp sample
   //  event.Skip();
 }
 
@@ -475,18 +478,13 @@ void AmayaCanvas::Init()
                  GetSize().GetWidth(),
                  GetSize().GetHeight() );
 
-#ifdef _GL
-  /* wx 3.x: guard against BadMatch */
-  if (!IsShownOnScreen() || GetSize().GetWidth() <= 0 || !m_glContext) {
+  /* wxDC-based rendering: no GL context to set up, but the same
+   * readiness race that used to affect GL context creation applies
+   * just as much to attempting a first real paint too early. */
+  if (!IsShownOnScreen() || GetSize().GetWidth() <= 0) {
     m_Init = false;  /* not ready yet -- retry next paint */
     return;
   }
-  if (!SetCurrent(*m_glContext)) {
-    m_Init = false;  /* retry next paint */
-    return;
-  }
-  SetGlPipelineState ();
-#endif /* _GL */
 
   /* 
   // now the frame is initialized, show it
