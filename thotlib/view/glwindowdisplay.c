@@ -282,6 +282,7 @@ void GL_SetFillOpacity (int opacity)
 /*----------------------------------------------------------------------
   GL_SetClipping : prevent drawing outside this rectangle
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_SetClipping (old) */
 void GL_SetClipping (int x, int y, int width, int height)
 {
 #ifdef _WX
@@ -300,10 +301,12 @@ void GL_SetClipping (int x, int y, int width, int height)
       Height_Clip = height;
     }
 }
+#endif
 /*----------------------------------------------------------------------
   GL_UnsetClippingRestore : restore previous clipping or 
   free the drawing from it
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_UnsetClipping (old) */
 void GL_UnsetClipping ()
 {  
   glDisable (GL_SCISSOR_TEST);
@@ -312,6 +315,7 @@ void GL_UnsetClipping ()
   Width_Clip = 0;
   Height_Clip = 0;
 }
+#endif
 
 /*----------------------------------------------------------------------
   GL_GetCurrentClipping : get  the clipping
@@ -1201,6 +1205,7 @@ void getboundingbox (int size, float *buffer, int frame,
 /*----------------------------------------------------------------------
   GL_realize : can we cancel if no modifs ?
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_realize (old) */
 void GL_realize (int frame)
 {
 #ifdef _TESTSWAP
@@ -1211,6 +1216,7 @@ void GL_realize (int frame)
 #endif /*_TESTSWAP*/
   return;
 }
+#endif
 
 /*----------------------------------------------------------------------
   GL_ActivateDrawing : Force Recalculation of the frame and redisplay
@@ -1527,7 +1533,7 @@ void GL_window_copy_area (int frame, int xf, int yf, int x_source, int y_source,
       /* glFinish (); */
       glDisable (GL_BLEND);
 
-      GL_UnsetClipping  (/*0, 0, 0, 0*/);
+      GL_UnsetClipping  (frame);
 
       glRasterPos2i (xf, yf+height);	  
       /*IF Rasterpos is outside canvas...

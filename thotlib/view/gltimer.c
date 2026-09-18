@@ -247,6 +247,7 @@ ThotBool GetBadCard ()
   or animated (FrameTable[frame].Animated_Boxes && FrameTable[frame].Anim_play)
   Then we call a redrawframebottom
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_DrawAll */
 ThotBool GL_DrawAll ()
 {
   Document         doc;
@@ -346,6 +347,7 @@ ThotBool GL_DrawAll ()
     }
   return TRUE;
 }
+#endif
 
 
 #endif /* _GL */

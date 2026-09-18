@@ -172,8 +172,10 @@ target_compile_definitions(amaya PRIVATE
 )
 
 target_link_libraries(amaya PRIVATE
+  -Wl,--start-group
   ThotEditor
   CSS
+  -Wl,--end-group
   ${wxWidgets_LIBRARIES}
   OpenGL::GL
   OpenGL::GLU

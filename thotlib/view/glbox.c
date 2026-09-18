@@ -176,7 +176,7 @@ void Clear (int frame, int width, int height, int x, int y)
       bottom = FrameTable[frame].FrHeight + FrameTable[frame].FrTopMargin;
       if (bottom > y+height)
 	{
-	  GL_SetClipping (x, bottom - (y + height), width, height);
+	  GL_SetClipping (frame, x, bottom - (y + height), width, height);
 #ifdef _GL_COLOR_DEBUG
 	  {
 	    float tmp[4];
@@ -201,6 +201,7 @@ ThotBool GL_NotInFeedbackMode ()
 /*----------------------------------------------------------------------
   GL_prepare: If a modif has been done
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_prepare */
 ThotBool GL_prepare (int frame)
 {  
   if (frame >= 0 && frame < MAX_FRAME && NotFeedBackMode)
@@ -227,10 +228,12 @@ ThotBool GL_prepare (int frame)
     }
   return FALSE;
 }
+#endif
 
 /*----------------------------------------------------------------------
   GL_Swap : swap frontbuffer with backbuffer (display changes)
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_Swap */
 void GL_Swap (int frame)
 {
   if (frame >= 0 && frame < MAX_FRAME &&
@@ -250,29 +253,36 @@ void GL_Swap (int frame)
       FrameTable[frame].DblBuffNeedSwap = FALSE;
     }
 }
+#endif
 
 /*----------------------------------------------------------------------
   GL_SwapStop : Prevent savage swapping (causes flickering)
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_SwapStop */
 void GL_SwapStop (int frame)
 {
   FrameTable[frame].SwapOK = FALSE;
 }
+#endif
 /*----------------------------------------------------------------------
   GL_SwapGet : 
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_SwapGet */
 ThotBool GL_SwapGet (int frame)
 {
   return FrameTable[frame].SwapOK;
 }
+#endif
 
 /*----------------------------------------------------------------------
   GL_SwapEnable : 
   ----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: replaced by wxdclifecycle.cpp -- GL_SwapEnable */
 void GL_SwapEnable (int frame)
 {
   FrameTable[frame].SwapOK = TRUE;
 }
+#endif
 #endif /* _GL */
 
 /*----------------------------------------------------------------------

@@ -104,8 +104,8 @@ ThotBool SavePng (const char *filename,
 		 unsigned int m_width,
 		  unsigned int m_height);
 void saveBuffer (char *filename, int width, int height);
-void GL_UnsetClipping ();
-void GL_SetClipping (int x, int y, int width, int height);
+void GL_UnsetClipping (int frame);
+void GL_SetClipping (int frame, int x, int y, int width, int height);
 void GL_GetCurrentClipping (int *x, int *y, int *width, int *height);
 
 void DisplayBoxTransformation (void *v_trans, int x, int y);

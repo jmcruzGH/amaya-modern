@@ -96,8 +96,12 @@ thot_sources(DISPLAY_SRCS
   dialogue/glglyph.c
   dialogue/openglfont.c
   view/glwindowdisplay.c
-  view/gldisplay.c
+  # view/gldisplay.c   # replaced by wxDC-based rendering for Option B
   view/spline.c
+  view/wxdcdisplay.cpp
+  view/wxdclifecycle.cpp
+  dialogue/wxdcfont.cpp
+  view/wxdcstubs.cpp
 )
 
 # ── EDITOR sources (wx widgets, editing logic) ────────────────────────────────

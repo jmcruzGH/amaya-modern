@@ -969,10 +969,10 @@ void ClearOpaqueGroup (PtrAbstractBox pAb, int frame,
         width = widthclip;
       if (height > heightclip)
         height = heightclip;
-      GL_SetClipping (x, org, width, height);
+      GL_SetClipping (frame, x, org, width, height);
       glClear (GL_COLOR_BUFFER_BIT);
       /* restore the previous clipping */
-      GL_SetClipping (xclip, yclip, widthclip, heightclip);
+      GL_SetClipping (frame, xclip, yclip, widthclip, heightclip);
     }
 #endif /*_GL*/
 }

@@ -100,12 +100,10 @@ static SpecFont   FirstFontSel = NULL;
 static void *GL_LoadFont (char alphabet, int family, int highlight, int size)
 {
   char filename[2048];
+  extern void *WxDC_LoadFont (const char *filename, char alphabet, int size);
 
   if (GetFontFilename (alphabet, family, highlight, size, filename))
-    {
-      //  printf ("load %s size=%d font=%d\n",filename, size, FirstFreeFont);
-      return (gl_font_init (filename, alphabet, size));
-    }
+    return WxDC_LoadFont (filename, alphabet, size);
   return NULL;
 }
 #endif /* _GL */
