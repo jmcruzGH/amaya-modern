@@ -123,6 +123,25 @@ void GL_realize (int frame)
  * immediately; remove that call once this is confirmed working. */
 ThotBool GL_DrawAll (void)
 {
+  /* Arrow-key (and other special-key) handling explicitly calls this
+   * right after moving the cursor via ThotInput(), per the original
+   * authors' own comment: "try to redraw something because ... nothing
+   * is shown on the screen before the user release the key." A plain
+   * cursor move (no text change) does not otherwise trigger a redraw --
+   * ThotInput() has nothing to hand to RedrawFrameBottom/GL_realize in
+   * that case. This was left as a no-op stub, which is exactly why the
+   * cursor's position tracking worked (confirmed via the status bar)
+   * while its on-screen position never visually updated. Refresh every
+   * frame that has a canvas and is not already mid-paint (same guard
+   * as GL_realize, to avoid the same repaint-loop risk). */
+  int frame;
+  for (frame = 0; frame <= MAX_FRAME; frame++)
+    {
+      if (GetFrameDC(frame) != NULL)
+        continue;
+      if (FrameTable[frame].WdFrame && FrameTable[frame].WdFrame->GetCanvas ())
+        FrameTable[frame].WdFrame->GetCanvas ()->Refresh ();
+    }
   return TRUE;
 }
 
