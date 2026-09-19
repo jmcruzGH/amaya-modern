@@ -99,9 +99,23 @@ void DrawRectangle (int frame, int thick, int style,
 
   if (pattern == 2 && bg >= 0)
     {
+      /* The cursor/selection-highlight case (a narrow, e.g. 2px wide,
+       * column) has been observed to inherit a wildly oversized height
+       * from its underlying box's own layout data (hundreds of pixels
+       * or more, versus the single line's height a cursor should be) --
+       * confirmed by diagnostic logging showing this clamped down to
+       * exactly the frame's own height, meaning the real, uncapped
+       * value was even larger. A genuinely wide fill (e.g. a table
+       * cell's background) is never this narrow, so this clamp cannot
+       * affect it. Root cause (why that box's stored height is wrong)
+       * not yet found; this keeps the cursor visually sane in the
+       * meantime. */
+      int drawHeight = height;
+      if (width <= 4 && drawHeight > 40)
+        drawHeight = 24;
       dc->SetPen (*wxTRANSPARENT_PEN);
       dc->SetBrush (wxBrush (ThotColourToWx (bg)));
-      dc->DrawRectangle (x, y, width, height);
+      dc->DrawRectangle (x, y, width, drawHeight);
     }
   else if (pattern == 4)
     {
