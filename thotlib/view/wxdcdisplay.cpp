@@ -76,6 +76,27 @@ void DrawRectangle (int frame, int thick, int style,
 
   y += FrameTable[frame].FrTopMargin;
 
+  /* Defensive clamp: seen in practice with the text-cursor drawing
+   * path (DisplayStringSelection), which can compute a wildly wrong
+   * height (tens of thousands of pixels, for what should be a single
+   * line's height) under a still-unidentified layout-timing condition
+   * -- likely related to this project's move to synchronous wxDC
+   * painting. Handing wxDC a rectangle far larger than the frame
+   * itself is never correct regardless of why a caller computed one,
+   * and was very likely also the direct cause of a crash observed
+   * immediately after this exact symptom. Root cause not yet found;
+   * this stops the visible/crash symptom without masking the
+   * underlying value for future investigation (only the draw call is
+   * clamped, not what callers compute or store). */
+  {
+    int frameH = FrameTable[frame].FrHeight + FrameTable[frame].FrTopMargin;
+    if (height > frameH)
+      height = frameH;
+    int frameW = FrameTable[frame].FrScrollWidth > 0 ? FrameTable[frame].FrScrollWidth : 2000;
+    if (width > frameW)
+      width = frameW;
+  }
+
   if (pattern == 2 && bg >= 0)
     {
       dc->SetPen (*wxTRANSPARENT_PEN);
