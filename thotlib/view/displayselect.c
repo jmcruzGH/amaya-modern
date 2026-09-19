@@ -932,6 +932,17 @@ void DisplayStringSelection (int frame, int leftX, int rightX, int t,
       topY = pBox->BxYOrg - pFrame->FrYOrg /*+t*/;
       //topY += pBox->BxTMargin + pBox->BxTBorder;
       h = pBox->BxHeight;
+      /* The box used for the caret/cursor is sometimes a zero-size
+       * "ghost" placeholder box (BxHeight == BxH == 0), confirmed by
+       * direct diagnostic logging: the exact same ghost box, with
+       * BxHeight=0, was reused for the caret at every character
+       * position along an entire line, in both the main and source
+       * views. A ghost box has no intrinsic visual size by design --
+       * fall back to the enclosing box's own height instead, which is
+       * what a caret should visually match anyway (one line tall). */
+      if (h <= 0 && pBox->BxAbstractBox && pBox->BxAbstractBox->AbEnclosing &&
+          pBox->BxAbstractBox->AbEnclosing->AbBox)
+        h = pBox->BxAbstractBox->AbEnclosing->AbBox->BxHeight;
 
       /* limit to the scrolling zone */
       width = FrameTable[frame].FrScrollOrg + FrameTable[frame].FrScrollWidth
