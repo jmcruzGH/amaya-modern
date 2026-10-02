@@ -66,26 +66,12 @@ IMPLEMENT_DYNAMIC_CLASS(AmayaCanvas, wxGLCanvas)
   Description:  construct the canvas : its a wxGLCanvas if opengl is
   used or a wxPanel if not
   -----------------------------------------------------------------------*/
-#ifdef _GL
-AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
-                         AmayaFrame * p_parent_frame,
-                         wxGLContext * p_shared_context )
- : wxGLCanvas( p_parent_window,
-               wxID_ANY,
-               AmayaApp::GetGL_AttrList(),
-               wxDefaultPosition, wxDefaultSize,
-               wxWANTS_CHARS, _T("AmayaCanvas") ),
-#else // #ifdef _GL   
 AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
                          AmayaFrame * p_parent_frame )
- : wxPanel( p_parent_window ),
-#endif // #ifdef _GL 
+ : wxPanel( p_parent_window, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+            wxWANTS_CHARS, _T("AmayaCanvas") ),
    m_pAmayaFrame( p_parent_frame ),
    m_Init( false ),
-#ifdef _GL
-   m_glContext( NULL ),
-   m_pSharedContext( p_shared_context ),
-#endif
    m_IsMouseSelecting( false ),
    m_MouseGrab (false)
 {
@@ -97,20 +83,8 @@ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
   p_panel->SetSize( p_button->GetSize() );
 #endif /* FORUMLARY_WIDGET_DEMO */
 
-#ifdef _GL
-  /* wx 3.x: independent context per canvas (shared context causes BadMatch).
-   * Font textures are recreated per-context on first use. */
-  (void)p_shared_context;
-  /* Real GL context sharing: each canvas keeps its OWN context object
-   * (required on modern Mesa -- one context object cannot be handed to
-   * two different windows without triggering BadMatch), but when a
-   * sibling context is given, the new context shares its textures and
-   * display lists with it via wx's standard share-list constructor. */
-  if (p_shared_context)
-    m_glContext = new wxGLContext(this, p_shared_context);
-  else
-    m_glContext = new wxGLContext(this);
-#endif /* _GL */
+  /* Option B: AmayaCanvas no longer derives from wxGLCanvas, so there
+   * is no GL context to create or share here at all. */
 
   SetAutoLayout(TRUE);
   Layout();

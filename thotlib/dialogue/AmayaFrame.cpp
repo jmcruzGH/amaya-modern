@@ -163,21 +163,9 @@ AmayaFrame::~AmayaFrame()
   ----------------------------------------------------------------------*/
 AmayaCanvas * AmayaFrame::CreateDrawingArea()
 {
-  AmayaCanvas * p_canvas = NULL;
-
-#ifdef _GL
-  if ( GetSharedContext() == -1 )
-    {
-      p_canvas = new AmayaCanvas( this, this );
-      SetSharedContext( m_FrameId );
-    }
-  else
-    {
-      wxGLContext * p_SharedContext =
-          FrameTable[GetSharedContext()].WdFrame->GetCanvas()->GetGLContext();
-      p_canvas = new AmayaCanvas( this, this, p_SharedContext );
-    }
-#endif /* _GL */
+  /* Option B: no GL context to create or share -- every canvas is
+   * independent and cheap now, so there is nothing to decide here. */
+  AmayaCanvas * p_canvas = new AmayaCanvas( this, this );
   return p_canvas;
 }
 
@@ -339,6 +327,7 @@ void AmayaFrame::ShowScrollbar( int scrollbar_id )
  * Description:  just give focus to this OpenGL canvas -> 
  *               now opengl commands are forwared to this canvas
   -----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: references the removed GetGLContext(); its only caller was already inside the disabled old GL_prepare in glbox.c */
 bool AmayaFrame::SetCurrent()
 {
   if ( DisplayIsReady() )
@@ -353,6 +342,7 @@ bool AmayaFrame::SetCurrent()
       return FALSE;
     }
 }
+#endif
 
 /*----------------------------------------------------------------------
  *       Class:  AmayaFrame
@@ -372,6 +362,7 @@ bool AmayaFrame::DisplayIsReady()
  * Description:  swap the buffer because opengl draw into a backbuffer not visible
  *               to show this backbuffer this command must be called
   -----------------------------------------------------------------------*/
+#if 0 /* disabled for Option B: calls the removed wxGLCanvas-only SwapBuffers(); its only caller was already inside the disabled old GL_Swap in glbox.c */
 bool AmayaFrame::SwapBuffers()
 {
   if (DisplayIsReady())
@@ -386,6 +377,7 @@ bool AmayaFrame::SwapBuffers()
       return FALSE;
     }
 }
+#endif
 #endif /* _GL */
 
 /*----------------------------------------------------------------------

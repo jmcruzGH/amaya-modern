@@ -57,23 +57,13 @@ class AmayaFrame;
  *     Revision:  none
 */
 
-#ifdef _GL
-class AmayaCanvas : public wxGLCanvas
-#else // #ifdef _GL
 class AmayaCanvas : public wxPanel
-#endif // #ifdef _GL
 {
 public:
   DECLARE_DYNAMIC_CLASS(AmayaCanvas)
 
-#ifdef _GL
   AmayaCanvas( wxWindow * p_parent_window = NULL,
-	       AmayaFrame * p_parent_frame = NULL,
-	       wxGLContext * p_shared_context = NULL );
-#else /* _GL */
-  AmayaCanvas( wxWindow * p_parent_window = NULL,
-	       AmayaFrame * p_parent_frame = NULL );
-#endif /* _GL */
+               AmayaFrame * p_parent_frame = NULL );
   virtual ~AmayaCanvas( );
 
   bool IsInit();
@@ -96,15 +86,6 @@ protected:
 
   
   AmayaFrame *  m_pAmayaFrame;  // amaya frame reference (parent)
-
-#ifdef _GL
-  wxGLContext *  m_glContext;       /* owned when first canvas; shared otherwise */
-  wxGLContext *  m_pSharedContext;  /* non-NULL when sharing an existing context */
-public:
-  wxGLContext * GetGLContext() const { return m_glContext; }
-protected:
-#endif /* _GL */
-
 
   bool m_Init;
   void Init();
