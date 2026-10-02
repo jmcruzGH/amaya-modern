@@ -2304,7 +2304,11 @@ static void DisplayJustifiedText (PtrBox pBox, PtrBox mbox, int frame,
         }
       /* display a caret if needed */
       if (selected && right == left + 2 && pFrame->FrSelectOnePosition)
-        DisplayStringSelection (frame, left, right, t, pBox);
+        {
+          fprintf(stderr, "DIAGCARET2 pBox=%p BxYOrg=%d BxHeight=%d FrYOrg=%d left=%d right=%d\n",
+                  (void*)pBox, pBox->BxYOrg, pBox->BxHeight, pFrame->FrYOrg, left, right);
+          DisplayStringSelection (frame, left, right, t, pBox);
+        }
       TtaFreeMemory (wbuffer);
       TtaFreeMemory (buffer);
     }

@@ -86,6 +86,16 @@ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
   /* Option B: AmayaCanvas no longer derives from wxGLCanvas, so there
    * is no GL context to create or share here at all. */
 
+  /* Standard wxWidgets technique for a custom-painted wxPanel-derived
+   * widget using wxBufferedPaintDC: tells wx this widget fully repaints
+   * its own background every time, so the system should not also try
+   * to erase it separately first. Without this, a plain wxPanel (unlike
+   * wxGLCanvas, which handled this differently) can end up fighting its
+   * own default background handling against our custom OnPaint, which
+   * is a very plausible cause of visible flicker / content briefly
+   * disappearing and reappearing. */
+  SetBackgroundStyle(wxBG_STYLE_PAINT);
+
   SetAutoLayout(TRUE);
   Layout();
 

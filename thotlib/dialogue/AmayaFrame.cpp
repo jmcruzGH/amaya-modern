@@ -163,8 +163,20 @@ AmayaFrame::~AmayaFrame()
   ----------------------------------------------------------------------*/
 AmayaCanvas * AmayaFrame::CreateDrawingArea()
 {
-  /* Option B: no GL context to create or share -- every canvas is
-   * independent and cheap now, so there is nothing to decide here. */
+  /* Option B: no GL context to create or share, so the original
+   * if/else that chose between "own a new context" and "share an
+   * existing one" is gone. BUT GetSharedContext()/SetSharedContext()
+   * (appli.c) is NOT purely about GL contexts -- GL_DestroyFrame uses
+   * it to decide whether cleanup work (FreeAllPicCacheFromFrame) runs
+   * when a frame closes, comparing the closing frame's id against
+   * whatever SetSharedContext() last recorded. Dropping the call
+   * entirely left that value stuck at -1 forever, breaking that
+   * unrelated cleanup for every frame close -- confirmed as the real
+   * cause of a validation/log-window regression this change introduced.
+   * Restore just the "first frame becomes the recorded one" side
+   * effect, with no GL context involved. */
+  if ( GetSharedContext() == -1 )
+    SetSharedContext( m_FrameId );
   AmayaCanvas * p_canvas = new AmayaCanvas( this, this );
   return p_canvas;
 }
