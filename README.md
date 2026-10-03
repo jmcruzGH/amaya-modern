@@ -64,7 +64,8 @@ was first produced; its changes are already part of the committed sources.
 
 `tools/smoke-test.sh` runs the freshly built binary under a virtual X server,
 performs a short editing session on a local file, and checks the saved result.
-See the comments at the top of the script.
+See the comments at the top of the script.  For testing on a real desktop
+session, see [`docs/TESTING.md`](docs/TESTING.md).
 
 ---
 
@@ -73,15 +74,36 @@ See the comments at the top of the script.
 ### Phase 1 — wxWidgets 2.8 → 3.2 ✅
 - `compat/wx3compat.h` force-included into every TU via CMake
 - Renames all `wxEVT_COMMAND_*` → `wxEVT_*`, `DEFINE_EVENT_TYPE` → `wxDEFINE_EVENT`
-- `patches/apply-patches.sh`: fixes `wxGLCanvas` constructor, `SetCurrent()`,
+- Fixes to `wxGLCanvas` construction, `SetCurrent()`,
   `GetContext()→GetGLContext()`, `ListBoxBook` event types
+- Runtime fixes under wx 3.2 / GTK 3: glyph position overflow, GL context
+  sharing, keyboard input (character corruption, arrows, AltGr), glyph baseline
+- wx 3 defines `__WXDEBUG__` by default; Amaya's own debug code now uses
+  `AMAYA_WXDEBUG`, set only for `CMAKE_BUILD_TYPE=Debug` (otherwise a
+  developer trace window opened beside every Amaya window)
+- Note: the shim hides deprecated wx 2.8 API usage rather than migrating it
 
-### Phase 2 — GCC 13/14 compatibility ✅
-- Global flags: `-Wno-implicit-function-declaration`, `-Wno-incompatible-pointer-types`,
-  `-fno-strict-aliasing`, `-fpermissive` (C++ only)
-- `GL_CLAMP → GL_CLAMP_TO_EDGE` in `glwindowdisplay.c`
-- `WX_GL_NOT_ACCELERATED` removed from `AmayaApp.cpp`
-- `static_cast` fix in `base64.cpp`
+### Phase 2 — GCC 13 warnings ✅ (error-class and memory-safety categories)
+The build uses `-Wall` with **no** `-Wno-*` suppressions and **no**
+`-fpermissive`.  All `.c` files are compiled as C++ (see "Open decisions").
+
+| Category | Before | Now | Notes |
+|---|---|---|---|
+| errors hidden by `-fpermissive` | 5 | 0 | pointer/`'\0'` comparisons, `char`→`char*` |
+| `-Wformat-overflow` | 37 | 0 | `sprintf` → `snprintf(buf, sizeof buf, …)` |
+| `-Wformat-security` | 22 | 0 | `fprintf(f, s)` → `fprintf(f, "%s", s)` |
+| `-Wstringop-truncation` | 91 | 39 | remaining sites verified safe (GCC false positives) or dead code |
+| `-Wmaybe-uninitialized` | 27 | 0 | neutral initial values |
+| `-Wint-to-pointer-cast` | 170 | 0 | explicit `(intptr_t)` (int-in-`void*` idiom, verified) |
+| `-Wreturn-type`, `-Wnonnull`, `-Wmemset-elt-size`, `-Wsizeof-pointer-div`, `-Wuninitialized`, `-Wrestrict`, `-Waddress` | 19 | 0 | several were real bugs |
+| `-Wmisleading-indentation` | 5 | 0 | indentation only |
+| `-Wparentheses` / `-Wdangling-else` | 12 / 8 | 9 / 7 | 3 NULL dereferences + 1 dangling else fixed; rest correct |
+
+Totals (clean build, unique warnings): **868 → 564**, 0 errors.
+Remaining warnings are mostly `-Wswitch-outside-range` (noise),
+`-Wunused-but-set-variable`, `-Wunused-result`, and the `-Wformat-truncation`
+notes that mark the `snprintf` conversions ("may truncate", formerly "may
+overflow").  See `git log` for the individual bugs fixed.
 
 ### Phase 3 — libwww → libcurl ⚠ partial (remote loading not working yet)
 - `patches/curl/query.c`: full libcurl multi-handle replacement for `GetObjectWWW`,
@@ -106,6 +128,23 @@ Port `thotlib/dialogue/` from wxWidgets to Qt6, replacing `wxGLCanvas` with
 `QOpenGLWidget`. The Thot rendering engine (`thotlib/view/`, `thotlib/document/`,
 `thotlib/tree/`, `thotlib/editing/`) is unchanged — only the ~82 dialogue files
 need porting.
+
+---
+
+## Open decisions
+
+- **C compiled as C++.**  Every `.c` file in `amaya/` and `thotlib/` is
+  compiled as C++ because `thot_gui_wx.h` declares C++ classes without
+  `#ifdef __cplusplus` guards.  Since `-fpermissive` is gone, this is now a
+  stable, strict configuration, and returning to C would require guarding
+  those headers and re-checking every C/C++ boundary.  Recommendation: keep it.
+- **`thotlib/editing/structcreation.c` (~line 3835)** compares two arrays
+  (`pEl->ElAbstractBox == pLeaf->ElAbstractBox`).  This has always been false,
+  also in Amaya 11.4.7, so the "inclusion" branch never selects the new
+  element.  The intent was probably to compare the first view's box; changing
+  it alters editing behaviour, so it is left as is.
+- **libcurl layer** (Phase 3): see the known issues above; local files are
+  not affected.
 
 ---
 
