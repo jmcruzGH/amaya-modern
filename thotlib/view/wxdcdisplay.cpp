@@ -237,6 +237,7 @@ int DrawString (unsigned char *buff, int lg, int frame,
   if (hyphen)
     text += wxT("-");
 
+  fprintf(stderr, "DIAGTXT2 DrawString: frame=%d x=%d y=%d text='%s'\n", frame, x, y, (const char*)text.mb_str());
   dc->DrawText (text, x, BaselineToTop (dc, text, y));
   return dc->GetTextExtent (text).GetWidth ();
 }
@@ -264,6 +265,7 @@ int WDrawString (wchar_t *buff, int lg, int frame, int x, int y,
   if (hyphen)
     text += wxT("-");
 
+  fprintf(stderr, "DIAGTXT2 WDrawString: frame=%d x=%d y=%d text='%s'\n", frame, x, y, (const char*)text.mb_str());
   dc->DrawText (text, x, BaselineToTop (dc, text, y));
   return dc->GetTextExtent (text).GetWidth ();
 }

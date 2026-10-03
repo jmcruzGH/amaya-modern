@@ -56,7 +56,34 @@ void WxDC_SetCurrentFrameDC (int frame, wxDC *dc)
  * context current could. */
 ThotBool GL_prepare (int frame)
 {
-  return GetFrameDC (frame) != NULL;
+  /* Originally: make this frame's GL context current, report whether
+   * that succeeded -- a one-time setup precondition, not a "should I
+   * bother drawing" check. Used as a gate in ~20 places across the
+   * codebase (scroll.c, picture.c, frame.c, animbox.c, appli.c...),
+   * most of which are triggered OUTSIDE of a paint event entirely
+   * (e.g. scrollbar drags, timers) -- confirmed as the direct cause of
+   * the scrollbar never visibly working: VerticalScroll's whole body
+   * is gated on this, and a DC is never active at the moment a
+   * scrollbar event fires, so it silently did nothing every time.
+   *
+   * Retrying this fix: the first attempt caused more frequent crashes
+   * and was reverted, but that was very likely because
+   * ComputeBoundingBox/ComputeFilledBox (glbox.c) still made raw,
+   * context-less GL calls (undefined behaviour) at the time -- letting
+   * more code paths like VerticalScroll actually run meant more calls
+   * into those broken functions. Both are now fixed to never touch GL
+   * at all, so this should be safe to retry.
+   *
+   * The actual drawing primitives (DrawRectangle, DrawString, etc. in
+   * this same file) already have their own correct, separate guard
+   * for "is a DC active right now" built into each of them
+   * (GetFrameDC(frame) != NULL, checked directly). GL_prepare does not
+   * need to duplicate that -- its only job here is the faithful
+   * equivalent of the original question, "is this frame valid and
+   * ready", which has nothing to do with whether a paint happens to be
+   * in progress at this exact moment. */
+  return frame >= 0 && frame <= MAX_FRAME &&
+         FrameTable[frame].WdFrame != NULL;
 }
 
 /* GL_Swap / GL_SwapStop / GL_SwapEnable / GL_SwapGet: originally

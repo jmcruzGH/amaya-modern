@@ -291,53 +291,29 @@ void GL_SwapEnable (int frame)
   (after transformation, coordinates may have changed)			    
   ----------------------------------------------------------------------*/
 void ComputeBoundingBox (PtrBox box, int frame, int xmin, int xmax, 
-			 int ymin, int ymax)
+                        int ymin, int ymax)
 {
-#ifdef _GL
-  GLfloat    feedBuffer[FEEDBUFFERSIZE];
-  GLint      mode;
-  int        size;
-  ViewFrame  *pFrame;
- 
-  if (NotFeedBackMode)
-    {
-      glGetIntegerv (GL_RENDER_MODE, &mode);
-       /* display into a temporary buffer */
-      glFeedbackBuffer (FEEDBUFFERSIZE, GL_2D, feedBuffer);
-      glRenderMode (GL_FEEDBACK);
-      NotFeedBackMode = FALSE;
-      /* display the box with transformation and clipping */
-      DisplayBox (box, frame, xmin, xmax, ymin, ymax, NULL, FALSE);
-      size = glRenderMode (mode);
-      NotFeedBackMode = TRUE;
-      if (size > 0)
-        {
-          /* the box is displayed */
-          if (size > FEEDBUFFERSIZE)
-            size = FEEDBUFFERSIZE;
-          
-          box->BxClipX = -1;
-          box->BxClipY = -1;
-          getboundingbox (size, feedBuffer, frame,
-                          &box->BxClipX,
-                          &box->BxClipY,
-                          &box->BxClipW,
-                          &box->BxClipH);    
-          box->BxBoundinBoxComputed = TRUE; 
-        }
-      else
-        {
-          /* the box is not displayed */
-          pFrame = &ViewFrameTable[frame - 1];
-          /* */
-          box->BxClipX = box->BxXOrg - (pFrame->FrXOrg?pFrame->FrXOrg:pFrame->OldFrXOrg);
-          box->BxClipY = box->BxYOrg - (pFrame->FrYOrg?pFrame->FrYOrg:pFrame->OldFrYOrg);
-          box->BxClipW = box->BxW;
-          box->BxClipH = box->BxH;
-          box->BxBoundinBoxComputed = FALSE; 
-        }   
-    }
-#endif /* _GL */
+  /* Option B: AmayaCanvas no longer has a GL context at all (the
+   * wxGLCanvas -> wxPanel switch), so the glRenderMode/glFeedbackBuffer
+   * calls this function used to make are undefined behaviour now --
+   * no current GL context to operate on. Confirmed as the cause of a
+   * real bug, not just dead code: a short test document only ever
+   * showed its very first element (direct diagnostic logging showed
+   * every single redraw, across many separate repaints, drawing only
+   * that element), which fits exactly -- every OTHER box's
+   * BxClipX/Y/W/H either came from undefined GL behaviour or, in
+   * ComputeFilledBox's case below, was never set at all. This always
+   * takes the safe, direct fallback the original code already used
+   * for the "box not displayed via feedback" case, unconditionally --
+   * the same fix applied during Option A's fix/gl-blanking work,
+   * which this branch's history never included. */
+  ViewFrame *pFrame = &ViewFrameTable[frame - 1];
+  (void) xmin; (void) xmax; (void) ymin; (void) ymax;
+  box->BxClipX = box->BxXOrg - (pFrame->FrXOrg?pFrame->FrXOrg:pFrame->OldFrXOrg);
+  box->BxClipY = box->BxYOrg - (pFrame->FrYOrg?pFrame->FrYOrg:pFrame->OldFrYOrg);
+  box->BxClipW = box->BxW;
+  box->BxClipH = box->BxH;
+  box->BxBoundinBoxComputed = TRUE;
 }
 
 #ifdef _GL
@@ -348,36 +324,19 @@ void ComputeBoundingBox (PtrBox box, int frame, int xmin, int xmax,
   
   ----------------------------------------------------------------------*/
 void ComputeFilledBox (PtrBox box, int frame, int xmin, int xmax,
-                       int ymin, int ymax, ThotBool show_bgimage)
+                      int ymin, int ymax, ThotBool show_bgimage)
 {
-  GLfloat feedBuffer[4096];
-  GLint   mode;
-  int     size;
-  
-  if (NotFeedBackMode)
-    {
-      glGetIntegerv (GL_RENDER_MODE, &mode);
-      box->BxBoundinBoxComputed = TRUE; 
-      glFeedbackBuffer (4096, GL_2D, feedBuffer);
-      glRenderMode (GL_FEEDBACK);
-      NotFeedBackMode = FALSE;
-      DrawFilledBox (box, box->BxAbstractBox, frame, NULL,
-		     xmin, xmax, ymin, ymax, FALSE, TRUE, TRUE, show_bgimage);
-      size = glRenderMode (mode);
-      NotFeedBackMode = TRUE;
-      if (size > 0)
-        {
-          box->BxClipX = -1;
-          box->BxClipY = -1;
-          getboundingbox (size, feedBuffer, frame,
-                          &box->BxClipX,
-                          &box->BxClipY,
-                          &box->BxClipW,
-                          &box->BxClipH);     
-          box->BxBoundinBoxComputed = TRUE; 
-          /* printBuffer (size, feedBuffer); */
-        }
-    }
+  /* Option B: same fix as ComputeBoundingBox above -- see its comment.
+   * This one is worse unfixed: there was no fallback at all here, so
+   * BxClipX/Y/W/H were simply never set once the GL feedback stopped
+   * ever returning anything. */
+  ViewFrame *pFrame = &ViewFrameTable[frame - 1];
+  (void) xmin; (void) xmax; (void) ymin; (void) ymax; (void) show_bgimage;
+  box->BxClipX = box->BxXOrg - (pFrame->FrXOrg?pFrame->FrXOrg:pFrame->OldFrXOrg);
+  box->BxClipY = box->BxYOrg - (pFrame->FrYOrg?pFrame->FrYOrg:pFrame->OldFrYOrg);
+  box->BxClipW = box->BxW;
+  box->BxClipH = box->BxH;
+  box->BxBoundinBoxComputed = TRUE;
 }
 
 /*----------------------------------------------------------------------

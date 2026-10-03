@@ -169,6 +169,9 @@ void AmayaCanvas::OnSize( wxSizeEvent& event )
   -----------------------------------------------------------------------*/
 void AmayaCanvas::OnPaint( wxPaintEvent& event )
 {
+  static int s_paintCount = 0;
+  s_paintCount++;
+  fprintf(stderr, "DIAGPAINT OnPaint call #%d, frame=%d\n", s_paintCount, m_pAmayaFrame->GetFrameId());
   /* wxBufferedPaintDC handles double buffering correctly and
    * automatically -- wx allocates a backing bitmap, every drawing
    * primitive (DrawRectangle, DrawString, etc. in wxdcdisplay.cpp)
