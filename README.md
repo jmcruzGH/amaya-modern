@@ -16,11 +16,11 @@ Port © 2026 J. Magalhães Cruz `<jmcruz@fe.up.pt>` — FEUP.
 |---|---|
 | `amaya/` | Application source (XHTML editor, CSS, HTTP) |
 | `amaya/generated/` | Pre-generated `*APP.c` / `*.h` schema files (committed so you don't need to run the schema compilers) |
-| `amaya/schemas/` | Pre-compiled binary structure schemas (`HTML.STR` etc.) |
+| `amaya/*.STR, *.PRS, *.TRA` | Pre-compiled binary schemas (`HTML.STR` etc.) |
 | `thotlib/` | Thot rendering engine (document model, OpenGL display, wx UI) |
 | `batch/` | Schema compiler source (`str`, `app`) and CMake rules |
 | `compat/` | Compatibility shim headers (`wx3compat.h`) |
-| `patches/` | Apply scripts and libcurl replacement sources |
+| `patches/` | Historical record of the original port (already applied) |
 | `cmake/` | CMake helper files (`config.h.in`) |
 
 ---
@@ -30,46 +30,41 @@ Port © 2026 J. Magalhães Cruz `<jmcruz@fe.up.pt>` — FEUP.
 ```bash
 sudo apt install \
   build-essential cmake git \
-  libwxgtk3.2-dev libwxgtk-gl3.2-dev wx-common \
+  libwxgtk3.2-dev wx-common \
   libgl-dev libglu1-mesa-dev \
   libfreetype-dev libfontconfig1-dev \
-  libgtk2.0-dev libglib2.0-dev \
-  libcurl4-openssl-dev \
-  libssl-dev libexpat1-dev \
+  libcurl4-openssl-dev libssl-dev libexpat1-dev \
   zlib1g-dev libjpeg-dev libpng-dev \
   libraptor2-dev \
   flex bison
 ```
 
+(`libwxgtk3.2-dev` already includes wxGLCanvas support; there is no separate
+`-gl-dev` package on 24.04. The build uses GTK 3, not GTK 2.)
+
 ---
 
 ## Build
 
+The tree is already patched: no upstream checkout, `rsync` or patch step is needed.
+
 ```bash
-# 1. Clone this repo
 git clone https://github.com/jmcruzGH/amaya-modern.git
 cd amaya-modern
-
-# 2. Clone the original Amaya source alongside it
-git clone --depth=1 https://github.com/w3c/Amaya-Editor.git ../Amaya-Editor
-
-# 3. Merge original source into this repo (patches will be applied on top)
-rsync -a --exclude='.git' --exclude='WindowsWX' ../Amaya-Editor/ ./
-
-# 4. Apply all patches (Phases 1–3)
-bash patches/apply-patches.sh
-
-# 5. Configure and build
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make -j$(nproc) 2>&1 | tee build.log
-
-# 6. Check for errors
-grep -c 'error:' build.log && echo "errors — see build.log" || echo "clean build"
-
-# 7. Run
-./amaya
+./amaya/amaya            # or: ./amaya/amaya /path/to/file.html
 ```
+
+The `patches/` directory is kept only as a historical record of how the port
+was first produced; its changes are already part of the committed sources.
+
+### Smoke test
+
+`tools/smoke-test.sh` runs the freshly built binary under a virtual X server,
+performs a short editing session on a local file, and checks the saved result.
+See the comments at the top of the script.
 
 ---
 
@@ -88,13 +83,19 @@ grep -c 'error:' build.log && echo "errors — see build.log" || echo "clean bui
 - `WX_GL_NOT_ACCELERATED` removed from `AmayaApp.cpp`
 - `static_cast` fix in `base64.cpp`
 
-### Phase 3 — libwww → libcurl ✅
+### Phase 3 — libwww → libcurl ⚠ partial (remote loading not working yet)
 - `patches/curl/query.c`: full libcurl multi-handle replacement for `GetObjectWWW`,
   `PutObjectWWW`, `StopRequest`, `QueryInit/Close`
 - All other libwww files (`AHTBridge.c`, `AHTInit.c`, `AHTMemConv.c`,
   `AHTFWrite.c`, `AHTEvntrg.c`, `answer.c`) replaced by linker stubs
 - HTTP-only in this phase; HTTPS requires removing the protocol filter in `query.c`
 - libcurl poll wired into wx event loop via `wxAmayaSocketEventLoop::SetCurlPoll()`
+- **Known issues** (remote documents never load; local files are unaffected):
+  `GetObjectWWW` does not fill in the caller's `outputfile` buffer (the libwww
+  version generated a temp-file name there) and returns without calling the
+  terminate callback when `fopen("")` fails; the poll timer is only started when
+  a socket is registered, which libcurl never does; `AMAYA_SYNC` is ignored;
+  no 401/authentication handling.
 
 ### Phase 4 — HTTPS, authentication (planned)
 Remove the `strncmp(urlName, "http://", 7)` guard in `patches/curl/query.c`.
@@ -110,7 +111,7 @@ need porting.
 
 ## Regenerating schema files
 
-The `amaya/generated/*APP.c` and `amaya/schemas/*.STR` files are committed and
+The `amaya/generated/*APP.c` and `amaya/*.STR` (and `*.PRS`, `*.TRA`) files are committed and
 normally do not need regeneration. If you change a `.S` or `.A` schema file:
 
 ```bash
