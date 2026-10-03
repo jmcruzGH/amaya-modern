@@ -91,9 +91,9 @@ class AmayaAdvancedNotebook : public wxAuiNotebook, public AmayaPageContainer
 
 protected:
   DECLARE_EVENT_TABLE()
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
   void OnPageChanging(wxAuiNotebookEvent& event);
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
   
   void OnMouseRightDown(wxAuiNotebookEvent& event);
   

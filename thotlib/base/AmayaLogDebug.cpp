@@ -8,7 +8,7 @@
 #ifdef _WX
 #include "wx/wx.h"
 
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
 #include "thot_gui.h"
 #include "thot_sys.h"
 #include "constmedia.h"
@@ -166,6 +166,6 @@ BEGIN_EVENT_TABLE(AmayaLogDebug, wxDialog)
   EVT_BUTTON( wxID_LOGDEBUG_TESTCASE, AmayaLogDebug::OnTestCaseButton )
 END_EVENT_TABLE()
 
-#endif /* #ifdef __WXDEBUG__ */
+#endif /* #ifdef AMAYA_WXDEBUG */
 
 #endif /* #ifdef _WX */

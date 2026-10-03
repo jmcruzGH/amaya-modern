@@ -575,12 +575,12 @@ AmayaFrame * AmayaSplittablePage::DetachFrame( int position )
       // The frame is alone and can't be unsplit
       // => replace it with a dummy panel
       m_DummyPanel->Show();
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
       bool isReplaced = m_pSplitterWindow->ReplaceWindow( oldframe, m_DummyPanel );
       wxASSERT_MSG( isReplaced, _T("La frame n'a pas pu etre remplacee") );
-#else /* __WXDEBUG__ */
+#else /* AMAYA_WXDEBUG */
       m_pSplitterWindow->ReplaceWindow( oldframe, m_DummyPanel );
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
     }
   if (oldframe)
     oldframe->SetActive( FALSE );

@@ -3,7 +3,7 @@
 #ifndef __AMAYALOGDEBUG_H__
 #define __AMAYALOGDEBUG_H__
 
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
 
 #include "wx/wx.h"
 #include "wx/dialog.h"
@@ -40,7 +40,7 @@ class AmayaLogDebug : public wxDialog
   wxButton * m_pTestCaseButton;
 };
 
-#endif /* #ifdef __WXDEBUG__ */
+#endif /* #ifdef AMAYA_WXDEBUG */
 
 #endif // __AMAYALOGDEBUG_H__
 

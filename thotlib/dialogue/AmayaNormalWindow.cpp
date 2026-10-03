@@ -756,26 +756,26 @@ void AmayaNormalWindow::ToggleFullScreen()
  *      Method:  OnMenuOpen
  * Description:  
  -----------------------------------------------------------------------*/
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
 void AmayaNormalWindow::OnMenuOpen( wxMenuEvent& event )
 {
   TTALOGDEBUG_1( TTA_LOG_DIALOG, _T("AmayaNormalWindow::OnMenuOpen - menu_id=%d"), event.GetMenuId() );
   event.Skip();
 }
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
 
 /*----------------------------------------------------------------------
  *       Class:  AmayaNormalWindow
  *      Method:  OnMenuClose
  * Description:  
  -----------------------------------------------------------------------*/
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
 void AmayaNormalWindow::OnMenuClose( wxMenuEvent& event )
 {
   TTALOGDEBUG_1( TTA_LOG_DIALOG, _T("AmayaNormalWindow::OnMenuClose - menu_id=%d"), event.GetMenuId() );
   event.Skip();
 }
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
 
 /*----------------------------------------------------------------------
  *       Class:  AmayaNormalWindow
@@ -1109,10 +1109,10 @@ void AmayaNormalWindow::OnClose(wxCloseEvent& event)
  *  the callbacks are assigned to an event type
  *----------------------------------------------------------------------*/
 BEGIN_EVENT_TABLE(AmayaNormalWindow, AmayaWindow)
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
   EVT_MENU_OPEN(  AmayaNormalWindow::OnMenuOpen )
   EVT_MENU_CLOSE( AmayaNormalWindow::OnMenuClose )
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
   
   EVT_MENU(wxID_ANY,   AmayaNormalWindow::OnMenuItem )
   EVT_MENU_HIGHLIGHT_ALL( AmayaNormalWindow::OnMenuHighlight )

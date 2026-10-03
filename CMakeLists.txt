@@ -36,6 +36,12 @@ add_compile_options(
 )
 
 # ── Platform definition ───────────────────────────────────────────────────────
+# Amaya's developer trace window and TTALOGDEBUG_* tracing used to be keyed on
+# __WXDEBUG__, which wx 2.8 only defined in debug builds of wx.  wx 3.x defines
+# it by default, which made the trace window pop up in every build.  Use our
+# own macro, enabled only for Debug builds.
+add_compile_definitions($<$<CONFIG:Debug>:AMAYA_WXDEBUG>)
+
 add_compile_definitions(
   _UNIX
   _WX

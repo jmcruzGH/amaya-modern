@@ -228,7 +228,7 @@ void AmayaClassicNotebook::UpdatePageId()
  *               Processes a wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING event.
  *               This event can be vetoed.
  -----------------------------------------------------------------------*/
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
 void AmayaClassicNotebook::OnPageChanging(wxNotebookEvent& event)
 {
   TTALOGDEBUG_2( TTA_LOG_DIALOG, _T("AmayaClassicNotebook::OnPageChanging : old=%d, new=%d"),
@@ -236,7 +236,7 @@ void AmayaClassicNotebook::OnPageChanging(wxNotebookEvent& event)
                  event.GetSelection() );
   event.Skip();
 }
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
 
 /*----------------------------------------------------------------------
  *       Class:  AmayaClassicNotebook
@@ -377,9 +377,9 @@ void AmayaClassicNotebook::OnMouseMiddleUp(wxMouseEvent& event)
 BEGIN_EVENT_TABLE(AmayaClassicNotebook, wxNotebook)
   EVT_CLOSE( AmayaClassicNotebook::OnClose )
   EVT_NOTEBOOK_PAGE_CHANGED(  -1, AmayaClassicNotebook::OnPageChanged )
-#ifdef __WXDEBUG__  
+#ifdef AMAYA_WXDEBUG  
   EVT_NOTEBOOK_PAGE_CHANGING( -1, AmayaClassicNotebook::OnPageChanging )
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
   EVT_CONTEXT_MENU(               AmayaClassicNotebook::OnContextMenu )
   EVT_MIDDLE_UP(AmayaClassicNotebook::OnMouseMiddleUp)
 END_EVENT_TABLE()

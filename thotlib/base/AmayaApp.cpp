@@ -94,9 +94,9 @@ int AmayaApp::AttrList[] =
 
 wxImageList * AmayaApp::m_pDocImageList = NULL;
 wxIcon AmayaApp::m_AppIcon = wxIcon();
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
 AmayaLogDebug * AmayaApp::m_pAmayaLogDebug = NULL;
-#endif /* #ifdef __WXDEBUG__ */
+#endif /* #ifdef AMAYA_WXDEBUG */
 
 #ifdef _MACOS
 #include "wx/mac/uma.h"
@@ -686,7 +686,7 @@ void AmayaApp::OnKeyDown(wxKeyEvent& event)
     event.Skip();
 }
 
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
 /*----------------------------------------------------------------------
  *       Class:  AmayaApp
  *      Method:  GetAmayaLogDebug
@@ -711,7 +711,7 @@ void AmayaApp::DestroyAmayaLogDebug()
   m_pAmayaLogDebug = NULL;
 }
 
-#endif /* #ifdef __WXDEBUG__ */
+#endif /* #ifdef AMAYA_WXDEBUG */
 
 /*----------------------------------------------------------------------
  *       Class:  AmayaApp

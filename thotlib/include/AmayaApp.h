@@ -46,10 +46,10 @@ public:
   
   static void PostAmayaAction(const AmayaActionEvent& event);
   
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
   static AmayaLogDebug * GetAmayaLogDebug( wxWindow * p_parent );
   static void DestroyAmayaLogDebug();
-#endif /* #ifdef __WXDEBUG__ */
+#endif /* #ifdef AMAYA_WXDEBUG */
 
  protected:
   DECLARE_EVENT_TABLE()
@@ -83,9 +83,9 @@ public:
 
   bool m_AmayaIsInit;
 
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
   static AmayaLogDebug * m_pAmayaLogDebug;
-#endif /* #ifdef __WXDEBUG__ */
+#endif /* #ifdef AMAYA_WXDEBUG */
 };
 
 DECLARE_APP(AmayaApp)

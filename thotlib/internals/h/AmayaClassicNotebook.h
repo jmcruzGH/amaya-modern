@@ -89,9 +89,9 @@ class AmayaClassicNotebook : public wxNotebook, public AmayaPageContainer
   
 protected:
   DECLARE_EVENT_TABLE()
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
   void OnPageChanging(wxNotebookEvent& event);
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
   void OnPageChanged(wxNotebookEvent& event);
   void OnContextMenu( wxContextMenuEvent & event );
   void OnContextMenuItem( wxCommandEvent& event );

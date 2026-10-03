@@ -25,7 +25,7 @@ enum {
   TTA_LOG_MAX       = 1 << 11,
 };
 
-#if !defined(__WXDEBUG__)
+#if !defined(AMAYA_WXDEBUG)
 #define TTALOGDEBUG_0( filter, message ) ;
 #define TTALOGDEBUG_1( filter, message, p1 ) ;
 #define TTALOGDEBUG_2( filter, message, p1, p2 ) ;
@@ -42,11 +42,11 @@ enum {
 #define TTALOGDEBUG_13( filter, message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13 ) ;
 #define TTALOGDEBUG_14( filter, message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14 ) ;
 #define TTALOGDEBUG_15( filter, message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15 ) ;
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
 
 #ifdef _WX
 
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
 #define TTALOGDEBUG_0( filter, message ) if ((filter) & g_logdebug_filter) wxLogDebug( message );
 #define TTALOGDEBUG_1( filter, message, p1 ) if ((filter) & g_logdebug_filter) wxLogDebug( message, p1 );
 #define TTALOGDEBUG_2( filter, message, p1, p2 ) if ((filter) & g_logdebug_filter) wxLogDebug( message, p1, p2 );
@@ -63,7 +63,7 @@ enum {
 #define TTALOGDEBUG_13( filter, message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13 ) if ((filter) & g_logdebug_filter) wxLogDebug( message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13 );
 #define TTALOGDEBUG_14( filter, message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14 ) if ((filter) & g_logdebug_filter) wxLogDebug( message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14 );
 #define TTALOGDEBUG_15( filter, message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15 ) if ((filter) & g_logdebug_filter) wxLogDebug( message, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15 );
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
 #endif /* _WX */
 
 #endif /* __LOGDEBUG_H__ */

@@ -89,13 +89,13 @@ AmayaWindow::AmayaWindow (  wxWindow* parent
   TTALOGDEBUG_1( TTA_LOG_DIALOG,  _T("AmayaWindow::AmayaWindow: window_id=%d"), m_WindowId );
   SetIcon( AmayaApp::GetAppIcon() );
 
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
   AmayaLogDebug * p_logdebug = AmayaApp::GetAmayaLogDebug( wxDynamicCast(this,wxWindow) );
   wxPoint win_position = GetPosition();
   wxSize  win_size = GetSize();
   p_logdebug->SetPosition(wxPoint(win_position.x+win_size.GetWidth()+10,win_position.y));
   p_logdebug->Show();
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
 }
 
 /*----------------------------------------------------------------------
@@ -110,9 +110,9 @@ AmayaWindow::~AmayaWindow()
   // empty the current window entry
   memset(&WindowTable[m_WindowId], 0, sizeof(Window_Ctl));
 
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
   AmayaApp::DestroyAmayaLogDebug();
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
 }
 
 /*----------------------------------------------------------------------

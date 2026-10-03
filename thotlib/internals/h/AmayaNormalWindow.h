@@ -86,10 +86,10 @@ class AmayaNormalWindow : public AmayaWindow
 protected:
   DECLARE_EVENT_TABLE()
 
-#ifdef __WXDEBUG__
+#ifdef AMAYA_WXDEBUG
   void OnMenuClose( wxMenuEvent& event );
   void OnMenuOpen( wxMenuEvent& event );
-#endif /* __WXDEBUG__ */
+#endif /* AMAYA_WXDEBUG */
 
   virtual AmayaPage* DoCreatePage( wxWindow* parent, Document doc, bool attach = false, int position = 0 );
   
