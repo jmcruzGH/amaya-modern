@@ -895,7 +895,7 @@ void TtaPrint (Document document, char *viewNames, char *cssNames)
    if (pFuncExportPrintDoc !=NULL)
      /* a export procedure is defined */
        ok = (*(Func3)pFuncExportPrintDoc)(
-	   	(void *)document,
+	   	(void *)(intptr_t)document,
 		(void *)PrintDocName,
 		(void *)PrintDirName);
    else

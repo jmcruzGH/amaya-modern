@@ -8129,7 +8129,7 @@ void LoadDefaultOpeningLocation (ThotBool noReplace)
   if (noReplace && where_id == 0)
     where_id++; /* zero based in the config file */
 
-  ThotCallback(BaseDialog + OpenLocation , INTEGER_DATA, (char*)where_id);
+  ThotCallback(BaseDialog + OpenLocation , INTEGER_DATA, (char*)(intptr_t)where_id);
 }
 
 /*----------------------------------------------------------------------

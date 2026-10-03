@@ -1226,7 +1226,7 @@ void InsertXmlElement (Element *el)
             parent = TtaGetParent (XMLcontext.lastElement);
           (*((Proc4)CurrentParserCtxt->CheckInsert)) ((void *)el,
                                                       (void *)parent,
-                                                      (void *)XMLcontext.doc,
+                                                      (void *)(intptr_t)XMLcontext.doc,
                                                       (void *)&inserted);
           if (!inserted)
             {
@@ -1245,7 +1245,7 @@ void InsertXmlElement (Element *el)
           (*((Proc4)CurrentParserCtxt->CheckInsert)) (
                                                       (void *)el,
                                                       (void *)XMLcontext.lastElement,
-                                                      (void *)XMLcontext.doc,
+                                                      (void *)(intptr_t)XMLcontext.doc,
                                                       (void *)&inserted);
           if (!inserted)
             TtaInsertFirstChild (el, XMLcontext.lastElement, XMLcontext.doc);
@@ -2276,7 +2276,7 @@ static void EndOfXmlStartElement (char *name)
           CurrentParserCtxt->ElementCreated != NULL)
         (*(Proc2)(CurrentParserCtxt->ElementCreated)) (
                                                        (void *)XMLcontext.lastElement,
-                                                       (void *)XMLcontext.doc);
+                                                       (void *)(intptr_t)XMLcontext.doc);
     }
   XmlWhiteSpaceHandling ();
 }
@@ -2877,7 +2877,7 @@ static void      UnknownXmlAttribute (char *xmlAttr, char *ns_uri)
                                                      (void *)&attrType,
                                                      (void *)currentElementName,
                                                      (void *)&level,
-                                                     (void *)XMLcontext.doc);
+                                                     (void *)(intptr_t)XMLcontext.doc);
       if (attrType.AttrTypeNum > 0)
         {
           attr = TtaGetAttribute (XMLcontext.lastElement, attrType);
@@ -3101,7 +3101,7 @@ static void EndOfXmlAttributeName (char *attrName, char *uriName,
                                                          (void *)&attrType,
                                                          (void *)currentElementName,
                                                          (void *)&level,
-                                                         (void *)doc);
+                                                         (void *)(intptr_t)doc);
         }
     }
    
@@ -3391,7 +3391,7 @@ static void EndOfXmlAttributeValue (char *attrValue)
     (*(Proc3)(CurrentParserCtxt->AttributeComplete)) (
                                                       (void *)currentAttribute,
                                                       (void *)XMLcontext.lastElement,
-                                                      (void *)XMLcontext.doc);
+                                                      (void *)(intptr_t)XMLcontext.doc);
 }
 
 /*----------------------------------------------------------------------

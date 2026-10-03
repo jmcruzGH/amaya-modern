@@ -913,7 +913,7 @@ void AmayaNormalWindow::GotoSelectedURL(ThotBool noreplace)
           strcpy (BufUrl, buffer);
         }
 #else /* _WINDOWS */
-      (*(Proc4)pDoc->Call_Text) ((void *)doc, (void *)view, (void *)buffer,  (void *)noreplace);
+      (*(Proc4)pDoc->Call_Text) ((void *)(intptr_t)doc, (void *)(intptr_t)view, (void *)buffer,  (void *)noreplace);
 #endif /* _WINDOWS */
     }
 }

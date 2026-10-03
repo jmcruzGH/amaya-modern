@@ -225,7 +225,7 @@ void NewPosition (PtrAbstractBox pAb, int X, int xref, int Y, int yref,
                 GetSizesFrame (frame, &x, &y);
               else
                 y = pAb->AbEnclosing->AbBox->BxHeight;
-              dy = LogicalValue (dy, UnPercent, (PtrAbstractBox) y, 0);
+              dy = LogicalValue (dy, UnPercent, (PtrAbstractBox)(intptr_t) y, 0);
             }
           else
             dy = LogicalValue (dy, unit, pAb,
@@ -377,7 +377,7 @@ void NewPosition (PtrAbstractBox pAb, int X, int xref, int Y, int yref,
                 GetSizesFrame (frame, &x, &y);
               else
                 x = pAb->AbEnclosing->AbBox->BxWidth;
-              dx = LogicalValue (dx, UnPercent, (PtrAbstractBox) x, 0);
+              dx = LogicalValue (dx, UnPercent, (PtrAbstractBox)(intptr_t) x, 0);
             }
           else
             dx = LogicalValue (dx, unit, pAb,
@@ -628,7 +628,7 @@ void NewDimension (PtrAbstractBox pAb, int width, int height, int frame,
             }
           if (unit == UnPercent)
             /* get the new percent value */
-            dx = LogicalValue (dx, UnPercent, (PtrAbstractBox) widthRef, 0);
+            dx = LogicalValue (dx, UnPercent, (PtrAbstractBox)(intptr_t) widthRef, 0);
           else
             /* convert the new height in logical value */
             dx = LogicalValue (dx, unit, pAb, ViewFrameTable[frame - 1].FrMagnification);
@@ -706,7 +706,7 @@ void NewDimension (PtrAbstractBox pAb, int width, int height, int frame,
                 {
                   /* the rule gives a default */
                   if (unit == UnPercent)
-                    dx = LogicalValue (width, UnPercent, (PtrAbstractBox) widthRef, 0);
+                    dx = LogicalValue (width, UnPercent, (PtrAbstractBox)(intptr_t) widthRef, 0);
                   else
                     dx = LogicalValue (width, unit, pAb,
                                        ViewFrameTable[frame - 1].FrMagnification);
@@ -799,7 +799,7 @@ void NewDimension (PtrAbstractBox pAb, int width, int height, int frame,
             }
           if (unit == UnPercent)
             /* get the new percent value */
-            dy = LogicalValue (dy, UnPercent, (PtrAbstractBox)heightRef, 0);
+            dy = LogicalValue (dy, UnPercent, (PtrAbstractBox)(intptr_t)heightRef, 0);
           else
             /* convert the new height in logical value */
             dy = LogicalValue (dy, unit, pAb,
@@ -880,7 +880,7 @@ void NewDimension (PtrAbstractBox pAb, int width, int height, int frame,
                 {
                   /* the rule gives a default height */
                   if (unit == UnPercent)
-                    dy = LogicalValue (height, UnPercent, (PtrAbstractBox) heightRef, 0);
+                    dy = LogicalValue (height, UnPercent, (PtrAbstractBox)(intptr_t) heightRef, 0);
                   else
                     dy = LogicalValue (height, unit, pAb,
                                        ViewFrameTable[frame - 1].FrMagnification);
@@ -2224,7 +2224,7 @@ int TtaGetPixelValue (int val, int unit, Element element, Document document)
               if (int_unit == UnAuto)
                 val = w;
               else
-                val = PixelValue (val, UnPercent, (PtrAbstractBox) w,
+                val = PixelValue (val, UnPercent, (PtrAbstractBox)(intptr_t) w,
                                   ViewFrameTable[0].FrMagnification);
             }
           else
@@ -2293,7 +2293,7 @@ int TtaGetLogicalValue (int val, int unit, Element element, Document document)
               if (int_unit == UnAuto)
                 val = w;
               else
-                val = LogicalValue (val, UnPercent, (PtrAbstractBox) w,
+                val = LogicalValue (val, UnPercent, (PtrAbstractBox)(intptr_t) w,
                                     ViewFrameTable[frame - 1].FrMagnification);
             }
           else
@@ -2355,8 +2355,8 @@ void TtaChangeBoxSize (Element element, Document document, View view,
                       x = pAb->AbEnclosing->AbBox->BxW;
                       y = pAb->AbEnclosing->AbBox->BxH;
                     }
-                  deltaX = PixelValue (deltaX, UnPercent, (PtrAbstractBox) x, 0);
-                  deltaY = PixelValue (deltaY, UnPercent, (PtrAbstractBox) y, 0);
+                  deltaX = PixelValue (deltaX, UnPercent, (PtrAbstractBox)(intptr_t) x, 0);
+                  deltaY = PixelValue (deltaY, UnPercent, (PtrAbstractBox)(intptr_t) y, 0);
                 }
               else
                 {
@@ -2421,8 +2421,8 @@ void TtaChangeBoxPosition (Element element, Document document, View view,
                       x = pAb->AbEnclosing->AbBox->BxW;
                       y = pAb->AbEnclosing->AbBox->BxH;
                     }
-                  deltaX = PixelValue (deltaX, UnPercent, (PtrAbstractBox) x, 0);
-                  deltaY = PixelValue (deltaY, UnPercent, (PtrAbstractBox) y, 0);
+                  deltaX = PixelValue (deltaX, UnPercent, (PtrAbstractBox)(intptr_t) x, 0);
+                  deltaY = PixelValue (deltaY, UnPercent, (PtrAbstractBox)(intptr_t) y, 0);
                 }
               else
                 {
@@ -2646,8 +2646,8 @@ void TtaGiveBoxSize (Element element, Document document, View view,
                       x = pAb->AbEnclosing->AbBox->BxW;
                       y = pAb->AbEnclosing->AbBox->BxH;
                     }
-                  *width = LogicalValue (*width, UnPercent, (PtrAbstractBox) x, 0);
-                  *height = LogicalValue (*height, UnPercent, (PtrAbstractBox) y, 0);
+                  *width = LogicalValue (*width, UnPercent, (PtrAbstractBox)(intptr_t) x, 0);
+                  *height = LogicalValue (*height, UnPercent, (PtrAbstractBox)(intptr_t) y, 0);
                 }
               else
                 {
@@ -2770,8 +2770,8 @@ void TtaGiveBoxPosition (Element element, Document document, View view,
               /* Convert values to the requested unit */
               if (unit == UnPercent)
                 {
-                  *xCoord = LogicalValue (*xCoord, UnPercent, (PtrAbstractBox) w, 0);
-                  *yCoord = LogicalValue (*yCoord, UnPercent, (PtrAbstractBox) h, 0);
+                  *xCoord = LogicalValue (*xCoord, UnPercent, (PtrAbstractBox)(intptr_t) w, 0);
+                  *yCoord = LogicalValue (*yCoord, UnPercent, (PtrAbstractBox)(intptr_t) h, 0);
                 }
               else
                 {
@@ -2855,8 +2855,8 @@ void TtaGiveBoxAbsPosition (Element element, Document document, View view,
               if (unit == UnPercent)
                 {
                   GetSizesFrame (frame, &x, &y);
-                  *xCoord = LogicalValue (*xCoord, UnPercent, (PtrAbstractBox) x, 0);
-                  *yCoord = LogicalValue (*yCoord, UnPercent, (PtrAbstractBox) y, 0);
+                  *xCoord = LogicalValue (*xCoord, UnPercent, (PtrAbstractBox)(intptr_t) x, 0);
+                  *yCoord = LogicalValue (*yCoord, UnPercent, (PtrAbstractBox)(intptr_t) y, 0);
                 }
               else
                 {

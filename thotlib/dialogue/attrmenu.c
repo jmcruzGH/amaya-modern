@@ -244,7 +244,7 @@ static void MenuValues (TtAttribute *pAttr, ThotBool required,
           {
             AmayaParams p;
             p.param1 = (int)AmayaAttributeToolPanel::wxATTR_ACTION_SETUPNUM;
-            p.param2 = (void*)(required ? 0xFFFFFF : 0x000000);
+            p.param2 = (void*)(intptr_t)(required ? 0xFFFFFF : 0x000000);
             p.param8 = i;
             p.param9 = begin;
             p.param10 = end;
@@ -293,7 +293,7 @@ static void MenuValues (TtAttribute *pAttr, ThotBool required,
           {
             AmayaParams p;
             p.param1 = (int)AmayaAttributeToolPanel::wxATTR_ACTION_SETUPTEXT;
-            p.param2 = (void*)(required ? 0xFFFFFF : 0x000000);
+            p.param2 = (void*)(intptr_t)(required ? 0xFFFFFF : 0x000000);
             p.param3 = (void*)TextAttrValue;
             TtaSendDataToPanel( WXAMAYA_PANEL_ATTRIBUTE, p );
           }
@@ -351,7 +351,7 @@ static void MenuValues (TtAttribute *pAttr, ThotBool required,
           {
             AmayaParams p;
             p.param1 = (int)AmayaAttributeToolPanel::wxATTR_ACTION_SETUPENUM;
-            p.param2 = (void*)(required ? 0xFFFFFF : 0x000000);
+            p.param2 = (void*)(intptr_t)(required ? 0xFFFFFF : 0x000000);
             p.param3 = (void*)bufMenu; /* list data */
             p.param7 = i; /* selected item */
             p.param8 = val; /* nb items */
@@ -1083,7 +1083,7 @@ void CallbackValAttrMenu (int ref, int valmenu, char *valtext)
                     AttributeChangeFunction)
                   {
                     // should generate a span
-                    (*(Proc2)AttributeChangeFunction) ((void *)pAttrNew->AeAttrNum,
+                    (*(Proc2)AttributeChangeFunction) ((void *)(intptr_t)pAttrNew->AeAttrNum,
                                                        (void *)TextAttrValue);
                   }
                 else
@@ -1225,7 +1225,7 @@ void SetAttrValueToRange (PtrAttrListElem elem, intptr_t value)
           if (isSpan && firstSel != lastSel && AttributeChangeFunction)
             {
               // should generate a span
-              (*(Proc2)AttributeChangeFunction) ((void *)pAttrNew->AeAttrNum,
+              (*(Proc2)AttributeChangeFunction) ((void *)(intptr_t)pAttrNew->AeAttrNum,
                                                  (void *)value);
             }
           else

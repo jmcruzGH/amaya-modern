@@ -820,8 +820,8 @@ void CloseView (PtrDocument pDoc, int viewNb)
                     }
                   (*(Proc5)ThotLocalActions[T_confirmclose]) (
                                                               (void*)pDoc,
-                                                              (void*)document,
-                                                              (void*)view,
+                                                              (void*)(intptr_t)document,
+                                                              (void*)(intptr_t)view,
                                                               (void*)&ok,
                                                               (void*)&Save);
                   if (Save)

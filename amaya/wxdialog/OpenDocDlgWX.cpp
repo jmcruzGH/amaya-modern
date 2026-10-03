@@ -522,7 +522,7 @@ void OpenDocDlgWX::OnOpenButton( wxCommandEvent& event )
 
   // get the "where to open" indicator
   where_id = XRCCTRL(*this, "wxID_RADIOBOX", wxRadioBox)->GetSelection();
-  ThotCallback (BaseDialog + OpenLocation , INTEGER_DATA, (char*)where_id);
+  ThotCallback (BaseDialog + OpenLocation , INTEGER_DATA, (char*)(intptr_t)where_id);
 
   // get the combobox profile for new file
   if (New_File)

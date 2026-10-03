@@ -2084,7 +2084,7 @@ void ApplyClass (Document doc, View view)
       p.param1 = 0;
       p.param2 = NULL;
       p.param3 = NULL;
-      p.param4 = (void*)(BaseDialog+AClassForm); /* the dialog reference used to call the right callback in thotlib */
+      p.param4 = (void*)(intptr_t)(BaseDialog+AClassForm); /* the dialog reference used to call the right callback in thotlib */
       TtaSendDataToPanel( WXAMAYA_PANEL_APPLYCLASS, p );
 #endif /* _WX */
       return;
@@ -2144,7 +2144,7 @@ void ApplyClass (Document doc, View view)
   p.param1 = NbClass;
   p.param2 = (void*)ListBuffer;
   p.param3 = (void*)CurrentClass;
-  p.param4 = (void*)(BaseDialog+AClassForm); /* the dialog reference used to call the right callback in thotlib */
+  p.param4 = (void*)(intptr_t)(BaseDialog+AClassForm); /* the dialog reference used to call the right callback in thotlib */
   TtaSendDataToPanel( WXAMAYA_PANEL_APPLYCLASS, p );
 #endif /* _WX */
 }

@@ -518,7 +518,7 @@ int GetPixelValue (int val, TypeUnit unit, int size, PtrAbstractBox pAb,
                    int zoom)
 {
   if (unit == UnPercent)
-    return PixelValue (val, unit, (PtrAbstractBox) size, 0);
+    return PixelValue (val, unit, (PtrAbstractBox)(intptr_t) size, 0);
   else
     return PixelValue (val, unit, pAb, zoom);
 }
@@ -1628,7 +1628,7 @@ void ComputePosRelation (AbPosition *rule, PtrBox pBox, int frame,
           if (rule->PosUnit == UnPercent)
             {
               dist = PixelValue (rule->PosDistance, UnPercent,
-                                 (PtrAbstractBox) dim, 0);
+                                 (PtrAbstractBox)(intptr_t) dim, 0);
               /* Change the rule for further updates */
               pAb->AbHorizPos.PosDistance = dist;
               pAb->AbHorizPos.PosUnit = UnPixel;
@@ -1639,7 +1639,7 @@ void ComputePosRelation (AbPosition *rule, PtrBox pBox, int frame,
           if (rule->PosDeltaUnit == UnPercent)
             {
               d = PixelValue (rule->PosDistDelta, UnPercent,
-                              (PtrAbstractBox) dim, 0);
+                              (PtrAbstractBox)(intptr_t) dim, 0);
               /* Change the rule for further updates */
               pAb->AbHorizPos.PosDistDelta = d;
               pAb->AbHorizPos.PosUnit = UnPixel;
@@ -1798,7 +1798,7 @@ void ComputePosRelation (AbPosition *rule, PtrBox pBox, int frame,
           dim = pParentAb->AbBox->BxH;
           if (rule->PosUnit == UnPercent)
             {
-              dist = PixelValue (rule->PosDistance, UnPercent, (PtrAbstractBox) dim, 0);
+              dist = PixelValue (rule->PosDistance, UnPercent, (PtrAbstractBox)(intptr_t) dim, 0);
               /* Change the rule for further updates */
               pAb->AbVertPos.PosDistance = dist;
               pAb->AbVertPos.PosUnit = UnPixel;
@@ -1808,7 +1808,7 @@ void ComputePosRelation (AbPosition *rule, PtrBox pBox, int frame,
                                ViewFrameTable[frame - 1].FrMagnification);
           if (rule->PosDeltaUnit == UnPercent)
             {
-              d = PixelValue (rule->PosDistDelta, UnPercent, (PtrAbstractBox) dim, 0);
+              d = PixelValue (rule->PosDistDelta, UnPercent, (PtrAbstractBox)(intptr_t) dim, 0);
               /* Change the rule for further updates */
               pAb->AbVertPos.PosDistDelta = d;
               pAb->AbVertPos.PosDeltaUnit = UnPixel;
@@ -2892,9 +2892,9 @@ ThotBool  ComputeDimRelation (PtrAbstractBox pAb, int frame, ThotBool horizRef)
                       if (pDimAb->DimValue < 0)
                         val += pDimAb->DimValue;
                       else if (pDimAb->DimUnit == UnPercent)
-                        val = PixelValue (pDimAb->DimValue, UnPercent, (PtrAbstractBox) val, 0);
+                        val = PixelValue (pDimAb->DimValue, UnPercent, (PtrAbstractBox)(intptr_t) val, 0);
                       else if (pDimAb->DimUnit == UnAuto)
-                        val = PixelValue (100, UnPercent, (PtrAbstractBox) val, 0);
+                        val = PixelValue (100, UnPercent, (PtrAbstractBox)(intptr_t) val, 0);
                       else
                         val = PixelValue (pDimAb->DimValue, pDimAb->DimUnit, pAb,
                                           zoom);
@@ -3111,7 +3111,7 @@ ThotBool  ComputeDimRelation (PtrAbstractBox pAb, int frame, ThotBool horizRef)
                               if (pDimAb->DimUnit == UnPercent)
                                 {
                                   val = PixelValue (pDimAb->DimValue, UnPercent,
-                                                    (PtrAbstractBox) i, 0);
+                                                    (PtrAbstractBox)(intptr_t) i, 0);
                                   if (pDimAb->DimValue == 100)
                                     /* the rule gives the outside value */
                                     val = val + inx - dx;
@@ -3119,7 +3119,7 @@ ThotBool  ComputeDimRelation (PtrAbstractBox pAb, int frame, ThotBool horizRef)
                               else /* UnAuto */
                                 {
                                   val = PixelValue (100, UnPercent, 
-                                                    (PtrAbstractBox) i, 0);
+                                                    (PtrAbstractBox)(intptr_t) i, 0);
                                   /* the rule gives the outside value */
                                   val = val + inx - dx;
                                 }
@@ -3136,7 +3136,7 @@ ThotBool  ComputeDimRelation (PtrAbstractBox pAb, int frame, ThotBool horizRef)
                           else
                             {
                               val = PixelValue (pDimAb->DimValue, UnPercent,
-                                                (PtrAbstractBox) pParentAb->AbBox->BxW, 0);
+                                                (PtrAbstractBox)(intptr_t) pParentAb->AbBox->BxW, 0);
                               val = val + inx - dx;
                             }
                         }
@@ -3243,10 +3243,10 @@ ThotBool  ComputeDimRelation (PtrAbstractBox pAb, int frame, ThotBool horizRef)
                               /* Convert the distance value */
                               if (pDimAb->DimUnit == UnPercent)
                                 val = PixelValue (pDimAb->DimValue, UnPercent,
-                                                  (PtrAbstractBox) val, 0);
+                                                  (PtrAbstractBox)(intptr_t) val, 0);
                               else if (pDimAb->DimUnit == UnAuto)
                                 val = PixelValue (100, UnPercent,
-                                                  (PtrAbstractBox) val, 0);
+                                                  (PtrAbstractBox)(intptr_t) val, 0);
                               else
                                 val += PixelValue (pDimAb->DimValue, pDimAb->DimUnit, pAb,
                                                    zoom);
@@ -3314,13 +3314,13 @@ ThotBool  ComputeDimRelation (PtrAbstractBox pAb, int frame, ThotBool horizRef)
                             {
                               i = GetPercentDim (pAb, pParentAb, horizRef);
                               val = PixelValue (pDimAb->DimValue, UnPercent, 
-                                                (PtrAbstractBox) i, 0);
+                                                (PtrAbstractBox)(intptr_t) i, 0);
                             }
                           else
                             {
                               GetSizesFrame (frame, &val, &i);
                               val = PixelValue (pDimAb->DimValue, UnPercent, 
-                                                (PtrAbstractBox) i, 0);
+                                                (PtrAbstractBox)(intptr_t) i, 0);
                             }
                           /* the rule gives the outside value */
                           //if (pAb->AbVertEnclosing)
@@ -3751,12 +3751,12 @@ void ComputeAxisRelation (AbPosition rule, PtrBox pBox, int frame, ThotBool hori
           localEdge = VertRef;
           if (rule.PosUnit == UnPercent)
             dist = PixelValue (rule.PosDistance, UnPercent,
-                               (PtrAbstractBox) (pBox->BxW), 0);
+                               (PtrAbstractBox)(intptr_t) (pBox->BxW), 0);
           else
             dist = 0;
           if (rule.PosDeltaUnit == UnPercent)
             dist += PixelValue (rule.PosDistDelta, UnPercent,
-                                (PtrAbstractBox) (pBox->BxW), 0);
+                                (PtrAbstractBox)(intptr_t) (pBox->BxW), 0);
         }
       else
         {
@@ -3764,12 +3764,12 @@ void ComputeAxisRelation (AbPosition rule, PtrBox pBox, int frame, ThotBool hori
           localEdge = HorizRef;
          if (rule.PosUnit == UnPercent)
             dist = PixelValue (rule.PosDistance, UnPercent,
-                               (PtrAbstractBox) (pBox->BxH), 0);
+                               (PtrAbstractBox)(intptr_t) (pBox->BxH), 0);
           else
             dist = BoxFontBase (pBox->BxFont);
           if (rule.PosDeltaUnit == UnPercent)
             dist += PixelValue (rule.PosDistDelta, UnPercent,
-                                (PtrAbstractBox) (pBox->BxH), 0);
+                                (PtrAbstractBox)(intptr_t) (pBox->BxH), 0);
         }
     }
   else

@@ -567,7 +567,7 @@ void SaveAsDlgWX::OnMimeTypeCbx( wxCommandEvent& event )
 void SaveAsDlgWX::OnDocFormatBox ( wxCommandEvent& event )
 {
   ThotCallback (BaseDialog + RadioSave, INTEGER_DATA,
-                (char*) (XRCCTRL(*this, "wxID_DOC_FORMAT", wxRadioBox)->GetSelection( )));
+                (char*)(intptr_t) (XRCCTRL(*this, "wxID_DOC_FORMAT", wxRadioBox)->GetSelection( )));
   if (SaveFileName[0] != EOS)
     // update the filename (the suffix can change)
     XRCCTRL(*this, "wxID_DOC_LOCATION_CTRL", wxTextCtrl)->SetValue(TtaConvMessageToWX(SaveFileName));

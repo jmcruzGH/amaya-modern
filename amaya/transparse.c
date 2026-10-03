@@ -2031,7 +2031,7 @@ static void TRANSparse (BinFile infile)
                       /* call the procedure associated with the transition */
                       normalTransition = TRUE;
                       if (trans->action)
-                        (*(Proc1)(trans->action)) ((void *)(int)charRead);
+                        (*(Proc1)(trans->action)) ((void *)(intptr_t)(int)charRead);
                       if (normalTransition)
                         {
                           /* the input character has been processed */

@@ -148,7 +148,7 @@ void PrintDlgWX::OnPaperFormatBox ( wxCommandEvent& event )
 {
 #ifndef _WINDOWS
   ThotCallback (BasePrint + PaperFormat, INTEGER_DATA,
-		(char*) (XRCCTRL(*this, "wxID_PAPER_FORMAT_BOX", wxRadioBox)->GetSelection( )));
+		(char*)(intptr_t) (XRCCTRL(*this, "wxID_PAPER_FORMAT_BOX", wxRadioBox)->GetSelection( )));
 #endif /* _WINDOWS */
 }
 
@@ -159,7 +159,7 @@ void PrintDlgWX::OnPaperOrientationBox ( wxCommandEvent& event )
 {
 #ifndef _WINDOWS
   ThotCallback (BasePrint + PaperOrientation, INTEGER_DATA,
-		(char*) (XRCCTRL(*this, "wxID_ORIENTATION_BOX", wxRadioBox)->GetSelection( )));
+		(char*)(intptr_t) (XRCCTRL(*this, "wxID_ORIENTATION_BOX", wxRadioBox)->GetSelection( )));
 #endif /* _WINDOWS */
 }
 
@@ -170,7 +170,7 @@ void PrintDlgWX::OnPaperDispositionBox ( wxCommandEvent& event )
 {
 #ifndef _WINDOWS
   ThotCallback (BasePrint + PPagesPerSheet, INTEGER_DATA,
-		(char*) (XRCCTRL(*this, "wxID_DISPOSITION_BOX", wxRadioBox)->GetSelection( )));
+		(char*)(intptr_t) (XRCCTRL(*this, "wxID_DISPOSITION_BOX", wxRadioBox)->GetSelection( )));
 #endif /* _WINDOWS */
 }
 
@@ -184,7 +184,7 @@ void PrintDlgWX::OnOutputBox ( wxCommandEvent& event )
 
   m_output = XRCCTRL(*this, "wxID_OUTPUT_BOX", wxRadioBox)->GetSelection( );
   ThotCallback (BasePrint + PrintSupport, INTEGER_DATA,
-		(char*) m_output);
+		(char*)(intptr_t) m_output);
   if (m_output == 0)
     {
       if (m_print == 1)

@@ -1304,7 +1304,7 @@ void ChangeSelFrame (int frame)
           strcmp (LoadedDocument[doc-1]->DocTypeName, "log") &&
           olddoc && LoadedDocument[olddoc-1]->DocTypeName &&
           strcmp (LoadedDocument[olddoc-1]->DocTypeName, "log"))
-        (*(Proc1)ChangeFocusFunction) ((void *) doc);
+        (*(Proc1)ChangeFocusFunction) ((void *)(intptr_t) doc);
 
       /* update the class list */
       TtaExecuteMenuAction ("ApplyClass", doc, 1, FALSE);

@@ -90,7 +90,7 @@ static int *get_intptr_attribute_from_el (Element el, int Attribut_Type)
   attrType.AttrSSchema = elType.ElSSchema;
   attrType.AttrTypeNum = Attribut_Type;  
   attr = TtaGetAttribute (el, attrType);
-  result = (int *) TtaGetAttributeValue (attr);
+  result = (int *)(intptr_t) TtaGetAttributeValue (attr);
   return result;
 #endif /* _SVG */
 }

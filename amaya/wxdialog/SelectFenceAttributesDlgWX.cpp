@@ -77,7 +77,7 @@ void SelectFenceAttributesDlgWX::OnInsert( wxCommandEvent& event )
   if (string.Len() > 0)
     {
       value = (int)string.GetChar(0);
-      ThotCallback (MathsDialogue + MathAttributeOpen, STRING_DATA, (char *)value);
+      ThotCallback (MathsDialogue + MathAttributeOpen, STRING_DATA, (char *)(intptr_t)value);
     }
 
   // return open separators
@@ -85,7 +85,7 @@ void SelectFenceAttributesDlgWX::OnInsert( wxCommandEvent& event )
   if (string.Len() > 0)
     {
       value = (int)string.GetChar(0);
-      ThotCallback (MathsDialogue + MathAttributeSeparators, STRING_DATA, (char *)value);
+      ThotCallback (MathsDialogue + MathAttributeSeparators, STRING_DATA, (char *)(intptr_t)value);
     }
 
   // return open symbol
@@ -93,7 +93,7 @@ void SelectFenceAttributesDlgWX::OnInsert( wxCommandEvent& event )
   if (string.Len() > 0)
     {
       value = (int)string.GetChar(0);
-      ThotCallback (MathsDialogue + MathAttributeClose, STRING_DATA, (char *)value);
+      ThotCallback (MathsDialogue + MathAttributeClose, STRING_DATA, (char *)(intptr_t)value);
     }
 
   ThotCallback (MyRef, INTEGER_DATA, (char*) 1);

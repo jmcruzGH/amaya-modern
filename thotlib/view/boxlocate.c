@@ -606,8 +606,8 @@ ThotBool LocateSelectionInView (int frame, int x, int y, int button,
 #if defined(_UNIX) && !defined(_MACOS)
               if (MenuActionList[CMD_PasteFromClipboard].Call_Action != NULL)
                 (*(Proc2)MenuActionList[CMD_PasteFromClipboard].Call_Action) (
-                                                                              (void*)doc,
-                                                                              (void*)view);
+                                                                              (void*)(intptr_t)doc,
+                                                                              (void*)(intptr_t)view);
 #endif /* _UNIX && !_MACOS */
               break;
             case 6:

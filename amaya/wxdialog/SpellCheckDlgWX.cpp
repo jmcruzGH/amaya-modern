@@ -262,7 +262,7 @@ void SpellCheckDlgWX::OnIgnoreSpecialsChkBox ( wxCommandEvent& event )
 void SpellCheckDlgWX::OnAreaRadioBox ( wxCommandEvent& event )
 {
   ThotCallback (m_base + ChkrMenuOR, INTEGER_DATA,
-		(char*)(XRCCTRL(*this, "wxID_CHECKING_AREA", wxRadioBox)->GetSelection( )) );
+		(char*)(intptr_t)(XRCCTRL(*this, "wxID_CHECKING_AREA", wxRadioBox)->GetSelection( )) );
 }
 
 /*---------------------------------------------------------------

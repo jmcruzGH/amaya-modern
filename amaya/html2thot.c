@@ -4787,7 +4787,7 @@ static void HTMLparse (FILE * infile, char* HTMLbuf)
                       /* call the procedure associated with the transition */
                       CharProcessed = FALSE;
                       if (trans->action != NULL)
-                        (*((Proc1)trans->action)) ((void *)(int)charRead);
+                        (*((Proc1)trans->action)) ((void *)(intptr_t)(int)charRead);
                       if (NormalTransition || CharProcessed)
                         /* the input character has been processed */
                         charRead = EOS;

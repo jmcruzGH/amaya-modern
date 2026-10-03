@@ -139,7 +139,7 @@ void SearchDlgWX::OnConfirmButton( wxCommandEvent& event )
 void SearchDlgWX::OnNoReplaceButton( wxCommandEvent& event )
 {
   ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *) 0);
-  ThotCallback (NumMenuOrSearchText, INTEGER_DATA, (char *) m_iarea);
+  ThotCallback (NumMenuOrSearchText, INTEGER_DATA, (char *)(intptr_t) m_iarea);
   ThotCallback (NumFormSearchText, INTEGER_DATA, (char *) 1);
   if (m_iarea == 3)
     {
@@ -148,7 +148,7 @@ void SearchDlgWX::OnNoReplaceButton( wxCommandEvent& event )
     }
   if (m_ireplace != 0)
     // retore the value
-    ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *) m_ireplace);
+    ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *)(intptr_t) m_ireplace);
   // Give focus to first text control
   XRCCTRL(*this, "wxID_SEARCH_FOR_TXT", wxTextCtrl)->SetFocus();
 }
@@ -168,7 +168,7 @@ void SearchDlgWX::OnCancelButton( wxCommandEvent& event )
 void SearchDlgWX::OnReplaceBox ( wxCommandEvent& event )
 {
   m_ireplace = XRCCTRL(*this, "wxID_REPLACE_BOX", wxRadioBox)->GetSelection( );
-  ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *) m_ireplace);
+  ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *)(intptr_t) m_ireplace);
 }
 
 /*----------------------------------------------------------------------
@@ -208,14 +208,14 @@ void SearchDlgWX::OnReplaceChanged ( wxCommandEvent& event )
         {
           m_ireplace = 1;
           XRCCTRL(*this, "wxID_REPLACE_BOX", wxRadioBox)->SetSelection(1);
-          ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *) m_ireplace);
+          ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *)(intptr_t) m_ireplace);
         }
     }
   else
     {
       m_ireplace = 0;
       XRCCTRL(*this, "wxID_REPLACE_BOX", wxRadioBox)->SetSelection(0);
-      ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *) m_ireplace);
+      ThotCallback (NumMenuReplaceMode, INTEGER_DATA, (char *)(intptr_t) m_ireplace);
     }
   ThotCallback (NumZoneTextReplace, STRING_DATA, buf);
 }
@@ -227,7 +227,7 @@ void SearchDlgWX::OnSearchAreaBox ( wxCommandEvent& event )
 {
   m_iarea = XRCCTRL(*this, "wxID_SEARCH_AREA_BOX",
                     wxRadioBox)->GetSelection( );
-  ThotCallback (NumMenuOrSearchText, INTEGER_DATA, (char *) m_iarea);
+  ThotCallback (NumMenuOrSearchText, INTEGER_DATA, (char *)(intptr_t) m_iarea);
 }
 
 /*----------------------------------------------------------------------

@@ -4128,7 +4128,7 @@ void ComputeLines (PtrBox pBox, int frame, int *height)
     indent = 0;
   else if (pAb->AbIndentUnit == UnPercent)
     indent = PixelValue (pAb->AbIndent, UnPercent,
-                         (PtrAbstractBox) width, 0);
+                         (PtrAbstractBox)(intptr_t) width, 0);
   else
     indent = PixelValue (pAb->AbIndent, pAb->AbIndentUnit, pAb,
                          zoom);
@@ -4486,12 +4486,12 @@ void ComputeLines (PtrBox pBox, int frame, int *height)
       pPosAb = &pAb->AbHorizRef;
       if (pPosAb->PosUnit == UnPercent)
         y = PixelValue (pPosAb->PosDistance, UnPercent,
-                        (PtrAbstractBox) (pAb->AbBox->BxW), 0);
+                        (PtrAbstractBox)(intptr_t) (pAb->AbBox->BxW), 0);
       else
         y = PixelValue (pPosAb->PosDistance, pPosAb->PosUnit, pAb, zoom);
       if (pPosAb->PosDeltaUnit == UnPercent)
         y += PixelValue (pPosAb->PosDistDelta, UnPercent,
-                         (PtrAbstractBox) (pAb->AbBox->BxW), 0);
+                         (PtrAbstractBox)(intptr_t) (pAb->AbBox->BxW), 0);
       else
         y += PixelValue (pPosAb->PosDistDelta, pPosAb->PosDeltaUnit, pAb, zoom);
       y += top;

@@ -7846,7 +7846,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
                       MapXMLAttributeValue (xmlType, attrvals[j], &attrType,
                                             &kind);
                       /* store the attribute value */
-                      ctxt->attrText[j] = (char *) kind;
+                      ctxt->attrText[j] = (char *)(intptr_t) kind;
                     }
                   else
                     ctxt->attrText[j] = attrvals[j];

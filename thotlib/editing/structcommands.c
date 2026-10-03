@@ -835,7 +835,7 @@ static void SaveElement (PtrElement pEl, PtrElement pParent, int doc,
       if (CopyCellFunction &&
           TypeHasException (ExcIsCell, pEl->ElTypeNumber, pEl->ElStructSchema) &&
           WholeColumnSaved)
-        (*(Proc3)CopyCellFunction) ((void*)pEl, (void*)doc, (void*)TableRowsSaved);
+        (*(Proc3)CopyCellFunction) ((void*)pEl, (void*)(intptr_t)doc, (void*)TableRowsSaved);
       else if (CopyCellFunction &&
                TypeHasException (ExcIsRow, pEl->ElTypeNumber,
                                  pEl->ElStructSchema) &&
@@ -847,7 +847,7 @@ static void SaveElement (PtrElement pEl, PtrElement pParent, int doc,
               if (TypeHasException (ExcIsCell, pCell->ElTypeNumber,
                                     pCell->ElStructSchema))
                 /* notify the application for each enclosed cell */
-                (*(Proc3)CopyCellFunction) ((void*)pCell, (void*)doc,
+                (*(Proc3)CopyCellFunction) ((void*)pCell, (void*)(intptr_t)doc,
                                             (void*)TableRowsSaved);
               pCell = pCell->ElNext;
             }
@@ -858,7 +858,7 @@ static void SaveElement (PtrElement pEl, PtrElement pParent, int doc,
                             pEl->ElStructSchema) &&
           TableRowsSaved)
         /* notify the application for the copied row */
-        (*(Proc3)CopyRowFunction) ((void*)pEl, (void*) origEl, (void*)doc);
+        (*(Proc3)CopyRowFunction) ((void*)pEl, (void*) origEl, (void*)(intptr_t)doc);
 
       pNewPasteEl->PeNext = NULL;
       pEl->ElNext = NULL;
@@ -946,7 +946,7 @@ void CopyCommand ()
           /* tell the application what document the saved elements
              come from */
           if (CopyAndCutFunction)
-            (*(Proc1)CopyAndCutFunction) ((void *) doc);
+            (*(Proc1)CopyAndCutFunction) ((void *)(intptr_t) doc);
           pEl = NULL;
           if (WholeColumnSelected && FirstSelectedColumn && firstSel &&
               NextCellInColumnFunction)
@@ -954,7 +954,7 @@ void CopyCommand ()
             {
               row = NULL;
               (*(Proc5)NextCellInColumnFunction) ((void*)(&pEl), (void*)(&row),
-                                                  (void*)FirstSelectedColumn, (void*)doc, (void*)(&fakeCell));
+                                                  (void*)FirstSelectedColumn, (void*)(intptr_t)doc, (void*)(&fakeCell));
             }
           else
             /* first selected element */
@@ -1040,7 +1040,7 @@ void CopyCommand ()
                        WholeColumnSelected && FirstSelectedColumn)
                 /* copying all the cells of a table column */
                 (*(Proc5)NextCellInColumnFunction) ((void*)(&pEl),
-                                                    (void*)(&row), (void*)FirstSelectedColumn, (void*)doc,
+                                                    (void*)(&row), (void*)FirstSelectedColumn, (void*)(intptr_t)doc,
                                                     (void*)(&fakeCell));
               else
                 /* normal case. Take the next element in the current
@@ -1552,7 +1552,7 @@ ThotBool CutCommand (ThotBool save, ThotBool replace)
           row = NULL;
           (*(Proc5)NextCellInColumnFunction) ((void*)(&pEl), (void*)(&row),
                                               (void*)FirstSelectedColumn,
-                                              (void*)doc, (void*)(&fakeCell));
+                                              (void*)(intptr_t)doc, (void*)(&fakeCell));
         }
     }
 
@@ -1615,7 +1615,7 @@ ThotBool CutCommand (ThotBool save, ThotBool replace)
                 /* deleting all cells of a table column */
                 (*(Proc5)NextCellInColumnFunction) ((void*)(&pEl),
                                      (void*)(&row), (void*)FirstSelectedColumn,
-                                     (void*)doc, (void*)(&fakeCell));
+                                     (void*)(intptr_t)doc, (void*)(&fakeCell));
               else
                 {
                   pEl = NextInSelection (pEl, lastSel);
@@ -1744,7 +1744,7 @@ ThotBool CutCommand (ThotBool save, ThotBool replace)
                       /* tell the application what document the saved elements
                          come from */
                       if (CopyAndCutFunction)
-                        (*(Proc1)CopyAndCutFunction) ((void *) doc);
+                        (*(Proc1)CopyAndCutFunction) ((void *)(intptr_t) doc);
                     }
                   /* il ne faudra pas changer les labels des elements
                      exportables inseres par la prochaine commande Paste */
@@ -3000,7 +3000,7 @@ ThotBool CreateNewElement (int typeNum, PtrSSchema pSS, PtrDocument pDoc,
                     ok = (*(Func2)TransformIntoFunction) (
                                         (void*)&elType,
                                         /* SG : the @ should be passed in order to be c++ compliant */
-                                         (void*)((Document) IdentDocument (pSelDoc)));
+                                         (void*)(intptr_t)((Document) IdentDocument (pSelDoc)));
                 }
               /* si ca n'a pas marche' et si plusieurs elements sont
                  selectionne's, on essaie de transformer chaque element

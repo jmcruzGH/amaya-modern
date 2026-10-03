@@ -75,7 +75,7 @@ void MakeIdDlgWX::OnAddButton( wxCommandEvent& event )
 {
   // get the "where to open" indicator
   int where_id = XRCCTRL(*this, "wxID_RADIOBOX", wxRadioBox)->GetSelection();
-  ThotCallback (BaseDialog + mIdUseSelection, INTEGER_DATA, (char*)where_id);
+  ThotCallback (BaseDialog + mIdUseSelection, INTEGER_DATA, (char*)(intptr_t)where_id);
 
   // get the combobox current url
   wxString url = XRCCTRL(*this, "wxID_NAME", wxTextCtrl)->GetValue( );
@@ -103,7 +103,7 @@ void MakeIdDlgWX::OnRemoveButton( wxCommandEvent& event )
 {
   // get the "where to open" indicator
   int where_id = XRCCTRL(*this, "wxID_RADIOBOX", wxRadioBox)->GetSelection();
-  ThotCallback (BaseDialog + mIdUseSelection, INTEGER_DATA, (char*)where_id);
+  ThotCallback (BaseDialog + mIdUseSelection, INTEGER_DATA, (char*)(intptr_t)where_id);
 
   // get the combobox current url
   wxString url = XRCCTRL(*this, "wxID_NAME", wxTextCtrl)->GetValue( );

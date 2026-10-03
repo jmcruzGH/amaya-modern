@@ -408,7 +408,7 @@ ThotBool CallMenu (ThotWidget w, struct Cat_Context *catalogue, caddr_t call_d)
       if ((long int) catalogue->Cat_Widget == -1)
         /*** back to a simple button ***/
         (*(Proc3)CallbackDialogueProc) (
-                                        (void *)catalogue->Cat_Ref,
+                                        (void *)(intptr_t)catalogue->Cat_Ref,
                                         (void *)INTEGER_DATA,
                                         (void *)0);
       else
@@ -445,9 +445,9 @@ ThotBool CallMenu (ThotWidget w, struct Cat_Context *catalogue, caddr_t call_d)
             }
           /*** Retour de l'entree du menu choisie vers l'application ***/
           (*(Proc3)CallbackDialogueProc) (
-                                          (void *)catalogue->Cat_Ref,
+                                          (void *)(intptr_t)catalogue->Cat_Ref,
                                           (void *)INTEGER_DATA,
-                                          (void *)entry);
+                                          (void *)(intptr_t)entry);
         }
     }
   return TRUE;
@@ -519,9 +519,9 @@ ThotBool CallToggle (ThotWidget w, struct Cat_Context *catalogue, caddr_t call_d
                   /* signale que l'entree est basculee si le menu est reactif */
                   if (catalogue->Cat_React)
                     (*(Proc3)CallbackDialogueProc) (
-                                                    (void *)catalogue->Cat_Ref,
+                                                    (void *)(intptr_t)catalogue->Cat_Ref,
                                                     (void *)INTEGER_DATA,
-                                                    (void *)ent);
+                                                    (void *)(intptr_t)ent);
                 }
               i++;
               ent++;

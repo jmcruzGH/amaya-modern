@@ -2966,7 +2966,7 @@ ThotBool TransformIntoType (ElementType * resultType, Document doc)
           if (best == -1)
             /* no transformation for the actual selection : take another one */
             best = last;
-          TransCallbackDialog (TransBaseDialog + TransMenu, 0, (char*)best);  
+          TransCallbackDialog (TransBaseDialog + TransMenu, 0, (char*)(intptr_t)best);  
         }
     }
   TtaFreeMemory (nameSet);  

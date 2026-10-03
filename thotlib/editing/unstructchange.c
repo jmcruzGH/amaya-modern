@@ -1463,8 +1463,8 @@ void TtcInsertLineBreak (Document doc, View view)
 {
   if (MenuActionList[0].Call_Action)
     (*(Proc3)MenuActionList[0].Call_Action) (
-                                             (void *)doc,
-                                             (void *)view,
+                                             (void *)(intptr_t)doc,
+                                             (void *)(intptr_t)view,
                                              (void *)BREAK_LINE);
 }
 

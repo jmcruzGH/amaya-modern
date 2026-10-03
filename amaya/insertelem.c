@@ -316,7 +316,7 @@ DLList InsertableElement_GetList(Document doc)
 {
   InsertableElementList list;
 
-  list = (InsertableElementList) HashMap_Get(InsertableElementMap, (void*)doc);
+  list = (InsertableElementList) HashMap_Get(InsertableElementMap, (void*)(intptr_t)doc);
   if (list)
     return list->list;
   else
@@ -336,11 +336,11 @@ DLList InsertableElement_Update(Document doc, Element el)
 
   if (doc == 0)
     doc= TtaGetDocument (el);
-  list = (InsertableElementList) HashMap_Get (InsertableElementMap, (void*)doc);
+  list = (InsertableElementList) HashMap_Get (InsertableElementMap, (void*)(intptr_t)doc);
   if (list == NULL)
   {
     list = InsertableElementList_Create (0, DLList_Create());
-    HashMap_Set (InsertableElementMap, (void*)doc, list);
+    HashMap_Set (InsertableElementMap, (void*)(intptr_t)doc, list);
   }
   
   DLList_Empty (list->list);

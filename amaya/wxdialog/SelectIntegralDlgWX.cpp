@@ -84,7 +84,7 @@ void SelectIntegralDlgWX::OnInsert( wxCommandEvent& event )
     val = 3;
   else
     val = 1;
-  ThotCallback (MathsDialogue + MathIntegralNumber, INTEGER_DATA, (char *)val);
+  ThotCallback (MathsDialogue + MathIntegralNumber, INTEGER_DATA, (char *)(intptr_t)val);
 
   // return contour
   value = XRCCTRL(*this, "wxID_INTEGRAL_CONTOUR", wxChoice)->GetStringSelection();
@@ -93,7 +93,7 @@ void SelectIntegralDlgWX::OnInsert( wxCommandEvent& event )
     val = 1;
   else
     val = 0;
-  ThotCallback (MathsDialogue + MathIntegralContour, INTEGER_DATA, (char *)val);
+  ThotCallback (MathsDialogue + MathIntegralContour, INTEGER_DATA, (char *)(intptr_t)val);
 
   // return open symbol
   value = XRCCTRL(*this, "wxID_INTEGRAL_TYPE", wxChoice)->GetStringSelection();
@@ -102,7 +102,7 @@ void SelectIntegralDlgWX::OnInsert( wxCommandEvent& event )
     val = 1;
   else
     val = 0;
-  ThotCallback (MathsDialogue + MathIntegralType, INTEGER_DATA, (char *)val);
+  ThotCallback (MathsDialogue + MathIntegralType, INTEGER_DATA, (char *)(intptr_t)val);
 
   ThotCallback (MyRef, INTEGER_DATA, (char*) 1);
   TtaDestroyDialogue (MyRef);

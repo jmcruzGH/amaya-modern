@@ -316,7 +316,7 @@ CHAR_T *ustrncat (CHAR_T *dest, const CHAR_T *src, unsigned int count)
 CHAR_T *ustrncmp (const CHAR_T *str1, const CHAR_T *str2, unsigned int count)
 {
   /* Compatibility of wcsncmp: ANSI, WIN NT and WIN 9x */
-  return (CHAR_T*) wcsncmp ((wchar_t*)str1, (wchar_t*)str2, (size_t)count);
+  return (CHAR_T*)(intptr_t) wcsncmp ((wchar_t*)str1, (wchar_t*)str2, (size_t)count);
 }
 
 

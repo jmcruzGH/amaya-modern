@@ -927,7 +927,7 @@ ThotBool CloseHistorySequence (PtrDocument pDoc)
               if (pDoc->DocNTypedChars >= DocBackUpInterval)
                 if (ThotLocalActions[T_autosave] != NULL)
                   {
-                    (*(Proc1)ThotLocalActions[T_autosave]) ((void *)(Document) IdentDocument (pDoc));
+                    (*(Proc1)ThotLocalActions[T_autosave]) ((void *)(intptr_t)(Document) IdentDocument (pDoc));
                     pDoc->DocNTypedChars = 0;
                   }
             }

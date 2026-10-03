@@ -1321,7 +1321,7 @@ ThotBool CreateEnumListDlgWX (int ref, int subref, ThotWindow parent,
       int id = dlg.GetSelection();
       if (id!=wxNOT_FOUND)
         {
-          ThotCallback (subref, INTEGER_DATA, (char*)id);
+          ThotCallback (subref, INTEGER_DATA, (char*)(intptr_t)id);
           ThotCallback (ref, INTEGER_DATA, (char*)1);
         }
     }
@@ -1349,10 +1349,10 @@ ThotBool CreateNumDlgWX (int ref, int subref, ThotWindow parent,
   else
     {
       if (ref == MathsDialogue + FormMaths)
-          ThotCallback (ref, INTEGER_DATA, (char*)value);
+          ThotCallback (ref, INTEGER_DATA, (char*)(intptr_t)value);
       else
         {
-          ThotCallback (subref, INTEGER_DATA, (char *)value);
+          ThotCallback (subref, INTEGER_DATA, (char *)(intptr_t)value);
           ThotCallback (ref, INTEGER_DATA, (char*)1);
         }
     }

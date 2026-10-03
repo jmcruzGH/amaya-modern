@@ -627,7 +627,7 @@ int ThotInput (int frame, unsigned int value, int command, int modifiers,
                     {
                       /* close the current insertion */
                       CloseTextInsertion ();
-                      (*(Proc2)AccessKeyFunction) ((void *)document,
+                      (*(Proc2)AccessKeyFunction) ((void *)(intptr_t)document,
                                                    (void *)ptr->K_Param);
                       return 1;
                     }
@@ -649,7 +649,7 @@ int ThotInput (int frame, unsigned int value, int command, int modifiers,
                     {
                       /* close the current insertion */
                       CloseTextInsertion ();
-                      (*(Proc2)AccessKeyFunction) ((void *)document,
+                      (*(Proc2)AccessKeyFunction) ((void *)(intptr_t)document,
                                                    (void *)ptr->K_Param);
                       return 1;
                     }
@@ -860,8 +860,8 @@ int ThotInput (int frame, unsigned int value, int command, int modifiers,
             {
               /* close the current insertion */
               CloseTextInsertion ();
-              (*(Proc2)MenuActionList[CMD_ParentElement].Call_Action) ((void *)document,
-                                                                       (void *)view);
+              (*(Proc2)MenuActionList[CMD_ParentElement].Call_Action) ((void *)(intptr_t)document,
+                                                                       (void *)(intptr_t)view);
               return 2;
             }
           else
@@ -873,8 +873,8 @@ int ThotInput (int frame, unsigned int value, int command, int modifiers,
           /* sans se soucier de la langue courante */
           if (MenuActionList[CMD_DeletePrevChar].Call_Action)
             {
-              (*(Proc2)MenuActionList[CMD_DeletePrevChar].Call_Action) ((void *)document,
-                                                                        (void *)view);
+              (*(Proc2)MenuActionList[CMD_DeletePrevChar].Call_Action) ((void *)(intptr_t)document,
+                                                                        (void *)(intptr_t)view);
               return 2;
             }
           else
@@ -887,9 +887,9 @@ int ThotInput (int frame, unsigned int value, int command, int modifiers,
         {
           if (MenuActionList[0].Call_Action)
             {
-              (*(Proc3)MenuActionList[0].Call_Action) ((void *)document,
-                                                       (void *)view,
-                                                       (void *)value);
+              (*(Proc3)MenuActionList[0].Call_Action) ((void *)(intptr_t)document,
+                                                       (void *)(intptr_t)view,
+                                                       (void *)(intptr_t)value);
               done = TRUE;
             }
         }
@@ -916,9 +916,9 @@ int ThotInput (int frame, unsigned int value, int command, int modifiers,
           /* on insere un caractere valide quelque soit la langue */
           if (!done && MenuActionList[0].Call_Action)
             {
-              (*(Proc3)MenuActionList[0].Call_Action) ((void *)document,
-                                                       (void *)view,
-                                                       (void *)value);
+              (*(Proc3)MenuActionList[0].Call_Action) ((void *)(intptr_t)document,
+                                                       (void *)(intptr_t)view,
+                                                       (void *)(intptr_t)value);
               done = TRUE;
             }
           if (LoadedDocument[document - 1] == SelectedDocument &&

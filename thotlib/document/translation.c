@@ -285,7 +285,7 @@ static void ExportChar (wchar_t c, int fnum, char *outBuf, Document doc,
 		{
 		  if (DocumentHasDocType && GetEntityFunction)
 		    /* check if there is a DOCTYPE */
-		    (*(Proc4)GetEntityFunction) ((void *)c, (void *)doc,
+		    (*(Proc4)GetEntityFunction) ((void *)(intptr_t)c, (void *)(intptr_t)doc,
 						 (void *)WithMath,
 						 (void *)&entity);
 		  else
@@ -310,7 +310,7 @@ static void ExportChar (wchar_t c, int fnum, char *outBuf, Document doc,
         {
           /* generate an entity into an ASCII or ISO_8859_1 file */
           if (DocumentHasDocType && GetEntityFunction)
-            (*(Proc4)GetEntityFunction) ((void *)c, (void *)doc,
+            (*(Proc4)GetEntityFunction) ((void *)(intptr_t)c, (void *)(intptr_t)doc,
                                          (void *)(WithMath && entityName),(void *)&entity);
           else
             entity = NULL;
@@ -344,7 +344,7 @@ static void ExportChar (wchar_t c, int fnum, char *outBuf, Document doc,
             {
               /* generate an entity */
               if (DocumentHasDocType && GetEntityFunction)
-                (*(Proc4)GetEntityFunction) ((void *)c, (void *)doc,
+                (*(Proc4)GetEntityFunction) ((void *)(intptr_t)c, (void *)(intptr_t)doc,
                                              (void *)WithMath, (void *)&entity);
               else
                 entity = NULL;
@@ -4343,7 +4343,7 @@ ThotBool ExportDocument (Document doc, const char *fName, const char *tschema,
       /* check if the document has a doctype */
       if (GetDoctypeFunction)
         /* check if there is a DOCTYPE */
-        (*(Proc3)GetDoctypeFunction) ((void *)doc, (void *)&DocumentHasDocType,
+        (*(Proc3)GetDoctypeFunction) ((void *)(intptr_t)doc, (void *)&DocumentHasDocType,
                                       (void *) &WithMath);
     }
   else

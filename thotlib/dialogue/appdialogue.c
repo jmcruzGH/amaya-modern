@@ -551,7 +551,7 @@ void TtaExecuteMenuActionFromActionId (int action_id, Document doc,
          // it's more probable that the user wants to type some characteres after executing the action
          TtaRedirectFocus();
          g_DoingAction = FALSE;
-         (*(Proc2)MenuActionList[action_id].Call_Action) ((void *)doc, (void *)view);
+         (*(Proc2)MenuActionList[action_id].Call_Action) ((void *)(intptr_t)doc, (void *)(intptr_t)view);
        }
      else
        TtaRedirectFocus();
@@ -1614,7 +1614,7 @@ void ThotCallback (int ref, int typedata, char *data)
                   ctxCallback = ctxCallback->callbackNext;
                 }
             }
-          (*(Proc3)ctxCallback->callbackProc) ((void *)ref, (void *)typedata, (void *)data);
+          (*(Proc3)ctxCallback->callbackProc) ((void *)(intptr_t)ref, (void *)(intptr_t)typedata, (void *)data);
         }
     }
   else if (ref < MAX_LocalMenu)
@@ -1655,7 +1655,7 @@ void ThotCallback (int ref, int typedata, char *data)
       case NumMenuAttrTextNeeded:
       case NumMenuAttrEnumNeeded:
         (*(Proc3)ThotLocalActions[T_rattrreq]) (
-                                                (void *)ref,
+                                                (void *)(intptr_t)ref,
                                                 (void *)((long int) data),
                                                 (void *)data);
         break;
@@ -1664,28 +1664,28 @@ void ThotCallback (int ref, int typedata, char *data)
       case NumMenuAttrText:
       case NumMenuAttrEnum:
         (*(Proc3)ThotLocalActions[T_rattrval]) (
-                                                (void *)ref,
+                                                (void *)(intptr_t)ref,
                                                 (void *)((long int) data),
                                                 (void *)data);
         break;
 	
       case NumSelectLanguage:
         (*(Proc3)ThotLocalActions[T_rattrlang]) (
-                                                 (void *)ref,
+                                                 (void *)(intptr_t)ref,
                                                  (void *)0,
                                                  (void *)data);
         break;
       case NumFormLanguage:
       case NumMenuAlphaLanguage:
         (*(Proc3)ThotLocalActions[T_rattrlang]) (
-                                                 (void *)ref,
+                                                 (void *)(intptr_t)ref,
                                                  (void *)((long int) data),
                                                  (void *)NULL);
         break;
       case NumFormClose:
         (*(Proc3)ThotLocalActions[T_rconfirmclose]) (
-                                                     (void *)ref,
-                                                     (void *)typedata,
+                                                     (void *)(intptr_t)ref,
+                                                     (void *)(intptr_t)typedata,
                                                      (void *)data);
         break;
 	
@@ -1709,7 +1709,7 @@ void ThotCallback (int ref, int typedata, char *data)
       case NumToggleWidthUnchanged:
       case NumTogglePatternUnchanged:
         (*(Proc3)ThotLocalActions[T_present]) (
-                                               (void *)ref,
+                                               (void *)(intptr_t)ref,
                                                (void *)(long int) data,
                                                (void *)NULL);
         break;
@@ -1717,14 +1717,14 @@ void ThotCallback (int ref, int typedata, char *data)
       case NumSelectForegroundColor:
       case NumSelectBackgroundColor:
         (*(Proc3)ThotLocalActions[T_present]) (
-                                               (void *)ref,
+                                               (void *)(intptr_t)ref,
                                                (void *)0,
                                                (void *)data);
         break;
       case NumFormPresentStandard:
       case NumMenuPresentStandard:
         (*(Proc2)ThotLocalActions[T_presentstd]) (
-                                                  (void *)ref,
+                                                  (void *)(intptr_t)ref,
                                                   (void *)((long int) data));
         break;
       case NumFormSearchText:
@@ -1733,7 +1733,7 @@ void ThotCallback (int ref, int typedata, char *data)
       case NumMenuSearchNature:
         /* sous-menu mode de remplacement */
         (*(Proc3)ThotLocalActions[T_searchtext]) (
-                                                  (void *)ref,
+                                                  (void *)(intptr_t)ref,
                                                   (void *)((long int) data),
                                                   (void *)NULL);
         break;
@@ -1743,13 +1743,13 @@ void ThotCallback (int ref, int typedata, char *data)
       case NumSelAttributeToSearch:
         /* zone de saisie du texte de remplacement */
         (*(Proc3)ThotLocalActions[T_searchtext]) (
-                                                  (void *)ref,
+                                                  (void *)(intptr_t)ref,
                                                   (void *)0,
                                                   (void *)data);
         break;
       case NumMenuOrSearchText:
         (*(Proc2)ThotLocalActions[T_locatesearch]) (
-                                                    (void *)ref,
+                                                    (void *)(intptr_t)ref,
                                                     (void *)((long int) data));
         break;  
       case NumFormElemToBeCreated:
@@ -1764,9 +1764,9 @@ void ThotCallback (int ref, int typedata, char *data)
           /* retour du menu des attributs */
           {
             (*(Proc3)ThotLocalActions[T_rattr]) (
-                                                 (void *)ref,
+                                                 (void *)(intptr_t)ref,
                                                  (void *)((long int) data),
-                                                 (void *)ActiveFrame);
+                                                 (void *)(intptr_t)ActiveFrame);
           }
         break;
       }
@@ -1796,9 +1796,9 @@ void ThotCallback (int ref, int typedata, char *data)
             {
               /* traitement du menu attribut */
               (*(Proc3)ThotLocalActions[T_rattr]) (
-                                                   (void *)ref,
+                                                   (void *)(intptr_t)ref,
                                                    (void *)((long int) data),
-                                                   (void *)frame);
+                                                   (void *)(intptr_t)frame);
               return;
             }
         }
@@ -1844,7 +1844,7 @@ void ThotCallback (int ref, int typedata, char *data)
             if (MenuActionList[action].ActionActive[document])
                 {
                   if (MenuActionList[action].Call_Action)
-                    (*(Proc2)MenuActionList[action].Call_Action) ((void *)document, (void *)view);
+                    (*(Proc2)MenuActionList[action].Call_Action) ((void *)(intptr_t)document, (void *)(intptr_t)view);
                 }
         }
     }

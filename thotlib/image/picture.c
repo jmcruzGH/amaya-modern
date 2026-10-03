@@ -1394,8 +1394,8 @@ static void ComputeBgPosition (int val, TypeUnit unit, int start, int end,
     return;
   else if (unit == UnPercent)
     {
-      s_box = PixelValue (val, UnPercent, (PtrAbstractBox) (*d_box), 0);
-      s_img = PixelValue (val, UnPercent, (PtrAbstractBox) (*d_img), 0);
+      s_box = PixelValue (val, UnPercent, (PtrAbstractBox)(intptr_t) (*d_box), 0);
+      s_img = PixelValue (val, UnPercent, (PtrAbstractBox)(intptr_t) (*d_img), 0);
       if (s_box >= s_img - start)
         {
           // shift in the box
@@ -2266,12 +2266,12 @@ void DrawPicture (PtrBox box, ThotPictInfo *imageDesc, int frame,
       (*(PictureHandlerTable[typeImage].Produce_Postscript)) (
                                                               (void *)fileName,
                                                               (void *)pres,
-                                                              (void *)x,
-                                                              (void *)y,
-                                                              (void *)w,
-                                                              (void *)h,
+                                                              (void *)(intptr_t)x,
+                                                              (void *)(intptr_t)y,
+                                                              (void *)(intptr_t)w,
+                                                              (void *)(intptr_t)h,
                                                               (void *)(FILE *) drawable,
-                                                              (void *)bgColor,
+                                                              (void *)(intptr_t)bgColor,
                                                               (void *)0,
                                                               (void *)0);  
 #endif /* #if defined(_GTK) || defined(_WX) */
@@ -2798,7 +2798,7 @@ void LoadPicture (int frame, PtrBox box, ThotPictInfo *imageDesc)
 #endif /* #ifdef _WX */		   
                                                                  (void *)&width,
                                                                  (void *)&height,
-                                                                 (void *)zoom);
+                                                                 (void *)(intptr_t)zoom);
           /* ratio doesn't apply to background images */
           if (w == 0 && h == 0 && zoom)
             {

@@ -90,7 +90,7 @@ void ListDlgWX::OnOkButton( wxCommandEvent& event )
       ThotCallback (m_SubRef, STRING_DATA, buffer);
       // entry
       int i = XRCCTRL(*this, "wxID_LIST", wxListBox)->GetSelection();
-      ThotCallback (m_SubRef+1, INTEGER_DATA, (char*) i);
+      ThotCallback (m_SubRef+1, INTEGER_DATA, (char*)(intptr_t) i);
     }
   LoadDefaultOpeningLocation (FALSE);
   ThotCallback (MyRef, INTEGER_DATA, (char*) 1);

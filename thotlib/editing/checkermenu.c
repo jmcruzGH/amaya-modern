@@ -393,7 +393,7 @@ void TtcSpellCheck (Document doc, View view)
     i = 2;
   created = CreateSpellCheckDlgWX (SpellingBase + ChkrFormCorrect,
                                    SpellingBase, TtaGetViewFrame (doc, view), i);
-  CallbackChecker (SpellingBase + ChkrMenuOR, INTEGER_DATA, (char *)i);
+  CallbackChecker (SpellingBase + ChkrMenuOR, INTEGER_DATA, (char *)(intptr_t)i);
   if (created)
     TtaShowDialogue (SpellingBase + ChkrFormCorrect, FALSE, TRUE);
 #endif /* _WX */

@@ -1337,7 +1337,7 @@ void TtaNewScrollPopup (int ref, ThotWidget parent, char *title, int number,
 #ifdef _WX
                 sprintf (menu_item, "%s", &text[index + 1]);
                 ((AmayaPopupList*)menu)->Append(i, TtaConvMessageToWX(menu_item));
-                w = (ThotWidget) i;
+                w = (ThotWidget)(intptr_t) i;
 #endif /* _WX */
               }
             else

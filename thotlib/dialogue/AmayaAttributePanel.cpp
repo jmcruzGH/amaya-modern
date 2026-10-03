@@ -942,7 +942,7 @@ bool AmayaEnumAttributeSubpanel::SetAttrListElem(PtrAttrListElem elem)
                   else
                       index = m_pChoice->Append(TtaConvMessageToWX(pAttr->AttrEnumValue[val]));
                   if (index!=wxNOT_FOUND)
-                    m_pChoice->SetClientData(index, (void*)val);
+                    m_pChoice->SetClientData(index, (void*)(intptr_t)val);
                 }
               /* current value */
               if (elem->val && elem->val->AeAttrValue > 0)
