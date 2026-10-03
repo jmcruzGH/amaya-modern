@@ -146,8 +146,8 @@ static void PivotError (BinFile file, const char *code)
 #if defined(_WIN_PRINT) && defined(_WINGUI)
   WinErrorBox (WIN_Main_Wd, code);
 #else /* _WIN_PRINT && defined(_WINGUI) */
-  printf (buffer);
-  printf (code);
+  printf ("%s", buffer);
+  printf ("%s", code);
 #endif /* _WIN_PRINT && defined(_WINGUI) */
   error = TRUE;
 }
@@ -651,6 +651,7 @@ static PtrReferredDescr GetElRefer (LabelString label, PtrDocument pDoc)
       pRefD = NewReferredElDescr (pDoc);
       /* on initialise le descripteur de reference cree'. */
       strncpy (pRefD->ReReferredLabel, label, MAX_LABEL_LEN);
+      pRefD->ReReferredLabel[MAX_LABEL_LEN - 1] = '\0';
       LabelStringToInt (label, &i);
       if (i > GetCurrentLabel (pDoc))
         SetCurrentLabel (pDoc, i);

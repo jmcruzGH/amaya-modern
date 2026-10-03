@@ -1186,7 +1186,7 @@ void ShowLogFile (Document doc, View view)
     doc = GetDocFromSource (doc);
   if (doc)
     {
-      sprintf (fileName, "%s%c%d%cPARSING.ERR",
+      snprintf (fileName, sizeof (fileName), "%s%c%d%cPARSING.ERR",
                TempFileDirectory, DIR_SEP, doc, DIR_SEP);
       // check if the log file is already open
       for (d = 1; d < MAX_DOCUMENTS; d++)
@@ -1228,7 +1228,7 @@ ThotBool OpenParsingErrors (Document document)
   if (document == 0 || DocumentTypes[document] == docFree)
     return FALSE;
 
-  sprintf (fileName, "%s%c%d%cPARSING.ERR",
+  snprintf (fileName, sizeof (fileName), "%s%c%d%cPARSING.ERR",
            TempFileDirectory, DIR_SEP, document, DIR_SEP);
   /* check what error file is open */
   if (DocumentTypes[document] == docCSS)
@@ -1237,7 +1237,7 @@ ThotBool OpenParsingErrors (Document document)
       if ((CSSErrFile == NULL))
         return FALSE;
       else
-        fprintf (CSSErrFile, TtaGetMessage (AMAYA, AM_LINK_LINE));      
+        fprintf (CSSErrFile, "%s", TtaGetMessage (AMAYA, AM_LINK_LINE));      
     }
   else
     {
@@ -1245,7 +1245,7 @@ ThotBool OpenParsingErrors (Document document)
       if ((ErrFile == NULL))
         return FALSE;
       else
-        fprintf (ErrFile, TtaGetMessage (AMAYA, AM_LINK_LINE));      
+        fprintf (ErrFile, "%s", TtaGetMessage (AMAYA, AM_LINK_LINE));      
     }
   return TRUE;
 }
@@ -1257,7 +1257,7 @@ void RemoveParsingErrors (Document document)
 {  
   char       htmlErrFile[200];
   
-  sprintf (htmlErrFile, "%s%c%d%cPARSING.ERR",
+  snprintf (htmlErrFile, sizeof (htmlErrFile), "%s%c%d%cPARSING.ERR",
            TempFileDirectory, DIR_SEP, document, DIR_SEP);
   if (TtaFileExist (htmlErrFile))
     TtaFileUnlink (htmlErrFile);
@@ -1270,7 +1270,7 @@ ThotBool HasParsingErrors (Document document)
 {
    char       htmlErrFile[200];
   
-  sprintf (htmlErrFile, "%s%c%d%cPARSING.ERR",
+  snprintf (htmlErrFile, sizeof (htmlErrFile), "%s%c%d%cPARSING.ERR",
            TempFileDirectory, DIR_SEP, document, DIR_SEP);
       return TtaFileExist (htmlErrFile);
 }
@@ -1331,7 +1331,7 @@ void UpdateShowError (Document doc, View view)
     doc = GetDocFromSource (doc);
   if (doc)
     {
-      sprintf (fileName, "%s%c%d%cPARSING.ERR",
+      snprintf (fileName, sizeof (fileName), "%s%c%d%cPARSING.ERR",
                TempFileDirectory, DIR_SEP, doc, DIR_SEP);
       if (TtaFileExist (fileName))
         UpdateLogFile (doc, TRUE);
@@ -1412,7 +1412,7 @@ void CheckParsingErrors (Document doc)
             {
               ptr = TtaGetMessage (AMAYA, AM_XML_RETRY);
               // save the original log file
-              sprintf (fileName, "%s%c%d%cPARSING.ERR",
+              snprintf (fileName, sizeof (fileName), "%s%c%d%cPARSING.ERR",
                        TempFileDirectory, DIR_SEP, doc, DIR_SEP);
               strcpy (text, fileName);
               strcat (text, ".org");
@@ -4500,7 +4500,7 @@ void ShowSource (Document doc, View view)
             ShowVSplitToggle (sourceDoc, 1);
 
           // check if a parsing error is detected
-          sprintf (tempdir, "%s%c%d%cPARSING.ERR",
+          snprintf (tempdir, sizeof (tempdir), "%s%c%d%cPARSING.ERR",
                    TempFileDirectory, DIR_SEP, doc, DIR_SEP);
           if (TtaFileExist (tempdir))
             UpdateLogFile (sourceDoc, TRUE);
@@ -5889,6 +5889,7 @@ void CallbackDialogue (int ref, int typedata, char *data)
 
     case NameText:
       strncpy (Answer_name, data, NAME_LENGTH);
+      Answer_name[NAME_LENGTH - 1] = '\0';
       Answer_text[NAME_LENGTH - 1] = EOS;
       break;
 
@@ -6604,13 +6605,13 @@ static ThotBool RestoreAmayaDocs ()
   iscrash = FALSE;
 
   /* check if Amaya has crashed */
-  sprintf (tempname, "%s%cCrash.amaya", TempFileDirectory, DIR_SEP);
+  snprintf (tempname, sizeof (tempname), "%s%cCrash.amaya", TempFileDirectory, DIR_SEP);
   if (TtaFileExist (tempname))
     iscrash = TRUE;
   else if (!AmayaUniqueInstance)
     return FALSE;
   else
-    sprintf (tempname, "%s%cAutoSave.dat", TempFileDirectory, DIR_SEP);
+    snprintf (tempname, sizeof (tempname), "%s%cAutoSave.dat", TempFileDirectory, DIR_SEP);
   
   if (TtaFileExist (tempname))
     {
@@ -6692,7 +6693,7 @@ static ThotBool RestoreAmayaDocs ()
       if (iscrash)
         {
           TtaFileUnlink (tempname);
-          sprintf (tempname, "%s%cAutoSave.dat", TempFileDirectory, DIR_SEP);
+          snprintf (tempname, sizeof (tempname), "%s%cAutoSave.dat", TempFileDirectory, DIR_SEP);
           if (TtaFileExist (tempname))
             {
               f = TtaReadOpen (tempname);
@@ -6916,7 +6917,7 @@ void InitAmaya (NotifyEvent * event)
         {
           sprintf (TempFileDirectory,
                    TtaGetMessage (AMAYA, AM_CANNOT_CREATE_DIRECTORY), s);
-          fprintf (stderr, TempFileDirectory);
+          fprintf (stderr, "%s", TempFileDirectory);
           exit (1);
         }
     }

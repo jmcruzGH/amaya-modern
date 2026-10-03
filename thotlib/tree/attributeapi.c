@@ -880,7 +880,7 @@ char *TtaGetAttributeName (AttributeType attType)
            attType.AttrTypeNum > ((PtrSSchema) (attType.AttrSSchema))->SsNAttributes)
     TtaError (ERR_invalid_attribute_type);
   else
-    strncpy (bufferName, ((PtrSSchema) (attType.AttrSSchema))->SsAttribute->TtAttr[attType.AttrTypeNum - 1]->AttrName, ELEM_NAME_LENGTH);
+    {strncpy (bufferName, ((PtrSSchema) (attType.AttrSSchema))->SsAttribute->TtAttr[attType.AttrTypeNum - 1]->AttrName, ELEM_NAME_LENGTH); bufferName[ELEM_NAME_LENGTH - 1] = '\0';}
   return bufferName;
 }
 
@@ -903,7 +903,7 @@ char *TtaGetAttributeOriginalName (AttributeType attType)
            attType.AttrTypeNum > ((PtrSSchema) (attType.AttrSSchema))->SsNAttributes)
     TtaError (ERR_invalid_attribute_type);
   else
-    strncpy (bufferName, ((PtrSSchema) (attType.AttrSSchema))->SsAttribute->TtAttr[attType.AttrTypeNum - 1]->AttrOrigName, ELEM_NAME_LENGTH);
+    {strncpy (bufferName, ((PtrSSchema) (attType.AttrSSchema))->SsAttribute->TtAttr[attType.AttrTypeNum - 1]->AttrOrigName, ELEM_NAME_LENGTH); bufferName[ELEM_NAME_LENGTH - 1] = '\0';}
   return bufferName;
 }
 

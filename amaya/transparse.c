@@ -1066,7 +1066,7 @@ static void DoEndOfAttrName (unsigned char c)
       else
 	{
 	  ParsedError = TRUE;
-	  sprintf (msgBuffer, "unknown attribute %s", inputBuffer);
+	  snprintf (msgBuffer, sizeof (msgBuffer), "unknown attribute %s", inputBuffer);
 	  ErrorMessage ((unsigned char *)msgBuffer);
 	}
       ParsedLgBuffer = 0;
@@ -1126,7 +1126,7 @@ static void DoEndRuleAttrName (unsigned char c)
       else
 	{
 	  ParsedError = TRUE;
-	  sprintf (msgBuffer, "unknown attribute %s", inputBuffer);
+	  snprintf (msgBuffer, sizeof (msgBuffer), "unknown attribute %s", inputBuffer);
 	  ErrorMessage ((unsigned char *)msgBuffer);
 	}
       ParsedLgBuffer = 0;

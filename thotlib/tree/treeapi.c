@@ -243,7 +243,7 @@ Element TtaNewTree (Document document, ElementType elementType, const char* labe
         if (!element->ElStructSchema->SsRule->SrElem[element->ElTypeNumber - 1]->SrFirstOfPair)
           element->ElPairIdent = 0;
       if (*label != EOS)
-        strncpy (element->ElLabel, label, MAX_LABEL_LEN);
+        {strncpy (element->ElLabel, label, MAX_LABEL_LEN); element->ElLabel[MAX_LABEL_LEN - 1] = '\0';}
     }
   return ((Element) element);
 }
@@ -1817,8 +1817,8 @@ char *TtaGetElementTypeName (ElementType elementType)
   else if (elementType.ElTypeNum > schema->SsNRules || elementType.ElTypeNum < 1)
     TtaError (ERR_invalid_element_type);
   else
-    strncpy (nameBuffer, schema->SsRule->SrElem[elementType.ElTypeNum - 1]->SrName,
-             ELEM_NAME_LENGTH);
+    {strncpy (nameBuffer, schema->SsRule->SrElem[elementType.ElTypeNum - 1]->SrName,
+             ELEM_NAME_LENGTH); nameBuffer[ELEM_NAME_LENGTH - 1] = '\0';}
   return nameBuffer;
 }
 
@@ -1841,7 +1841,7 @@ char *TtaGetElementTypeOriginalName (ElementType elementType)
            elementType.ElTypeNum < 1)
     TtaError (ERR_invalid_element_type);
   else
-    strncpy (nameBuffer, ((PtrSSchema) (elementType.ElSSchema))->SsRule->SrElem[elementType.ElTypeNum - 1]->SrOrigName, ELEM_NAME_LENGTH);
+    {strncpy (nameBuffer, ((PtrSSchema) (elementType.ElSSchema))->SsRule->SrElem[elementType.ElTypeNum - 1]->SrOrigName, ELEM_NAME_LENGTH); nameBuffer[ELEM_NAME_LENGTH - 1] = '\0';}
   return nameBuffer;
 }
 

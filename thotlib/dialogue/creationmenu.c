@@ -237,7 +237,7 @@ void CallbackElemToBeCreated (int ref, int val, char *txt)
         NameOfElementToBeCreated[0] = EOS;
       else
         /* save the type name of the element to be created */
-        strncpy (NameOfElementToBeCreated, txt, MAX_TXT_LEN);
+        {strncpy (NameOfElementToBeCreated, txt, MAX_TXT_LEN); NameOfElementToBeCreated[MAX_TXT_LEN - 1] = '\0';}
       break;
     case NumFormElemToBeCreated:
       /* callback from the form itself */

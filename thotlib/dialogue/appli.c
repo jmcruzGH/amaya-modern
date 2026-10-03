@@ -678,6 +678,7 @@ void DisplaySelMessage (char *text, PtrDocument pDoc)
       TtaSetStatus ((Document) doc, 1, text, NULL);
       /* sel old message */
       strncpy (OldMsgSelect, text, MAX_TXT_LEN);
+      OldMsgSelect[MAX_TXT_LEN - 1] = '\0';
       OldDocMsgSelect = pDoc;     
     }
 }

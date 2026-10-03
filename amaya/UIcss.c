@@ -2380,7 +2380,7 @@ static void GenerateStyleListFileForElem (Element el, Document doc,
     /* it's an element belonging to a known XML vocabulary */
     fprintf (list, TtaGetMessage (AMAYA, AM_STYLE_APPLIED),
              GetXMLElementName (elType, doc));
-  fprintf (list, TtaGetMessage (AMAYA, AM_LINK_LINE));
+  fprintf (list, "%s", TtaGetMessage (AMAYA, AM_LINK_LINE));
   if (el)
     n = TtaListStyleOfCurrentElement (doc, list);
   else
@@ -2388,7 +2388,7 @@ static void GenerateStyleListFileForElem (Element el, Document doc,
   if (n == 0)
     {
       fprintf (list, "\n     ");
-      fprintf (list, TtaGetMessage (AMAYA, AM_NO_STYLE_FOR_ELEM));
+      fprintf (list, "%s", TtaGetMessage (AMAYA, AM_NO_STYLE_FOR_ELEM));
     }
   TtaWriteClose (list);
 }
@@ -2423,7 +2423,7 @@ void ShowAppliedStyle (Document doc, View view)
   else
     {
       /* list CSS rules applied to the current selection */
-      sprintf (fileName, "%s%c%d%cSTYLE.LST",
+      snprintf (fileName, sizeof (fileName), "%s%c%d%cSTYLE.LST",
                TempFileDirectory, DIR_SEP, doc, DIR_SEP);
       if (TtaFileExist (fileName))
         TtaFileUnlink (fileName);
@@ -2461,9 +2461,9 @@ void SynchronizeAppliedStyle (NotifyElement *event)
         strstr (DocumentURLs[i], "STYLE.LST"))
       {
         /* list CSS rules applied to the current selection */
-        sprintf (dirName, "%s%c%d",
+        snprintf (dirName, sizeof (dirName), "%s%c%d",
                  TempFileDirectory, DIR_SEP, doc);
-        sprintf (fileName, "%s%c%d%cSTYLE.LST",
+        snprintf (fileName, sizeof (fileName), "%s%c%d%cSTYLE.LST",
                  TempFileDirectory, DIR_SEP, doc, DIR_SEP);
         if (TtaFileExist (fileName))
           TtaFileUnlink (fileName);

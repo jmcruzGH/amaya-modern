@@ -469,7 +469,7 @@ fprintf(stderr, "Changed URL from %s to %s\n", oldname, newname);
           else
             {
               // there is enough space
-              strncpy (b, newname, newlen);
+              memcpy (b, newname, newlen);
               oldptr = &b[newlen];
               if (newlen < len)
                 // reduce the size of the full string
@@ -837,6 +837,7 @@ void InitSaveObjectForm (Document document, View view, char *object,
 
   SavingObject = document;
   strncpy (tempSavedObject, object, sizeof (tempSavedObject));
+  tempSavedObject[sizeof (tempSavedObject) - 1] = '\0';
 
   TtaExtractName (pathname, tempdir, ObjectName);
   created = CreateSaveObject (BaseDialog + SaveForm,
@@ -1653,7 +1654,7 @@ ThotBool ParseWithNewDoctype (Document doc, char *localFile, char *tempdir,
       TtaSetDocumentProfile (ext_doc, new_doctype, new_extraProfile);
 
       /* Copy the current document into a second temporary file */
-      sprintf (tempdoc2, "%s%c%d%c%s",
+      snprintf (tempdoc2, sizeof (tempdoc2), "%s%c%d%c%s",
                TempFileDirectory, DIR_SEP, ext_doc, DIR_SEP, documentname);
       if (!DocumentMeta[doc]->xmlformat && xml_doctype)
         //convert HTML into XHTML
@@ -1685,9 +1686,9 @@ ThotBool ParseWithNewDoctype (Document doc, char *localFile, char *tempdir,
     {
       CleanUpParsingErrors ();
       /* Show the parsing errors */
-      sprintf (err_doc, "%s%c%d%cPARSING.ERR",
+      snprintf (err_doc, sizeof (err_doc), "%s%c%d%cPARSING.ERR",
                TempFileDirectory, DIR_SEP, doc, DIR_SEP);
-      sprintf (err_extdoc, "%s%c%d%cPARSING.ERR",
+      snprintf (err_extdoc, sizeof (err_extdoc), "%s%c%d%cPARSING.ERR",
                TempFileDirectory, DIR_SEP, ext_doc, DIR_SEP);
       TtaFileCopy (err_extdoc, err_doc);
       ShowLogFile (doc, 1);
@@ -3323,7 +3324,7 @@ void SaveDocument (Document doc, View view)
       /* If 'SaveDocument' has not been triggered by a crash,
          remove the auto-saved file that corresponds to the document */
       /* Check if Amaya has crashed */
-      sprintf (tempname, "%s%cCrash.amaya", TempFileDirectory, DIR_SEP);
+      snprintf (tempname, sizeof (tempname), "%s%cCrash.amaya", TempFileDirectory, DIR_SEP);
       if (!TtaFileExist (tempname))
         RemoveAutoSavedDoc (doc);
     }
@@ -3437,7 +3438,7 @@ void BackUpDocs ()
         if (f == NULL)
           {
             /* open the crash file */
-            sprintf (pathname, "%s%cCrash.amaya", TempFileDirectory, DIR_SEP);
+            snprintf (pathname, sizeof (pathname), "%s%cCrash.amaya", TempFileDirectory, DIR_SEP);
             f = TtaWriteOpen (pathname);
             if (f == NULL)
               return;
@@ -3458,9 +3459,9 @@ void BackUpDocs ()
         else
           TtaExtractName (DocumentURLs[doc], pathname, docname);
         if (l == 0)
-          sprintf (pathname, "%s%c%d%s.html", TempFileDirectory, DIR_SEP, doc, docname);
+          snprintf (pathname, sizeof (pathname), "%s%c%d%s.html", TempFileDirectory, DIR_SEP, doc, docname);
         else
-          sprintf (pathname, "%s%c%d%s", TempFileDirectory, DIR_SEP, doc, docname);
+          snprintf (pathname, sizeof (pathname), "%s%c%d%s", TempFileDirectory, DIR_SEP, doc, docname);
 
         /* write the backup file */
         DocumentURLs[doc] = TtaStrdup (pathname);
@@ -3581,7 +3582,7 @@ void RemoveAutoSavedDoc (Document doc)
   TtaExtractName (url, pathname, docname);
   if (c == URL_SEP)
     url[l] = c; /* restore the last / */
-  sprintf (pathname, "%s%c%s%d.bak", TempFileDirectory, DIR_SEP, docname, doc);
+  snprintf (pathname, sizeof (pathname), "%s%c%s%d.bak", TempFileDirectory, DIR_SEP, docname, doc);
 
   /* Remove the autosaved file */
   if (TtaFileExist (pathname))
@@ -3623,8 +3624,8 @@ void GenerateAutoSavedDoc (Document doc)
     url[l] = EOS; /* remove the last / */
   TtaExtractName (url, pathname, docname);
   TtaFreeMemory (url);
-  sprintf (pathname, "%s%c%s%d.bak", TempFileDirectory, DIR_SEP, docname, doc);
-  sprintf (tmpname, "%s%c%s.tmp", TempFileDirectory, DIR_SEP, docname);
+  snprintf (pathname, sizeof (pathname), "%s%c%s%d.bak", TempFileDirectory, DIR_SEP, docname, doc);
+  snprintf (tmpname, sizeof (tmpname), "%s%c%s.tmp", TempFileDirectory, DIR_SEP, docname);
   /* Write the autosaved file */
   ok = AutoSaveDocument (doc, 1, tmpname);
   if (ok)
@@ -3839,7 +3840,7 @@ static void CheckCopiedObjects (Document doc, ThotBool src_is_local,
   if (oldpath[buflen] ==  '/')
     oldpath[buflen] = EOS;
   /* path to search image descriptors */
-  sprintf (localpath, "%s%s%d%s", TempFileDirectory, DIR_STR, doc, DIR_STR);
+  snprintf (localpath, sizeof (localpath), "%s%s%d%s", TempFileDirectory, DIR_STR, doc, DIR_STR);
   
   if (CopyImages)
     {

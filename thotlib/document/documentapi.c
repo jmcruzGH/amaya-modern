@@ -1038,7 +1038,7 @@ char *TtaGetSSchemaName (SSchema schema)
       TtaError (ERR_invalid_parameter);
     }
   else
-    strncpy (ISObuffer, ((PtrSSchema) schema)->SsName, 400);
+    {strncpy (ISObuffer, ((PtrSSchema) schema)->SsName, 400); ISObuffer[400 - 1] = '\0';}
   return ISObuffer;
 }
 
@@ -1061,7 +1061,7 @@ char *TtaGetPSchemaName (SSchema schema)
       TtaError (ERR_invalid_parameter);
     }
   else
-    strncpy (ISObuffer, ((PtrSSchema) schema)->SsDefaultPSchema, 400);
+    {strncpy (ISObuffer, ((PtrSSchema) schema)->SsDefaultPSchema, 400); ISObuffer[400 - 1] = '\0';}
   return ISObuffer;
 }
 

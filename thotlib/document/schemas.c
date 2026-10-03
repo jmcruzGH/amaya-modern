@@ -2581,7 +2581,7 @@ void ChangeGenericSchemaNames (const char *sSchemaUri, const char *sSchemaName,
               if (found)
                 /* this name is already used. Change it by appending a number*/
                 {
-                  sprintf (num, "%d", i++);
+                  snprintf (num, sizeof (num), "%d", i++);
                   TtaFreeMemory (sSName);
                   sSName = (char *)TtaGetMemory (strlen (sSchemaName) +
                                                  strlen (num) + 1);

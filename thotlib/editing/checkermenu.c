@@ -660,6 +660,7 @@ void CallbackChecker (int ref, int dataType, char *data)
       case ChkrSpecial:
         /* recopier la liste des car. speciaux dans RejectedChar[] */
         strncpy (RejectedChar, data, MAX_REJECTED_CHARS);
+        RejectedChar[MAX_REJECTED_CHARS - 1] = '\0';
         /* bascule automatiquement l'indicateur IgnoreSpecial */
         if (!IgnoreSpecial)
           {

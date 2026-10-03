@@ -2531,7 +2531,7 @@ static void wrdistunit (TypeUnit u, FILE *fileDescriptor)
 static void wrrulename (int r, FILE *fileDescriptor)
 {
   if (r > 0)
-    fprintf (fileDescriptor, pSchemaStr->SsRule->SrElem[r - 1]->SrName);
+    fprintf (fileDescriptor, "%s", pSchemaStr->SsRule->SrElem[r - 1]->SrName);
 }
 
 /*----------------------------------------------------------------------
@@ -2540,8 +2540,7 @@ static void wrrulename (int r, FILE *fileDescriptor)
 static void wrattrname (int a, FILE *fileDescriptor)
 {
   if (a != 0)
-    fprintf (fileDescriptor,
-             pSchemaStr->SsAttribute->TtAttr[abs (a) - 1]->AttrName);
+    fprintf (fileDescriptor, "%s", pSchemaStr->SsAttribute->TtAttr[abs (a) - 1]->AttrName);
 }
 
 /*----------------------------------------------------------------------
@@ -2550,7 +2549,7 @@ static void wrattrname (int a, FILE *fileDescriptor)
 static void wrboxname (int b, FILE *fileDescriptor)
 {
   if (b > 0)
-    fprintf (fileDescriptor, pSc1->PsPresentBox->PresBox[b - 1]->PbName);
+    fprintf (fileDescriptor, "%s", pSc1->PsPresentBox->PresBox[b - 1]->PbName);
 }
 
 /*----------------------------------------------------------------------
@@ -3284,9 +3283,9 @@ static void wrCondition (PtrCondition pCond, FILE *fileDescriptor)
       if (pCond->CoTypeAncestor == 0)
         {
           if (pCond->CoAncestorName)
-            fprintf (fileDescriptor, pCond->CoAncestorName);
+            fprintf (fileDescriptor, "%s", pCond->CoAncestorName);
           fprintf (fileDescriptor, "(");
-          fprintf (fileDescriptor, pCond->CoSSchemaName);
+          fprintf (fileDescriptor, "%s", pCond->CoSSchemaName);
           fprintf (fileDescriptor, ")");
         }
       else
@@ -3300,9 +3299,9 @@ static void wrCondition (PtrCondition pCond, FILE *fileDescriptor)
       if (pCond->CoTypeAncestor == 0)
         {
           if (pCond->CoAncestorName)
-            fprintf (fileDescriptor, pCond->CoAncestorName);
+            fprintf (fileDescriptor, "%s", pCond->CoAncestorName);
           fprintf (fileDescriptor, "(");
-          fprintf (fileDescriptor, pCond->CoSSchemaName);
+          fprintf (fileDescriptor, "%s", pCond->CoSSchemaName);
           fprintf (fileDescriptor, ")");
         }
       else
@@ -3499,7 +3498,7 @@ static void wrFonctPres (PtrPRule pR, FILE *fileDescriptor)
         }
       else if (pR->PrNPresBoxes == 0)
         {
-          fprintf (fileDescriptor, pR->PrPresBoxName);
+          fprintf (fileDescriptor, "%s", pR->PrPresBoxName);
           if (pR->PrExternal || !pR->PrElement)
             fprintf (fileDescriptor, "(****)");
         }
@@ -3577,7 +3576,7 @@ static void wrprules (PtrPRule RP, FILE *fileDescriptor, PtrPSchema pPSch)
       if (RP->PrViewNum > 1)
         {
           fprintf (fileDescriptor, "IN ");
-          fprintf (fileDescriptor, pSc1->PsView[RP->PrViewNum - 1]);
+          fprintf (fileDescriptor, "%s", pSc1->PsView[RP->PrViewNum - 1]);
           fprintf (fileDescriptor, " ");
         }
       wrAllConditions (RP->PrCond, fileDescriptor);
@@ -3911,7 +3910,7 @@ static void wrprules (PtrPRule RP, FILE *fileDescriptor, PtrPSchema pPSch)
               if (RP->PrIntValue == 0)
                 fprintf (fileDescriptor, "None");
               else if (pPSch->PsConstant[RP->PrIntValue-1].PdString)
-                fprintf (fileDescriptor, pPSch->PsConstant[RP->PrIntValue-1].PdString);
+                fprintf (fileDescriptor, "%s", pPSch->PsConstant[RP->PrIntValue-1].PdString);
            }
           break;
         case PtListStylePosition:
@@ -4148,7 +4147,7 @@ void TtaListStyleSchemas (Document document, FILE *fileDescriptor)
                       fprintf (fileDescriptor, "\nBOXES\n\n");
                       for (i = 1; i <= pSc1->PsNPresentBoxes; i++)
                         {
-                          fprintf (fileDescriptor, pSc1->PsPresentBox->PresBox[i-1]->PbName);
+                          fprintf (fileDescriptor, "%s", pSc1->PsPresentBox->PresBox[i-1]->PbName);
                           fprintf (fileDescriptor, ":\n");
                           fprintf (fileDescriptor, "   BEGIN\n");
                           wrprules (pSc1->PsPresentBox->PresBox[i-1]->PbFirstPRule, fileDescriptor, pSc1);
@@ -4372,7 +4371,7 @@ void DisplayCounterRule (int counter, int item, FILE *fileDescriptor,
       l += 19;
     }
   name = pSchP->PsConstant[pSchP->PsCounter[counter].CnNameIndx-1].PdString;
-  fprintf (fileDescriptor, name);
+  fprintf (fileDescriptor, "%s", name);
   l += strlen (name);
   if ((CntItem->CiCntrOp == CntrAdd && CntItem->CiParamValue != 1) ||
       (CntItem->CiCntrOp == CntrSet && CntItem->CiParamValue != 0))

@@ -700,7 +700,7 @@ char *TtaGetStyledAttributeValues (PSchema tsch, int attrType)
           /* add that new value */
           len = strlen (attrs->ApString) + 1;
           if (i + len <= MAX_LENGTH)
-            strncpy (&ListOfValues[i], attrs->ApString, len);
+            memcpy (&ListOfValues[i], attrs->ApString, len);
           i += len;
         }
       attrs = attrs->ApNextAttrPres;

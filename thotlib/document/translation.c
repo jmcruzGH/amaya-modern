@@ -189,7 +189,7 @@ static int GetSecondaryFile (char *fName, Document doc, ThotBool open)
     return -1;
   else
     {
-      sprintf (buff, "%s%c%s", fileDirectory, DIR_SEP, fName);
+      snprintf (buff, sizeof (buff), "%s%c%s", fileDirectory, DIR_SEP, fName);
       OutFile[NOutFiles].OfFileDesc = TtaWriteOpen (buff);
       if (OutFile[NOutFiles].OfFileDesc == NULL)
         {
@@ -425,7 +425,7 @@ static void ExportChar (wchar_t c, int fnum, char *outBuf, Document doc,
                 /* generate a CR */
                 putc (__CR__, fileDesc);
               /* generate a LF */		  
-              fprintf (fileDesc, tsEOL);
+              fprintf (fileDesc, "%s", tsEOL);
               /* le buffer de sortie est vide maintenant */
               OutFile[fnum].OfBufferLen = 0;
               OutFile[fnum].OfLineLen = 0;
@@ -471,7 +471,7 @@ static void ExportChar (wchar_t c, int fnum, char *outBuf, Document doc,
                         /* generate a CR */
                         putc (__CR__, fileDesc);
                       /* generate a LF */
-                      fprintf (fileDesc, tsTranslEOL);
+                      fprintf (fileDesc, "%s", tsTranslEOL);
                       OutFile[fnum].OfLineLen = 0;
                       OutFile[fnum].OfLineNumber++;
                       /* handle indentation */
@@ -3776,7 +3776,7 @@ static void ApplyTRule (PtrTRule pTRule, PtrTSchema pTSch, PtrSSchema pSSch,
                    FALSE, secondaryFileName, 0, doc, *lineBreak);
       if (secondaryFileName[0] != EOS)
         {
-          sprintf (fname, "%s%c%s", fileDirectory, DIR_SEP, secondaryFileName);
+          snprintf (fname, sizeof (fname), "%s%c%s", fileDirectory, DIR_SEP, secondaryFileName);
           TtaFileUnlink (fname);
         }
       break;
@@ -3942,7 +3942,7 @@ static void ApplyTRule (PtrTRule pTRule, PtrTSchema pTSch, PtrSSchema pSSch,
               TtaWriteClose (includedFile);
               OutFile[i].OfFileDesc = NULL;
               /* beginning of the file */
-              sprintf (fname, "%s%c%s", fileDirectory, DIR_SEP, secondaryFileName);
+              snprintf (fname, sizeof (fname), "%s%c%s", fileDirectory, DIR_SEP, secondaryFileName);
               includedFile = TtaReadOpen (fname);
               if (includedFile)
                 {

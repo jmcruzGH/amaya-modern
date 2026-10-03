@@ -2617,7 +2617,7 @@ static ThotBool AddInsertMenuItem (const Name word1, const Name word2, const Nam
       j = strlen (word1) + 1;
       if (j >= MAX_TXT_LEN - *menuInd)
         j = MAX_TXT_LEN - *menuInd;
-      strncpy (&menuBuf[*menuInd], word1, j);
+      memcpy (&menuBuf[*menuInd], word1, j);
       *menuInd += j;
       menuBuf[*menuInd - 1] = EOS;
 
@@ -2628,7 +2628,7 @@ static ThotBool AddInsertMenuItem (const Name word1, const Name word2, const Nam
           j = strlen (word2) + 1;
           if (j >= MAX_TXT_LEN - *menuInd)
             j = MAX_TXT_LEN - *menuInd;
-          strncpy (&menuBuf[*menuInd], word2, j);
+          memcpy (&menuBuf[*menuInd], word2, j);
           *menuInd += j;
           menuBuf[*menuInd - 1] = EOS;
         }
@@ -2640,7 +2640,7 @@ static ThotBool AddInsertMenuItem (const Name word1, const Name word2, const Nam
           j = strlen (word3) + 1;
           if (j >= MAX_TXT_LEN - *menuInd)
             j = MAX_TXT_LEN - *menuInd;
-          strncpy (&menuBuf[*menuInd], word3, j);
+          memcpy (&menuBuf[*menuInd], word3, j);
           *menuInd += j;
           menuBuf[*menuInd - 1] = EOS;
         }
@@ -2760,9 +2760,9 @@ static void AddItemWithinSiblimg (PtrElement pEl, ThotBool before, int *menuInd,
         /* on cree une nouvelle entree dans le menu */
         {
           if (before)
-            strncpy (N, TtaGetMessage (LIB, TMSG_AFTER), MAX_NAME_LENGTH);
+            {strncpy (N, TtaGetMessage (LIB, TMSG_AFTER), MAX_NAME_LENGTH); N[MAX_NAME_LENGTH - 1] = '\0';}
           else
-            strncpy (N, TtaGetMessage (LIB, TMSG_BEFORE), MAX_NAME_LENGTH);
+            {strncpy (N, TtaGetMessage (LIB, TMSG_BEFORE), MAX_NAME_LENGTH); N[MAX_NAME_LENGTH - 1] = '\0';}
           GetExternalTypeName (pSS, typeNum, &typeName);
           if (*separatorBefore)
             {
@@ -2801,9 +2801,9 @@ static void AddItemWithinSiblimg (PtrElement pEl, ThotBool before, int *menuInd,
                   {
                     distance = 1;
                     if (before)
-                      strncpy (N, TtaGetMessage (LIB, TMSG_AFTER), MAX_NAME_LENGTH);
+                      {strncpy (N, TtaGetMessage (LIB, TMSG_AFTER), MAX_NAME_LENGTH); N[MAX_NAME_LENGTH - 1] = '\0';}
                     else
-                      strncpy (N, TtaGetMessage (LIB, TMSG_BEFORE), MAX_NAME_LENGTH);
+                      {strncpy (N, TtaGetMessage (LIB, TMSG_BEFORE), MAX_NAME_LENGTH); N[MAX_NAME_LENGTH - 1] = '\0';}
                     do
                       /* boucle sur les voisins suivants */
                       {
@@ -3134,11 +3134,12 @@ void CreatePasteIncludeCmd (ThotBool create, ThotBool paste, char button,
                                 /* une paire de marques autour de la selection */
                                 {
                                   strncpy (N, TtaGetMessage (LIB, TMSG_AROUND), MAX_NAME_LENGTH);
+                                  N[MAX_NAME_LENGTH - 1] = '\0';
                                   typeName2 = NULL;
                                   ok = TteItemMenuInsert (pAncestSS, pSRule->SrInclusion[i] + 1, lastSel, pDoc, InsertAfter);
                                 }
                               else
-                                strncpy (N, TtaGetMessage (LIB, TMSG_BEFORE), MAX_NAME_LENGTH);
+                                {strncpy (N, TtaGetMessage (LIB, TMSG_BEFORE), MAX_NAME_LENGTH); N[MAX_NAME_LENGTH - 1] = '\0';}
                               if (ok)
                                 /* envoie l'evenement item a creer */
                                 if (TteItemMenuInsert (pAncestSS, pSRule->SrInclusion[i],
@@ -3228,11 +3229,12 @@ void CreatePasteIncludeCmd (ThotBool create, ThotBool paste, char button,
                             /* une paire de marques autour de la selection */
                             {
                               strncpy (N, TtaGetMessage (LIB, TMSG_AROUND), MAX_NAME_LENGTH);
+                              N[MAX_NAME_LENGTH - 1] = '\0';
                               typeName2 = NULL;
                               ok = TteItemMenuInsert (pSS, typeNum + 1, lastSel, pDoc, InsertAfter);
                             }
                           else
-                            strncpy (N, TtaGetMessage (LIB, TMSG_BEFORE), MAX_NAME_LENGTH);
+                            {strncpy (N, TtaGetMessage (LIB, TMSG_BEFORE), MAX_NAME_LENGTH); N[MAX_NAME_LENGTH - 1] = '\0';}
                           if (ok &&
                               /* envoie l'evenement item a creer */
                               TteItemMenuInsert (pSS, typeNum, pEl, pDoc, InsertBefore))
@@ -3561,11 +3563,11 @@ void CreatePasteIncludeCmd (ThotBool create, ThotBool paste, char button,
         {
           createPasteMenuOK = FALSE;
           if (create)
-            strncpy (menuTitle, TtaGetMessage (LIB, TMSG_INSERT), MAX_NAME_LENGTH);
+            {strncpy (menuTitle, TtaGetMessage (LIB, TMSG_INSERT), MAX_NAME_LENGTH); menuTitle[MAX_NAME_LENGTH - 1] = '\0';}
           else if (paste)
-            strncpy (menuTitle, TtaGetMessage (LIB, TMSG_PASTE), MAX_NAME_LENGTH);
+            {strncpy (menuTitle, TtaGetMessage (LIB, TMSG_PASTE), MAX_NAME_LENGTH); menuTitle[MAX_NAME_LENGTH - 1] = '\0';}
           else
-            strncpy (menuTitle, TtaGetMessage (LIB, TMSG_INCLUDE), MAX_NAME_LENGTH);
+            {strncpy (menuTitle, TtaGetMessage (LIB, TMSG_INCLUDE), MAX_NAME_LENGTH); menuTitle[MAX_NAME_LENGTH - 1] = '\0';}
 	    
           BuildPasteMenu (menuRef, menuBuf, menuTitle, nItems, button);
         }

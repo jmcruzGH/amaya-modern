@@ -149,7 +149,7 @@ static void Print (char *name, char *dir, char *thotSch, char *thotDoc,
    strcpy (printArgv[printArgc], ptr);
    printArgc++;
 #else /* _WINDOWS */
-   sprintf (cmd, "%s/print", BinariesDirectory); 
+   snprintf (cmd, sizeof (cmd), "%s/print", BinariesDirectory); 
    strcat (cmd, " -lang ");
    strcat (cmd, ptr);
 #endif /* _WINDOWS */
@@ -694,7 +694,7 @@ void InitPrintParameters (Document document)
        if (pDoc != NULL)
 	 {
 	   if (pDoc->DocDirectory[0] == DIR_SEP)
-	     sprintf (PSdir, "%s/%s.ps", pDoc->DocDirectory, pDoc->DocDName);
+	     snprintf (PSdir, sizeof (PSdir), "%s/%s.ps", pDoc->DocDirectory, pDoc->DocDName);
 	   else
 	     {
 	       ptr = NULL;

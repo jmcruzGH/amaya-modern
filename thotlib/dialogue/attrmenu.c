@@ -428,6 +428,7 @@ void CallbackReqAttrMenu (int ref, int val, char *txt)
       if (PtrReqAttr == NULL)
         {
           strncpy (TextAttrValue, txt, LgMaxAttrText);
+          TextAttrValue[LgMaxAttrText - 1] = '\0';
         }
       else
         {
@@ -939,6 +940,7 @@ void CallbackValAttrMenu (int ref, int valmenu, char *valtext)
     case NumMenuAttrText:
       /* valeur d'un attribut textuel */
       strncpy (TextAttrValue, valtext, LgMaxAttrText);
+      TextAttrValue[LgMaxAttrText - 1] = '\0';
       act = 0;
       break;
     case NumMenuAttrEnum:
@@ -1566,7 +1568,7 @@ void CallbackLanguageMenu (int ref, int val, char *txt)
       if (txt == NULL)
         LangAttrValue[0] = EOS;
       else
-        strncpy (LangAttrValue, txt, LgMaxAttrText);
+        {strncpy (LangAttrValue, txt, LgMaxAttrText); LangAttrValue[LgMaxAttrText - 1] = '\0';}
       break;
     case NumFormLanguage:
       switch (val)

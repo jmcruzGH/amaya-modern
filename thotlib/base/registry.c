@@ -707,7 +707,7 @@ void TtaSetEnvInt (const char *name, int value, int overwrite)
   int    r_val;
 
   r_val = value % 65537;
-  sprintf (ptr, "%d", r_val);
+  snprintf (ptr, sizeof (ptr), "%d", r_val);
   AddRegisterEntry (AppRegistryEntryAppli, name, ptr, REGISTRY_USER, overwrite);
 }
 
@@ -1162,7 +1162,7 @@ static void InitEnviron ()
   if (pT == NULL)
     DocumentPath[0] = EOS; 
   else
-    strncpy (DocumentPath, pT, MAX_PATH);
+    {strncpy (DocumentPath, pT, MAX_PATH); DocumentPath[MAX_PATH - 1] = '\0';}
 
   /* Read the schemas Paths */
   Thot_Sch = TtaGetEnvString ("THOTSCH");
@@ -1172,13 +1172,14 @@ static void InitEnviron ()
   if ((Thot_Sch != NULL) && (Thot_Sys_Sch != NULL))
     {
       strncpy (SchemaPath, Thot_Sch, MAX_PATH);
+      SchemaPath[MAX_PATH - 1] = '\0';
       strcat (SchemaPath, PATH_STR);
       strcat (SchemaPath, Thot_Sys_Sch);
     }
   else if (Thot_Sch != NULL)
-    strncpy (SchemaPath, Thot_Sch, MAX_PATH);
+    {strncpy (SchemaPath, Thot_Sch, MAX_PATH); SchemaPath[MAX_PATH - 1] = '\0';}
   else if (Thot_Sys_Sch != NULL)
-    strncpy (SchemaPath, Thot_Sys_Sch, MAX_PATH);
+    {strncpy (SchemaPath, Thot_Sys_Sch, MAX_PATH); SchemaPath[MAX_PATH - 1] = '\0';}
   else
     SchemaPath[0] = EOS;
 
@@ -1295,10 +1296,10 @@ void TtaInitializeAppRegistry (char *appArgv0)
 #endif /* _MACOS & _WX */
 #ifdef _WINDOWS
   if (appArgv0[0] == DIR_SEP || (appArgv0[1] == ':' && appArgv0[2] == DIR_SEP))
-    strncpy (&execname[0], appArgv0, sizeof (execname) / sizeof (char));
+    {strncpy (execname, appArgv0, sizeof (execname)); execname[sizeof (execname) - 1] = '\0';}
 #else  /* _WINDOWS */
   if (appArgv0[0] == DIR_SEP)
-    strncpy (&execname[0], appArgv0, sizeof (execname) / sizeof (char));
+    {strncpy (execname, appArgv0, sizeof (execname)); execname[sizeof (execname) - 1] = '\0';}
 #endif /* _WINDOWS */
   /*
    * second case, the argv[0] indicate a relative path name.
@@ -1522,7 +1523,7 @@ void TtaInitializeAppRegistry (char *appArgv0)
   /* IV 18/08/2003 Check the variable AMAYA_USER_HOME first */
   ptr = getenv ("AMAYA_USER_HOME");
   if (ptr && TtaDirExists (ptr))
-    strncpy (app_home, ptr, MAX_PATH);
+    {strncpy (app_home, ptr, MAX_PATH); app_home[MAX_PATH - 1] = '\0';}
 
   if (app_home[0] == EOS && amaya_exe)
     {

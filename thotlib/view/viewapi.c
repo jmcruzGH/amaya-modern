@@ -706,6 +706,7 @@ char *TtaGetViewName (Document document, View view)
           pPS = PresentationSchema (dView.DvSSchema, pDoc);
           strncpy (nameBuffer, pPS->PsView[dView.DvPSchemaView - 1],
                    MAX_NAME_LENGTH);
+          nameBuffer[MAX_NAME_LENGTH - 1] = '\0';
         }
     }
   return nameBuffer;

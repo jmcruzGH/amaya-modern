@@ -1255,7 +1255,7 @@ static void LoadPasswordTable ()
   /* Read the password file and store the records */
   /* Open the password file */
   file = NULL;
-  sprintf (pathname, "%s%c%s", TempFileDirectory, DIR_SEP, S_FILE);
+  snprintf (pathname, sizeof (pathname), "%s%c%s", TempFileDirectory, DIR_SEP, S_FILE);
   file = TtaReadOpen (pathname);
   if (file == NULL)
     {
@@ -1498,7 +1498,7 @@ void WritePasswordTable ()
     {
       /* Open the new password file */
       f = NULL;
-      sprintf (pwdname_tmp, "%s%c%s_tmp", TempFileDirectory, DIR_SEP, S_FILE);
+      snprintf (pwdname_tmp, sizeof (pwdname_tmp), "%s%c%s_tmp", TempFileDirectory, DIR_SEP, S_FILE);
       f = TtaWriteOpen (pwdname_tmp);
       if (f == NULL)
         return;
@@ -1540,7 +1540,7 @@ void WritePasswordTable ()
       
       /* Replace the password file with the new one */
       /* Remove the old file */
-      sprintf (pwdname, "%s%c%s", TempFileDirectory, DIR_SEP, S_FILE);
+      snprintf (pwdname, sizeof (pwdname), "%s%c%s", TempFileDirectory, DIR_SEP, S_FILE);
       if (TtaFileExist (pwdname))
         TtaFileUnlink (pwdname);
       /* Rename the new file */

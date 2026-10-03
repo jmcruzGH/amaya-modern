@@ -978,6 +978,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -993,6 +994,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, TRUE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1008,6 +1010,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, FALSE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1023,6 +1026,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, FALSE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1038,6 +1042,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1053,6 +1058,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1068,6 +1074,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1083,6 +1090,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1098,6 +1106,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1123,6 +1132,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1146,6 +1156,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1170,6 +1181,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1194,6 +1206,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1218,6 +1231,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1233,6 +1247,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, FALSE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1248,6 +1263,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1263,6 +1279,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, FALSE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1278,6 +1295,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1293,6 +1311,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, FALSE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1308,6 +1327,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1323,6 +1343,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, FALSE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1338,6 +1359,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1353,6 +1375,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1368,6 +1391,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1383,6 +1407,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, FALSE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1398,6 +1423,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1413,6 +1439,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1428,6 +1455,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1443,6 +1471,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (!CheckValue (buffer, TRUE, TRUE, TRUE, FALSE, TRUE))
             {
               value = TtaConvMessageToWX(buffer);
@@ -1458,6 +1487,7 @@ void StyleDlgWX::OnValueChanged( wxCommandEvent& event )
       if (value.Len() > 0)
         {
           strncpy (buffer, (const char*)value.mb_str(wxConvUTF8), 50);
+          buffer[50 - 1] = '\0';
           if (strcmp (buffer, "auto") && strcmp (buffer, "inherit") &&
               !CheckValue (buffer, FALSE, FALSE, FALSE, TRUE, FALSE))
             {

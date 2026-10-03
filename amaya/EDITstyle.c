@@ -217,7 +217,7 @@ static char *UpdateCSSImport (const char *oldpath, const char *newpath,
           else
             {
               // there is enough space
-              strncpy (b, new_url, newlen);
+              memcpy (b, new_url, newlen);
               sString = &b[newlen];
               if (newlen < len)
                 // reduce the size of the full string
@@ -342,7 +342,7 @@ char *UpdateCSSURLs (Document doc, char *oldpath, char *newpath,
                   else
                     {
                       // there is enough space
-                      strncpy (b, newname, newlen);
+                      memcpy (b, newname, newlen);
                       sString = &b[newlen];
                       if (newlen < len)
                         // reduce the size of the full string

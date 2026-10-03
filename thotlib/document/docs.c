@@ -276,6 +276,7 @@ void NewDocument (PtrDocument *pDoc, char *SSchemaName, char *docName,
           /* ce nom n'est pas dans le fichier langue, on le prend */
           /* tel quel */
           strncpy (docType, SSchemaName, MAX_NAME_LENGTH);
+          docType[MAX_NAME_LENGTH - 1] = '\0';
           /* compose le nom du fichier a ouvrir avec le nom du directory */
           /* des schemas... */
           strncpy (directoryBuffer, SchemaPath, MAX_PATH);
@@ -297,10 +298,11 @@ void NewDocument (PtrDocument *pDoc, char *SSchemaName, char *docName,
               LoadSchemas (docType, PSchemaName, &((*pDoc)->DocSSchema), *pDoc,
                            NULL, FALSE);
               if (docName[0] != EOS)
-                strncpy (docNameBuffer, docName, MAX_NAME_LENGTH);
+                {strncpy (docNameBuffer, docName, MAX_NAME_LENGTH); docNameBuffer[MAX_NAME_LENGTH - 1] = '\0';}
               else
                 {
                   strncpy (docNameBuffer, SSchemaName, MAX_NAME_LENGTH);
+                  docNameBuffer[MAX_NAME_LENGTH - 1] = '\0';
                   strcat (docNameBuffer, "X");
                 }
               if ((*pDoc)->DocSSchema != NULL)
@@ -345,7 +347,7 @@ void NewDocument (PtrDocument *pDoc, char *SSchemaName, char *docName,
                                     TRUE);
               /* le document appartient au directory courant */
               if (directory[0] != EOS)
-                strncpy (directoryBuffer, directory, MAX_PATH);
+                {strncpy (directoryBuffer, directory, MAX_PATH); directoryBuffer[MAX_PATH - 1] = '\0';}
               else
                 {
                   strncpy (directoryBuffer, DocumentPath, MAX_PATH);
@@ -692,7 +694,7 @@ void BackupAll()
 {
   int             doc;
 
-  fprintf (stderr, TtaGetMessage (LIB, TMSG_DEBUG_SAV_FILES));
+  fprintf (stderr, "%s", TtaGetMessage (LIB, TMSG_DEBUG_SAV_FILES));
   /* parcourt la table des documents */
   for (doc = 0; doc < MAX_DOCUMENTS; doc++)
     if (LoadedDocument[doc] != NULL)

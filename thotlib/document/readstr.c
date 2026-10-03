@@ -367,6 +367,7 @@ ThotBool ReadStructureSchema (const char * fileName, PtrSSchema pSS)
       /* echec */
      {
 	strncpy (buf, fileName, MAX_PATH);
+	buf[MAX_PATH - 1] = '\0';
 	strcat (buf, ".STR");
 	TtaDisplayMessage (INFO, TtaGetMessage (LIB, TMSG_INCORRECT_STR_FILE),
 			   buf);

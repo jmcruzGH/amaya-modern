@@ -3663,6 +3663,7 @@ ThotBool ApplyRule (PtrPRule pPRule, PtrPSchema pSchP, PtrAbstractBox pAb,
                               /* relative file name */
                               {
                                 strncpy (directoryName, SchemaPath, MAX_PATH-1);
+                                directoryName[MAX_PATH-1] = '\0';
                                 MakeCompleteName (pConst->PdString, "",
                                                   directoryName, fname, &i);
                               }
@@ -4808,6 +4809,7 @@ ThotBool ApplyRule (PtrPRule pPRule, PtrPSchema pSchP, PtrAbstractBox pAb,
                               /* relative file name */
                               {
                                 strncpy (directoryName, SchemaPath, MAX_PATH-1);
+                                directoryName[MAX_PATH-1] = '\0';
                                 MakeCompleteName (pConst->PdString, "",
                                                   directoryName, fname, &i);
                               }

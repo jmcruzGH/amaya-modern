@@ -664,10 +664,10 @@ void CallbackPrint (int ref, int typedata, char *data)
         {
           if (PaperPrint == PP_PRINTER)
             /* text capture zone for the printer name */
-            strncpy (PPrinter, data, MAX_PATH);
+            {strncpy (PPrinter, data, MAX_PATH); PPrinter[MAX_PATH - 1] = '\0';}
           else
             /* text capture zone for the name of the PostScript file */
-            strncpy (PSfile, data, MAX_PATH);
+            {strncpy (PSfile, data, MAX_PATH); PSfile[MAX_PATH - 1] = '\0';}
         }
       break;
     }

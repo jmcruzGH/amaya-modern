@@ -183,6 +183,7 @@ static void BuildSSchemaViewList (PtrDocument pDoc, PtrSSchema pSS,
 		  viewList[*nViews].VdView = view + 1;
 		  strncpy (viewList[*nViews].VdViewName,
 			    pPSchema->PsView[view], MAX_NAME_LENGTH);
+		  viewList[*nViews].VdViewName[MAX_NAME_LENGTH - 1] = '\0';
 		  viewList[*nViews].VdSSchema = pSS;
 		  viewList[*nViews].VdExist = FALSE;
 		  viewList[*nViews].VdNature = nature;

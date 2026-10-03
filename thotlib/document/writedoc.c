@@ -314,7 +314,9 @@ ThotBool StoreDocument (PtrDocument pDoc, PathBuffer docName,
                          }
                      }
                    strncpy (pDoc->DocDName, docName, MAX_NAME_LENGTH);
+                   pDoc->DocDName[MAX_NAME_LENGTH - 1] = '\0';
                    strncpy (pDoc->DocDirectory, dirName, MAX_PATH);
+                   pDoc->DocDirectory[MAX_PATH - 1] = '\0';
                    ChangeDocumentName (pDoc, docName);
                  }
              }
