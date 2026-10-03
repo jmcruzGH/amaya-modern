@@ -916,9 +916,13 @@ void TtaPrint (Document document, char *viewNames, char *cssNames)
 	       if (firstGenericXML)
 		 {
 		   k = strlen (pDoc->DocSchemasPath);
-		   pDoc->DocSchemasPath[k] = PATH_SEP;
-		   pDoc->DocSchemasPath[k + 1] = EOS;
-		   strcat (pDoc->DocSchemasPath, pDoc->DocDirectory);
+		   if (k + 2 < (int) sizeof (pDoc->DocSchemasPath))
+		     {
+		       pDoc->DocSchemasPath[k] = PATH_SEP;
+		       pDoc->DocSchemasPath[k + 1] = EOS;
+		       strncat (pDoc->DocSchemasPath, pDoc->DocDirectory,
+			        sizeof (pDoc->DocSchemasPath) - k - 2);
+		     }
 		   firstGenericXML = FALSE;
 		 }
 	       FindCompleteName (pDoc->DocNatureName[i], "STR",

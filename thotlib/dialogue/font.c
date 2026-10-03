@@ -2119,8 +2119,8 @@ static void FreeAFont (int i)
 #if (defined(_GTK) || defined(_WX)) && !defined(_GL)
           TtPatchedFont[i] = TtPatchedFont[j];
 #endif /* #if (defined(_GTK) || defined(_WX)) && !defined(_GL) */
-          strncpy (&TtFontName[i * MAX_FONTNAME],
-                   &TtFontName[j * MAX_FONTNAME], MAX_FONTNAME);
+          memcpy (&TtFontName[i * MAX_FONTNAME],
+                  &TtFontName[j * MAX_FONTNAME], MAX_FONTNAME); /* j > i */
           TtFonts[j] = NULL;
           TtFontMask[j] = 0;
           /* the table is packed now */

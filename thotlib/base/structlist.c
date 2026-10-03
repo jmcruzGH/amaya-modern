@@ -4316,7 +4316,7 @@ void TtaListStyleSchemas (Document document, FILE *fileDescriptor)
                                               fprintf (fileDescriptor, " *");
                                             fprintf (fileDescriptor, ")");
                                           }
-                                        if (val > 0 && pAt1->AttrEnumValue[val-1])
+                                        if (val > 0)
                                           {
                                             fprintf (fileDescriptor, "=");
                                             wrtext (pAt1->AttrEnumValue[val-1], fileDescriptor);

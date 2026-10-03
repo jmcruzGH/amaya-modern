@@ -1607,7 +1607,7 @@ void Template_InsertXTigerPI(Document doc, XTigerTemplate t)
   if (t->uri)
     strcat (buffer, t->uri);
   else if (t->base_uri)
-    strcat (buffer, t->uri);
+    strcat (buffer, t->base_uri);
   strcat (buffer, "\" version=\"");
   if (t->version)
     strcat (buffer, t->version);

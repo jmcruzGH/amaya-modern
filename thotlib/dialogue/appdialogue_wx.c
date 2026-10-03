@@ -474,7 +474,7 @@ void TtaInitTopMenuStats( int doc_id )
 {
   /* enable every menu */
   PtrDocument pDoc = LoadedDocument[doc_id-1];
-  if (pDoc && pDoc->EnabledMenus)
+  if (pDoc)
     memset(pDoc->EnabledMenus, TRUE, sizeof(pDoc->EnabledMenus));
 }
 

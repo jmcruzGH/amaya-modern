@@ -1245,10 +1245,10 @@ static void LoadPasswordTable ()
 
 
   /* Initialization */
-  memset (PM_Server, 0, MAX_PM_TABLE);
-  memset (PM_Realm, 0, MAX_PM_TABLE);
-  memset (PM_Name, 0, MAX_PM_TABLE);
-  memset (PM_Passwd, 0, MAX_PM_TABLE);
+  memset (PM_Server, 0, sizeof (PM_Server));
+  memset (PM_Realm, 0, sizeof (PM_Realm));
+  memset (PM_Name, 0, sizeof (PM_Name));
+  memset (PM_Passwd, 0, sizeof (PM_Passwd));
   PM_Save = FALSE;
   PM_Index = 0;
 

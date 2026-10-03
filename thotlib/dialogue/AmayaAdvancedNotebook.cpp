@@ -131,7 +131,7 @@ bool AmayaAdvancedNotebook::ClosePage(int page_id)
     {
       frame = page->GetActiveFrame();
       GetDocAndView (frame->GetFrameId(), &pDoc, &view);
-      if (pDoc && pDoc->DocDName && !strcmp (pDoc->DocDName, "empty"))
+      if (pDoc && !strcmp (pDoc->DocDName, "empty"))
         // don't close a unique empty page
         return false;
       if (!GetAmayaWindow()->IsKindOf(CLASSINFO(AmayaHelpWindow))  &&

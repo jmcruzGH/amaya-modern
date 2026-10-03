@@ -2209,7 +2209,8 @@ char   *AmayaParseUrl (const char *aName, const char *relatedName, int wanted)
                }
             else
               {
-                l = strlen (given.fragment);
+                /* was strlen (given.fragment) with given.fragment == NULL */
+                l = strlen (related.fragment);
                 if (l <= len)
                   strcat (result, related.fragment);
               }

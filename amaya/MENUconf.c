@@ -1271,7 +1271,7 @@ static void BuildCharsetSelector (void)
     {
       entry = CharsetTxt[i];
       /* keep in mind the current selected entry */
-      if (GProp_Publish.CharsetType && !strcasecmp (GProp_Publish.CharsetType, entry))
+      if (!strcasecmp (GProp_Publish.CharsetType, entry))
         CurrentCharset = i;
       if (!strcasecmp (entry, "iso-8859-1"))
         i_default = i;
@@ -2827,6 +2827,10 @@ Prop_Annot GetProp_Annot()
 {
 #ifdef ANNOTATIONS
   return GProp_Annot;
+#else /* ANNOTATIONS */
+  Prop_Annot empty;
+  memset (&empty, 0, sizeof (empty));
+  return empty;
 #endif /* ANNOTATIONS */
 }
 
@@ -2847,6 +2851,10 @@ Prop_DAV GetProp_DAV()
 {
 #ifdef DAV
   return GProp_DAV;
+#else /* DAV */
+  Prop_DAV empty;
+  memset (&empty, 0, sizeof (empty));
+  return empty;
 #endif /* DAV */
 }
 

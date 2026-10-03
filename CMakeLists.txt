@@ -19,8 +19,8 @@ add_compile_options(
   -Wall
   -fno-strict-aliasing                 # thotlib uses aliased structs
 )
-# C++ additionally needs permissive mode for the old-style C++ in thotlib
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fpermissive>)
+# Note: -fpermissive is no longer used.  It used to turn five genuine errors
+# (pointer/char comparisons and a char -> char* conversion) into warnings.
 
 # ── Force-include the wx 2.8→3.2 compatibility shim into every TU ────────
 # This avoids editing every .cpp file for the wxEVT_COMMAND_* renames.

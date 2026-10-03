@@ -523,7 +523,7 @@ int CreateAbstractImage (PtrDocument pDoc, int v, PtrSSchema pSS,
   ----------------------------------------------------------------------*/
 ThotBool IsEmptyDocument (PtrDocument pDoc)
 {
-  if (pDoc && pDoc->DocDName && !strcmp (pDoc->DocDName, "empty"))
+  if (pDoc && !strcmp (pDoc->DocDName, "empty"))
     return TRUE;
   return FALSE;
 }

@@ -2119,6 +2119,9 @@ static char *ParseACSSListStyleType (Element element, PSchema tsch,
   PresentationValue   pval;
   char               *start_value;
 
+  /* ParseCounterStyle takes start_value by value: set it here */
+  cssRule = SkipBlanksAndComments (cssRule);
+  start_value = cssRule;
   cssRule = ParseCounterStyle (cssRule, &pval, start_value);
   if (DoDialog)
     DisplayStyleValue ("list-style-type", start_value, cssRule);

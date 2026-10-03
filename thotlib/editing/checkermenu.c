@@ -448,7 +448,9 @@ void TtaGetProposal (char **proposal, int i)
   if (strcmp (ChkrCorrection[i], "$"))
     *proposal = ChkrCorrection[i];
   else
-    proposal[0] = EOS;
+    /* was "proposal[0] = EOS", i.e. *proposal = NULL, which callers then
+       dereference; return an empty string instead */
+    *proposal = (char *)"";
 }
 
 /*----------------------------------------------------------------------
@@ -720,7 +722,7 @@ void CallbackChecker (int ref, int dataType, char *data)
         /* retour du selecteur de propositions */
         /* recopier le choix dans CorrectWord */
         strcpy (CorrectWord, data);
-        if (CorrectWord[0] != EOS && BadWord != EOS
+        if (CorrectWord[0] != EOS && BadWord[0] != EOS
             && strcmp (CorrectWord, BadWord) != 0)
           ToReplace = TRUE;
         break;

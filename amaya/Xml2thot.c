@@ -5337,7 +5337,7 @@ void ParseExternalDocument (char *fileName, char *originalName, Element el,
       if (infile != NULL)
         {
           /* Check if there is an xml declaration with a charset declaration */
-          if (tempName != EOS)
+          if (tempName != NULL)
             CheckDocHeader (tempName, &xmlDec, &docType, &isXML, &useMath, &isKnown,
                             &parsingLevel, &charset, charsetname, &thotType, &extraProfile);
 	  

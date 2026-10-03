@@ -2749,7 +2749,7 @@ static void EndOfEndTag (char c)
     {
       /* is it the end of the current HTML fragment ? */
       ok = FALSE;
-      if (HTMLrootClosingTag != EOS)
+      if (HTMLrootClosingTag != NULL)
         {
           /* look for a colon in the element name (namespaces) and ignore the
              prefix if there is one */
@@ -4422,7 +4422,7 @@ static char GetNextChar (FILE *infile, char* buffer, int *index,
           /* return the second UTF-8 byte */
           charRead = SecondByte[0];
           /* shift */
-          strncpy ((char *)SecondByte, (char *)&SecondByte[1], 4);
+          memmove (SecondByte, &SecondByte[1], 4);
         }
       else
         {
@@ -4482,7 +4482,7 @@ static char GetNextChar (FILE *infile, char* buffer, int *index,
               /* return the second UTF-8 byte */
               charRead = SecondByte[0];
               /* shift */
-              strncpy ((char *)SecondByte, (char *)&SecondByte[1], 4);
+              memmove (SecondByte, &SecondByte[1], 4);
             }
           else
             {

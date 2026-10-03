@@ -1320,8 +1320,8 @@ void TtaNewScrollPopup (int ref, ThotWidget parent, char *title, int number,
             /* Note l'accelerateur */
             if (equiv)
               {
-                if (&equiv[eindex] != EOS)
-                  strcpy (equiv_item, &equiv[eindex]); 
+                /* (was: if (&equiv[eindex] != EOS), which was always true) */
+                strcpy (equiv_item, &equiv[eindex]);
                 eindex += strlen (&equiv[eindex]) + 1;
               }
             if (text[index] == 'T' || text[index] == 'B' || text[index] == 'M')

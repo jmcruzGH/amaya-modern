@@ -118,7 +118,7 @@ bool AmayaAppInstance::SendURLToOtherAmayaInstance(const wxString & url)
                 {
                   /* it is a relative name */
 		  name = TtaStrdup (buffer);
-                  getcwd (buffer, sizeof (buffer) / sizeof (char));
+                  getcwd (buffer, MAX_LENGTH);
                   strcat (buffer, DIR_STR);
                   strcat (buffer, name);
 		  TtaFreeMemory (name);

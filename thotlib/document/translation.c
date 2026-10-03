@@ -4142,7 +4142,7 @@ static void TranslateTree (PtrElement pEl, Document doc,
           /* de l'element et qui doivent s'appliquer avant la traduction du */
           /* contenu de l'element */
           skip = (Skip_Template &&
-                  pTSch->TsStructName && !strcmp (pTSch->TsStructName, "Template"));
+                  !strcmp (pTSch->TsStructName, "Template"));
           if (skip)
             removeEl = ignoreEl = FALSE;
           else
