@@ -13,17 +13,10 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # ── Compiler flags ────────────────────────────────────────────────────────────
-# Amaya was written for GCC 3-4; silence the categories of warnings that GCC
-# 13/14 promote to errors for old C code, without hiding genuine new bugs.
+# No blanket -Wno-* suppressions: with GCC 13 they hid almost nothing (only
+# a handful of unused-variable warnings), and they would hide new problems.
 add_compile_options(
   -Wall
-  -Wno-implicit-function-declaration   # old C pattern; prototypes exist in _f.h
-  -Wno-implicit-int                    # old K&R-ish code in thotlib
-  -Wno-incompatible-pointer-types      # numerous legacy void* casts
-  -Wno-int-conversion                  # similar
-  -Wno-deprecated-declarations         # wxWidgets 2.8-style deprecations
-  -Wno-unused-variable
-  -Wno-unused-function
   -fno-strict-aliasing                 # thotlib uses aliased structs
 )
 # C++ additionally needs permissive mode for the old-style C++ in thotlib
