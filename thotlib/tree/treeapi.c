@@ -129,7 +129,7 @@ void TtaUpdateRootElementType (Element root, const char *schemaName, Document do
   -----------------------------------------------------------------------*/
 ThotBool TtaChangeTypeOfElement (Element elem, Document doc, int newTypeNum)
 {
-  Element    prev, next, parent;
+  Element    prev, next = 0, parent;
 
   UserErrorCode = 0;
   if (elem == NULL)

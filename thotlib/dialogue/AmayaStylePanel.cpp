@@ -343,7 +343,7 @@ void AmayaStyleToolPanel::OnThemeChange( wxCommandEvent& event )
   ----------------------------------------------------------------------*/
 void AmayaStyleToolPanel::SetTheme(const char *theme)
 {
-  char    *s;
+  char    *s = NULL;
   if (!strcasecmp (theme, "Standard"))
     s = TtaGetMessage(LIB, NoTheme);
   else if (!strcasecmp (theme, "Classic"))

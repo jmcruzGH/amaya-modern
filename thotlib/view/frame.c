@@ -2126,7 +2126,7 @@ void ComputeChangedBoundingBoxes (int frame)
 static void AddingOnTop (int frame, ViewFrame *pFrame, PtrBox topBox, int top)
 {
   PtrElement pEl = NULL;
-  int        y, delta, volume, view;
+  int        y = 0, delta = 0, volume, view;
 
   if (topBox && topBox->BxAbstractBox)
     {

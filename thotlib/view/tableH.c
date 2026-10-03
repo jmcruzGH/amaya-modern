@@ -659,7 +659,7 @@ static void CheckTableWidths (PtrAbstractBox table, int frame, ThotBool freely)
   int                 min, max, sum, parentWidth;
   int                 percent, sumPercent;
   int                 minOfPercent, minOfWidth;
-  int                 mbp, var, cellspacing;
+  int                 mbp, var = 0, cellspacing;
   ThotBool            constraint, useMax = FALSE;
   ThotBool            addPixels;
 

@@ -260,7 +260,7 @@ ThotDrawable JpegCreate (char *fn, ThotPictInfo *imageDesc, int *b_w, int *b_h,
                          int *wif, int *hif, int bgColor, int *width,
                          int *height, int zoom)
 {
-  int                 w, h;
+  int                 w = 0, h = 0;
   ThotPixmap              pixmap = (ThotPixmap) NULL;
   ThotColorStruct     colrs[256];
   unsigned char      *data = NULL;

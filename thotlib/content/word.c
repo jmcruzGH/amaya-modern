@@ -250,7 +250,7 @@ ThotBool SearchNextWord (PtrElement *curEl, int *beginning, int *end,
 {
   PtrElement          pEl, endEl;
   PtrElement          pAncestor;
-  PtrTextBuffer       pBuf;
+  PtrTextBuffer       pBuf = 0;
   CHAR_T             charact;
   int                 iChar, endChar;
   int                 len;

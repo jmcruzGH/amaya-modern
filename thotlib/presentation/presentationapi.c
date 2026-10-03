@@ -2686,7 +2686,7 @@ void TtaGiveBoxPosition (Element element, Document document, View view,
   PtrBox              pBox;
   ViewFrame	         *pFrame;
   int                 frame;
-  int                 x, y, w, h;
+  int                 x, y, w = 0, h = 0;
 
   UserErrorCode = 0;
   *xCoord = 0;

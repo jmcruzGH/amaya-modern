@@ -303,7 +303,7 @@ void AmayaEditShapeEvtHandler::OnMouseMove( wxMouseEvent& event )
 #define RATIO_EQUILATERAL sqrt((float)3)/2.
 
   ThotBool same_size;
-  int      rx, ry, lx, ly, x, y;
+  int      rx = 0, ry, lx, ly, x, y;
   int      x1, y1, x2, y2, dx, dy;
   float    ratio = 0.;
 

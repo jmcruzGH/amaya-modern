@@ -680,7 +680,7 @@ ThotBool GenerateInlineElement (int eType, SSchema eSchema, int aType,
   Language        lang;
   CHAR_T         *buffer;
   DisplayMode     dispMode;
-  ThotBool	      doit, split, before, charlevel, inside, done, removed;
+  ThotBool	      doit, split, before, charlevel, inside, done, removed = 0;
   ThotBool        lastChanged, parse, open, selpos, isPict = FALSE, skip;
   SSchema         templateSSchema;
   int             i, j, firstchar, lastchar, lg, min, max;

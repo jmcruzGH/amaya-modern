@@ -3174,7 +3174,7 @@ void EditGraphicElement (Document doc, View view, int entry)
 #ifdef _SVG
   DisplayMode  dispMode;
   int		       c1, c2;
-  ThotBool     done;
+  ThotBool     done = 0;
   Element      first, parent;
   SSchema      svgSchema;
 #define MAX_TITLE 50

@@ -2238,7 +2238,7 @@ void TemplateCreateTextBox (Document doc, View view)
 void TemplateCreateImport (Document doc, View view)
 {
 #ifdef TEMPLATES
-  Element        selElem, selElem2, parent;
+  Element        selElem, selElem2, parent = 0;
   Element        el, prev, next;
   ElementType    elType;
   SSchema        sstempl;

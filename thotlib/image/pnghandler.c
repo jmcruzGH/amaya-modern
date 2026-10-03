@@ -676,7 +676,7 @@ ThotDrawable PngCreate (char *fn, ThotPictInfo *imageDesc, int *b_w, int *b_h,
   unsigned char   *buffer2 = NULL;
 #endif /*_GL*/
   int              ncolors = 1, cpp, bg = -1;
-  int              w, h, bperpix;
+  int              w = 0, h = 0, bperpix;
   ThotBool         withAlpha, grayScale;
 
   buffer = ReadPngToData (fn, &w, &h, &ncolors, &cpp, &colrs, &bg,

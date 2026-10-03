@@ -1503,7 +1503,7 @@ char *TtaGetPathAttributeValue (Element el, int width, int height)
   PtrElement pEl;
   PtrPathSeg          b;
   int                 length, l, add;
-  char               *path;
+  char               *path = NULL;
   int nbSegments;
 #define SIZE_OF_ONE_SEGMENT 50
 
@@ -2083,7 +2083,7 @@ ThotBool TtaEndPointToCenterParam(int x1, int y1, int x2, int y2,
 void TtaSplitPathSeg (void *segment, Document doc, Element el)
 {
   PtrPathSeg       pPa = (PtrPathSeg)segment;
-  PtrPathSeg       newSeg;
+  PtrPathSeg       newSeg = 0;
   PtrElement pElAsc;
   int x0, y0, x1, y1, x2, y2, x3, y3;
   double k1, k2, rx, ry, cx, cy, theta1, dtheta, phi;
@@ -2702,8 +2702,8 @@ void TtaCopyGradientUse (Element el)
 static int getPathSegment (PtrPathSeg *pPa_, int pointselect,
                            ThotBool before)
 {
-  PtrPathSeg  pPa, pPaStart;
-  int i = 1, i_start;
+  PtrPathSeg  pPa, pPaStart = 0;
+  int i = 1, i_start = 0;
 
   pPa = *pPa_;
   *pPa_ = NULL;
@@ -5256,7 +5256,7 @@ static ThotBool GivePathSegmentAngle(PtrPathSeg pPa,
   ----------------------------------------------------------------------*/
 void TtaGivePathAngle (Element element, int rank, double *angle)
 {
-  PtrPathSeg       pPa, pPaStart;
+  PtrPathSeg       pPa, pPaStart = 0;
   PtrPathSeg       pPaPrevious = NULL, pPaNext = NULL;
   int              i;
   double           dxPrevious, dyPrevious, dxNext, dyNext;

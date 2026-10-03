@@ -2268,8 +2268,8 @@ ThotBool AskShapeEdit (Document doc, Element el, int point)
   PtrBox         pBox, svgBox;
   ViewFrame     *pFrame;
   PtrTransform   CTM, inverse;
-  char           shape;
-  int            frame, x, y, w, h, rx, ry;
+  char           shape = 0;
+  int            frame, x = 0, y = 0, w = 0, h = 0, rx, ry;
   int            ancestorX, ancestorY;
   ThotBool       hasBeenEdited = FALSE, open;
 

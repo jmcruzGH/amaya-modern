@@ -836,7 +836,7 @@ void UpdateSRCattribute (NotifyOnTarget *event)
   char            *text, *name;
   char            *utf8value;
   int              length;
-  ThotBool         newAttr, isObject = FALSE, isInput = FALSE, isSvg = FALSE,
+  ThotBool         newAttr = 0, isObject = FALSE, isInput = FALSE, isSvg = FALSE,
                    noURI = FALSE;
 
   el = event->element;
