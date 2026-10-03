@@ -95,7 +95,7 @@ SaveAsDlgWX::SaveAsDlgWX( int ref, wxWindow *parent, const wxString & pathname,
       else
         p_notebook->SetPageText (page_id,
                                  TtaConvMessageToWX(TtaGetMessage(AMAYA, AM_QUICK_SAVE)));
-        page_id++;
+      page_id++;
     }
 
   // Document format radio box

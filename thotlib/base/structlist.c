@@ -3014,6 +3014,7 @@ static void wrnbherit (PtrPRule pR, FILE *fileDescriptor)
   else if (pR->PrPresMode == PresCurrentColor)
     fprintf (fileDescriptor, "currentColor");
   else if (pR->PrPresMode == PresImmediate)
+    {
     if (pR->PrValueType == PrAttrValue)
       wrattrname (pR->PrIntValue, fileDescriptor);
     else if (pR->PrValueType == PrNumValue)
@@ -3023,6 +3024,7 @@ static void wrnbherit (PtrPRule pR, FILE *fileDescriptor)
 	fprintf (fileDescriptor, "Cste");
 	wrnumber (pR->PrIntValue, fileDescriptor);
       }
+    }
   else
     fprintf (fileDescriptor, "??????");
   fprintf (fileDescriptor, ";");

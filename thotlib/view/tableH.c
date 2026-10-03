@@ -2282,10 +2282,10 @@ void TtaUnlockTableFormatting ()
                   CheckRowHeights (table, pLockRel->LockRFrame[i]);
                   /* need to propagate to enclosing boxes */
                   if (table && table->AbEnclosing->AbBox &&
-                      table->AbEnclosing->AbBox->BxType == BoBlock ||
-                      table->AbEnclosing->AbBox->BxType == BoFloatBlock ||
-                      table->AbEnclosing->AbBox->BxType == BoStructGhost ||
-                      table->AbEnclosing->AbBox->BxType == BoGhost)
+                      (table->AbEnclosing->AbBox->BxType == BoBlock ||
+                       table->AbEnclosing->AbBox->BxType == BoFloatBlock ||
+                       table->AbEnclosing->AbBox->BxType == BoStructGhost ||
+                       table->AbEnclosing->AbBox->BxType == BoGhost))
                     {
                       if (table->AbBox)
                         pLine = SearchLine (table->AbBox, pLockRel->LockRFrame[i]);

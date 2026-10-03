@@ -3013,7 +3013,7 @@ ThotBool CreateNewElement (int typeNum, PtrSSchema pSS, PtrDocument pDoc,
                   if (!histOpen)
                     OpenHistorySequence (pSelDoc, firstSel, lastSel, NULL,
                                          firstChar, lastChar);
-                    pEl = firstSel;
+                  pEl = firstSel;
                     do
                       {
                         /* essaie de transformer un element */

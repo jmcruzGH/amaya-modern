@@ -192,7 +192,7 @@ static void GotoChild (XPointerContextPtr ctx)
   else
     curNode->el = TtaGetFirstChild (curNode->el);
 
-    curNode->el = SearchSiblingIndex (curNode->el, curNode->node, 
+  curNode->el = SearchSiblingIndex (curNode->el, curNode->node, 
 				      &(curNode->index));
   if (!curNode->el)
     CtxAddError (ctx, "GotoChild: no such node");

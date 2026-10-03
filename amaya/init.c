@@ -2080,8 +2080,8 @@ void OpenNew (Document document, View view, int docType, int docProfile)
         strcat (name,".xml");
       else
         strcat (name,".html");
-        InitOpenDocForm (document, view, name,
-                         TtaGetMessage (LIB, TMSG_BUTTON_NEW), docHTML);
+      InitOpenDocForm (document, view, name,
+                       TtaGetMessage (LIB, TMSG_BUTTON_NEW), docHTML);
       /* will scan html documents */
       strcpy (ScanFilter, "*.*htm*");
     }

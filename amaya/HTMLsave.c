@@ -2268,8 +2268,8 @@ static int SaveWikiFile (Document doc, char *localfile,
                   else
                     AddToBuffer (value);
 
-                    // move to the next parameter
-                    params = end;
+                  // move to the next parameter
+                  params = end;
                 }
               else
                 // use the default property value

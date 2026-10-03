@@ -194,7 +194,8 @@ ThotBool SList_IsEmpty (SList list)
 SListNode SList_GetPrev(SList list, SListNode node)
 {
   SListNode prev = NULL;
-  if (list && node || list->first==node)
+  /* was (list && node || list->first==node): NULL dereferences */
+  if (list && list->first && (node || list->first == node))
     {
       for (prev=list->first; prev->next!=NULL&&prev->next!=node; prev=prev->next) {}
     }

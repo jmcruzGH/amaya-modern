@@ -918,9 +918,10 @@ void RedisplayNewContent (PtrElement pEl, PtrDocument pDoc, int dVol,
                 frame = pDoc->DocViewFrame[view];
                 if (pAb)
                   {
-                    /* @@@@@@ generate a crash if the enclosing box is not created */
+                    /* (was 'A && B || C', which dereferenced a NULL
+                       AbEnclosing when reaching the root box) */
                     while (pAb->AbEnclosing &&
-                           pAb->AbEnclosing->AbNew || pAb->AbEnclosing->AbDead)
+                           (pAb->AbEnclosing->AbNew || pAb->AbEnclosing->AbDead))
                       pAb = pAb->AbEnclosing;
                     ClearViewSelection (frame);
                     h = 0;
