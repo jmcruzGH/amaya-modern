@@ -18,6 +18,7 @@
 # (0,0) and the default fonts of a stock Ubuntu 24.04.
 
 set -u
+REPO=$(cd "$(dirname "$0")/.." && pwd)
 BUILD=${1:-build}
 BIN=$(cd "$BUILD/amaya" 2>/dev/null && pwd)/amaya
 OUT=${SMOKE_OUT:-/tmp/amaya-smoke}
@@ -27,6 +28,11 @@ for t in Xvfb xdotool xwd convert; do
   command -v $t >/dev/null || { echo "missing tool: $t"; exit 2; }
 done
 [ -x "$BIN" ] || { echo "no binary at $BIN"; exit 2; }
+# Amaya locates config/ and resources/ two directories above its binary, so
+# the build directory must be a direct subdirectory of the repository.
+if [ "$(cd "$(dirname "$BIN")/../.." && pwd)" != "$REPO" ]; then
+  echo "build directory must be directly inside $REPO (e.g. $REPO/build)"; exit 2
+fi
 
 rm -rf "$OUT"; mkdir -p "$OUT/home/.amaya"
 export HOME="$OUT/home" DISPLAY="$DISP"
@@ -55,11 +61,17 @@ sleep 2
 ( cd "$(dirname "$BIN")" && exec ./amaya "$DOC" ) >"$OUT/stdout.log" 2>"$OUT/stderr.log" &
 APID=$!
 
-# wait for the main window
-for i in $(seq 1 40); do
-  xdotool search --name "Smoke" >/dev/null 2>&1 && break
+# wait for the main window (fail fast if it never appears)
+up=no
+for i in $(seq 1 120); do
+  xdotool search --name "Smoke" >/dev/null 2>&1 && { up=yes; break; }
+  kill -0 $APID 2>/dev/null || break
   sleep 0.5
 done
+if [ $up = no ]; then
+  echo "FAIL  main window never appeared; see $OUT/stderr.log"
+  exit 1
+fi
 sleep 4
 
 K() { xdotool key --delay 120 "$@"; sleep 0.4; }

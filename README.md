@@ -47,6 +47,9 @@ sudo apt install \
 ## Build
 
 The tree is already patched: no upstream checkout, `rsync` or patch step is needed.
+The build directory must be a direct subdirectory of the repository (as
+`build/` below): Amaya finds `config/` and `resources/` two directories above
+its binary, and shows a "No alphabet file" box and stops otherwise.
 
 ```bash
 git clone https://github.com/jmcruzGH/amaya-modern.git
