@@ -4347,6 +4347,12 @@ void ZoomNormal (Document document, View view)
   ----------------------------------------------------------------------*/
 void ShowSource (Document doc, View view)
 {
+  /* amaya-basic: this action creates an additional synchronized
+   * view, which this trimmed-down branch deliberately does not
+   * support (see the branch's own notes). Left as a reachable
+   * no-op rather than removed, so the menu item and its callback
+   * wiring stay intact and nothing else needs to change. */
+  return;
   Element          root;
   CHARSET          charset;
   char            *localFile;
@@ -4549,6 +4555,12 @@ void ShowFormatted (Document doc, View view)
   ----------------------------------------------------------------------*/
 void ShowStructure (Document doc, View view)
 {
+  /* amaya-basic: this action creates an additional synchronized
+   * view, which this trimmed-down branch deliberately does not
+   * support (see the branch's own notes). Left as a reachable
+   * no-op rather than removed, so the menu item and its callback
+   * wiring stay intact and nothing else needs to change. */
+  return;
   View                structView;
   int                 x, y, w, h;
   char                structureName[30];
@@ -4583,6 +4595,12 @@ void ShowStructure (Document doc, View view)
   ----------------------------------------------------------------------*/
 void ShowAlternate (Document doc, View view)
 {
+  /* amaya-basic: this action creates an additional synchronized
+   * view, which this trimmed-down branch deliberately does not
+   * support (see the branch's own notes). Left as a reachable
+   * no-op rather than removed, so the menu item and its callback
+   * wiring stay intact and nothing else needs to change. */
+  return;
   View                altView;
   int                 x, y, w, h;
 
@@ -4620,6 +4638,12 @@ void ShowAlternate (Document doc, View view)
   ----------------------------------------------------------------------*/
 void ShowLinks (Document doc, View view)
 {
+  /* amaya-basic: this action creates an additional synchronized
+   * view, which this trimmed-down branch deliberately does not
+   * support (see the branch's own notes). Left as a reachable
+   * no-op rather than removed, so the menu item and its callback
+   * wiring stay intact and nothing else needs to change. */
+  return;
   View                linksView;
   int                 x, y, w, h;
 
@@ -4657,6 +4681,12 @@ void ShowLinks (Document doc, View view)
   ----------------------------------------------------------------------*/
 void ShowToC (Document doc, View view)
 {
+  /* amaya-basic: this action creates an additional synchronized
+   * view, which this trimmed-down branch deliberately does not
+   * support (see the branch's own notes). Left as a reachable
+   * no-op rather than removed, so the menu item and its callback
+   * wiring stay intact and nothing else needs to change. */
+  return;
   View                tocView;
   int                 x, y, w, h;
 
@@ -7348,6 +7378,12 @@ void FullScreen (Document doc, View view)
   ----------------------------------------------------------------------*/
 void SplitHorizontally (Document doc, View view)
 {
+  /* amaya-basic: this action creates an additional synchronized
+   * view, which this trimmed-down branch deliberately does not
+   * support (see the branch's own notes). Left as a reachable
+   * no-op rather than removed, so the menu item and its callback
+   * wiring stay intact and nothing else needs to change. */
+  return;
   int frame_id = GetWindowNumber (doc, view);
   TtaSplitViewHorizontally( frame_id );
 }
@@ -7358,6 +7394,12 @@ void SplitHorizontally (Document doc, View view)
   ----------------------------------------------------------------------*/
 void SplitVertically (Document doc, View view)
 {
+  /* amaya-basic: this action creates an additional synchronized
+   * view, which this trimmed-down branch deliberately does not
+   * support (see the branch's own notes). Left as a reachable
+   * no-op rather than removed, so the menu item and its callback
+   * wiring stay intact and nothing else needs to change. */
+  return;
   int frame_id = GetWindowNumber (doc, view);
   TtaSplitViewVertically( frame_id );
 }
