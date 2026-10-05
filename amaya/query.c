@@ -196,6 +196,7 @@ ThotBool AHTReqContext_delete(AHTReqContext *me)
     me->req_headers = NULL;
   }
   if (me->output)    { fclose(me->output);       me->output    = NULL; }
+  if (me->put_input) { fclose(me->put_input);    me->put_input = NULL; }
   if (me->urlName)   { TtaFreeMemory(me->urlName); me->urlName = NULL; }
   if (me->outputfile){ TtaFreeMemory(me->outputfile); me->outputfile = NULL; }
   if (me->error_stream) { TtaFreeMemory(me->error_stream); me->error_stream = NULL; }
@@ -355,13 +356,13 @@ static int report_error(AHTReqContext *me, CURLcode res)
   for (char *c = message; *c; c++)
     if (*c == '%' || *c == '\r' || *c == '\n')
       *c = ' ';
-  if (me->docid > 0)
+  if (me->docid > 0) {
     TtaSetStatus(me->docid, 1, message, NULL);
+    /* keep the message: ResetStop shows "Finished!" only without errors */
+    DocNetworkStatus[me->docid] |= AMAYA_NET_ERROR;
+  }
   if (!me->error_html || !me->outputfile)
     return HT_ERROR;
-
-  if (me->docid > 0)
-    DocNetworkStatus[me->docid] |= AMAYA_NET_ERROR;
   if (res == CURLE_OK && TtaGetFileSize(me->outputfile) > 0)
     /* display the error page sent by the server */
     return HT_OK;
@@ -477,6 +478,9 @@ static int wait_for_request(AHTReqContext *me, int docid)
   int      status = HT_ERROR;
   me->sync_done = &done;
   me->sync_status = &status;
+  /* was another transfer of this document already in progress (e.g. the
+     page that needs this style sheet) or is the document idle (e.g. a save)? */
+  int already_loading = (docid > 0) ? FilesLoading[docid] : 0;
   SetStopButton(docid);
   while (!done) {
     int still_running = 0, numfds = 0;
@@ -487,11 +491,13 @@ static int wait_for_request(AHTReqContext *me, int docid)
     curl_multi_poll(s_curlm, NULL, 0, 50, &numfds);
     TtaHandlePendingEvents();
   }
-  /* as libwww's version did: compensate the decrement done by ResetStop,
-     which would otherwise mark the document as no longer loading while
-     its own load (e.g. the page that needed this CSS) is still in
-     progress -- its images would then never be fetched */
-  FilesLoading[docid]++;
+  /* as libwww's version did: when the document was already loading,
+     compensate the decrement done by ResetStop, which would otherwise mark
+     the document as no longer loading while its own load is still in
+     progress (its images would then never be fetched); when it was idle,
+     ResetStop brings it back to idle */
+  if (already_loading > 0)
+    FilesLoading[docid]++;   /* ResetStop must leave the count unchanged */
   ResetStop(docid);
   return status;
 }
@@ -672,14 +678,38 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
 
 /* ── PutObjectWWW ───────────────────────────────────────────────────────── */
 
+/* MIME type for an upload, from the URL's extension (libwww guessed it) */
+static const char *guess_content_type(const char *url)
+{
+  static const struct { const char *ext, *type; } map[] = {
+    {"html", "text/html"}, {"htm", "text/html"}, {"xhtml", "application/xhtml+xml"},
+    {"css", "text/css"}, {"xml", "text/xml"}, {"svg", "image/svg+xml"},
+    {"mml", "application/mathml+xml"}, {"txt", "text/plain"},
+    {"js", "application/javascript"}, {"png", "image/png"},
+    {"jpg", "image/jpeg"}, {"jpeg", "image/jpeg"}, {"gif", "image/gif"},
+    {NULL, NULL}};
+  const char *slash = strrchr(url, '/');
+  const char *dot = strrchr(slash ? slash : url, '.');
+  if (dot)
+    for (int i = 0; map[i].ext; i++)
+      if (!strcasecmp(dot + 1, map[i].ext))
+        return map[i].type;
+  return "application/octet-stream";
+}
+
 int PutObjectWWW(int docid, char *fileName, char *urlName,
                  const char *contentType, char *outputfile,
                  int mode, TTcbf *terminate_cbf, void *context_tcbf)
 {
   if (!s_curlm || !urlName || !fileName) return HT_ERROR;
+  if (strncmp(urlName, "http://", 7) && strncmp(urlName, "https://", 8))
+    return HT_ERROR;
 
   struct stat st;
   if (stat(fileName, &st) != 0) return HT_ERROR;
+
+  char *esc_url = EscapeURL(urlName);
+  if (!esc_url) return HT_ERROR;
 
   AHTReqContext *me = AHTReqContext_new(docid);
   me->urlName       = TtaStrdup(urlName);
@@ -690,39 +720,59 @@ int PutObjectWWW(int docid, char *fileName, char *urlName,
   me->block_size    = (unsigned long)st.st_size;
 
   FILE *src = fopen(fileName, "rb");
-  if (!src) { AHTReqContext_delete(me); return HT_ERROR; }
-  me->put_input = src;
+  if (!src) { TtaFreeMemory(esc_url); AHTReqContext_delete(me); return HT_ERROR; }
+  me->put_input = src;               /* closed by AHTReqContext_delete */
 
   CURL *easy = curl_easy_init();
-  if (!easy) { fclose(src); AHTReqContext_delete(me); return HT_ERROR; }
+  if (!easy) { TtaFreeMemory(esc_url); AHTReqContext_delete(me); return HT_ERROR; }
   me->easy = easy;
 
-  curl_easy_setopt(easy, CURLOPT_URL, urlName);
+  curl_easy_setopt(easy, CURLOPT_URL, esc_url);
+  TtaFreeMemory(esc_url);
   curl_easy_setopt(easy, CURLOPT_PRIVATE, (void*)me);
   curl_easy_setopt(easy, CURLOPT_UPLOAD, 1L);
   curl_easy_setopt(easy, CURLOPT_READDATA, src);
   curl_easy_setopt(easy, CURLOPT_INFILESIZE_LARGE, (curl_off_t)st.st_size);
+  curl_easy_setopt(easy, CURLOPT_USERAGENT, "Amaya/11.4.7-modern (libcurl)");
   curl_easy_setopt(easy, CURLOPT_HEADERFUNCTION, header_cb);
   curl_easy_setopt(easy, CURLOPT_HEADERDATA, (void*)me);
   curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, write_to_mem_cb);
   curl_easy_setopt(easy, CURLOPT_WRITEDATA, (void*)me);
 
-  if (contentType) {
-    char ct[256];
-    snprintf(ct, sizeof(ct), "Content-Type: %s", contentType);
-    me->req_headers = curl_slist_append(me->req_headers, ct);
-    curl_easy_setopt(easy, CURLOPT_HTTPHEADER, me->req_headers);
+  /* Content-Type: given by the caller, else guessed from the URL as libwww
+     did; text types get the document's charset */
+  const char *type = contentType ? contentType : guess_content_type(urlName);
+  char ct[300];
+  const char *cs = NULL;
+  if (docid > 0 && (!strncmp(type, "text/", 5) || strstr(type, "xml"))) {
+    CHARSET charset = TtaGetDocumentCharset(docid);
+    if (charset != UNDEFINED_CHARSET)
+      cs = TtaGetCharsetName(charset);
   }
+  if (cs && *cs && !strstr(type, "charset="))
+    snprintf(ct, sizeof(ct), "Content-Type: %s; charset=%s", type, cs);
+  else
+    snprintf(ct, sizeof(ct), "Content-Type: %s", type);
+  me->req_headers = curl_slist_append(me->req_headers, ct);
+  /* no "Expect: 100-continue": some servers handle it badly */
+  me->req_headers = curl_slist_append(me->req_headers, "Expect:");
+  curl_easy_setopt(easy, CURLOPT_HTTPHEADER, me->req_headers);
 
   CURLMcode mc = curl_multi_add_handle(s_curlm, easy);
   if (mc != CURLM_OK) {
-    fclose(src);
     AHTReqContext_delete(me);
     return HT_ERROR;
   }
 
   me->reqStatus = HT_BUSY;
   get_or_create_docid_status(docid)->counter++;
+  pending_add(me);
+  wxAmayaSocketEvent::GetEventLoop()->Start();
+
+  /* the save code checks the result right after the call */
+  if ((mode & AMAYA_SYNC) || (mode & AMAYA_ISYNC))
+    return wait_for_request(me, docid);
+
   int still_running = 0;
   curl_multi_perform(s_curlm, &still_running);
   return HT_OK;
