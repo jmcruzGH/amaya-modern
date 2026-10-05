@@ -326,11 +326,40 @@ void AmayaCanvas::OnMouseWheel( wxMouseEvent& event )
       m_MouseGrab = false;
       ReleaseMouse();
     }
-  FrameMouseWheelCallback( frame,
-                           thot_mod_mask,
-                           direction,
-                           delta,
-                           event.GetX(), event.GetY() );
+
+  /* Modern input (GTK 3 smooth scrolling, high-resolution wheels, tilt
+     wheels, touchpads) sends events that FrameMouseWheelCallback, written
+     for classic wheel notches, mishandled: a zero rotation counted as
+     "down", horizontal events scrolled vertically, and every fraction of a
+     notch scrolled a full step.  Near the top of a document this moved the
+     view down on a wheel-up tick.
+     - ignore zero rotations
+     - horizontal axis -> horizontal scrolling (via the Shift path)
+     - accumulate fractions of a notch; one step per full notch */
+  if (direction == 0 || frame <= 0 || frame >= MAX_FRAME)
+    return;
+  if (delta <= 0)
+    delta = 120;
+  bool horizontal = (event.GetWheelAxis() == wxMOUSE_WHEEL_HORIZONTAL);
+  static int accum[MAX_FRAME][2];
+  int *acc = &accum[frame][horizontal ? 1 : 0];
+  if ((*acc > 0 && direction < 0) || (*acc < 0 && direction > 0))
+    *acc = 0;            /* direction reversed: drop the remainder */
+  *acc += direction;
+  while (*acc >= delta || *acc <= -delta)
+    {
+      int step = (*acc > 0) ? delta : -delta;
+      *acc -= step;
+      if (horizontal)
+        /* wx: positive horizontal rotation = scroll right; the Shift path
+           of FrameMouseWheelCallback scrolls left for a positive value */
+        FrameMouseWheelCallback( frame, thot_mod_mask | THOT_MOD_SHIFT,
+                                 -step, delta,
+                                 event.GetX(), event.GetY() );
+      else
+        FrameMouseWheelCallback( frame, thot_mod_mask, step, delta,
+                                 event.GetX(), event.GetY() );
+    }
   //GL_Swap( frame );
 }
 
