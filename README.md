@@ -58,6 +58,7 @@ mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make -j$(nproc) 2>&1 | tee build.log
 ./amaya/amaya            # or: ./amaya/amaya /path/to/file.html
+                         # (the build also produces ./amaya/print, used by File > Print)
 ```
 
 The `patches/` directory is kept only as a historical record of how the port

@@ -79,6 +79,7 @@
   #include "AmayaApp.h"
   #include "AmayaPrintNotify.h"
   static wxGLCanvas * wx_canvas = NULL;
+  static wxGLContext * wx_glcontext = NULL;
   extern AmayaPrintNotify * g_p_print_dialog;
 
 #endif /* _WX */
@@ -204,11 +205,14 @@ void GetGLContext ()
 #endif /* _GTK */
 
 #ifdef _WX
-  wx_canvas = new wxGLCanvas( g_p_print_dialog, -1,
+  /* wx 3: the attribute list is the 3rd constructor argument and the GL
+     context is a separate wxGLContext object */
+  wx_canvas = new wxGLCanvas( g_p_print_dialog, wxID_ANY,
+			      AmayaApp::GetGL_AttrList(),
 			      wxDefaultPosition, wxDefaultSize,
-			      0, _T("AmayaCanvas"),
-			      AmayaApp::GetGL_AttrList() );
-  wx_canvas->SetCurrent(*wx_canvas->GetGLContext());
+			      0, _T("AmayaCanvas") );
+  wx_glcontext = new wxGLContext( wx_canvas );
+  wx_canvas->SetCurrent( *wx_glcontext );
 #endif /* _WX */
 
   SetGlPipelineState ();
@@ -463,7 +467,8 @@ ThotBool GL_prepare (int frame)
 #endif 
 
 #ifdef _WX
-  wx_canvas->SetCurrent(*wx_canvas->GetGLContext());
+  if (wx_canvas && wx_glcontext)
+    wx_canvas->SetCurrent( *wx_glcontext );
 #endif /* _WX */
   
 #ifdef _WINGUI

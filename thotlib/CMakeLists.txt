@@ -1,6 +1,6 @@
 # thotlib/CMakeLists.txt
 # Builds libThotEditor.a (the Thot rendering + wx UI engine)
-# Linux/amd64 only; no Windows, no macOS, no print binary.
+# Linux/amd64 only; no Windows, no macOS.  Also builds the "print" helper.
 
 # ── source helper ─────────────────────────────────────────────────────────────
 # Prefixes each filename with ${CMAKE_CURRENT_SOURCE_DIR}/
@@ -271,3 +271,153 @@ foreach(src ${THOTEDITOR_SOURCES})
     set_source_files_properties(${src} PROPERTIES LANGUAGE CXX)
   endif()
 endforeach()
+
+# ── print: the helper program Amaya runs to print / make PostScript ─────────
+# Amaya launches "<directory of the amaya binary>/print", so the executable is
+# written next to amaya.  The source list mirrors THOTK_OBJ + DISPLAY_OBJ +
+# PRINT_OBJ of the original thotlib/Makefile.in.  AmayaApp.cpp and paginate.c
+# are compiled a second time with print-specific definitions (the original
+# AmayaAppPP.o / paginatePP.o); separate object libraries keep those
+# definitions away from the editor's copies.
+thot_sources(PRINT_SRCS
+  base/AmayaAppInstance.cpp
+  base/AmayaLogDebug.cpp
+  base/wxAmayaTimer.cpp
+  base/wxAmayaSocketEvent.cpp
+  base/wxAmayaSocketEventLoop.cpp
+  base/global.c
+  base/memory.c
+  base/message.c
+  base/platform.c
+  base/registry.c
+  base/registry_wx.c
+  base/message_wx.c
+  base/actions.c
+  base/units.c
+  base/logdebug.c
+  base/testcase.c
+  document/externalref.c
+  document/language.c
+  document/readprs.c
+  document/readstr.c
+  document/readtra.c
+  document/schtrad.c
+  document/writeprs.c
+  document/writestr.c
+  tree/exceptions.c
+  tree/tree.c
+  tree/checkaccess.c
+  tree/labelalloc.c
+  unicode/uconvert.c
+  unicode/ustring.c
+  base/fileaccess.c
+  content/content.c
+  content/dictionary.c
+  image/encdec.c
+  dialogue/fontserver.c
+  dialogue/fontconfig.c
+  dialogue/font.c
+  dialogue/stix.c
+  document/documentapi.c
+  document/readpivot.c
+  document/schemas.c
+  document/translation.c
+  editing/applicationapi.c
+  image/abspictures.c
+  image/epshandler.c
+  image/gifhandler.c
+  image/jpeghandler.c
+  image/picture.c
+  image/pnghandler.c
+  image/xpmhandler.c
+  presentation/attrpresent.c
+  presentation/changepresent.c
+  presentation/presrules.c
+  presentation/presvariables.c
+  presentation/pschemaapi.c
+  presentation/style.c
+  tree/attributes.c
+  tree/pagecommands.c
+  tree/references.c
+  tree/structschema.c
+  view/absboxes.c
+  view/boxmoves.c
+  view/boxpositions.c
+  view/boxrelations.c
+  view/buildboxes.c
+  view/buildlines.c
+  view/changeabsbox.c
+  view/createabsbox.c
+  view/createpages.c
+  view/displaybox.c
+  view/displayview.c
+  view/frame.c
+  view/hyphen.c
+  view/tesse.c
+  view/glgradient.c
+  dialogue/glglyph.c
+  dialogue/openglfont.c
+  view/glwindowdisplay.c
+  view/gldisplay.c
+  view/spline.c
+  dialogue/AmayaActionEvent.cpp
+  dialogue/AmayaPrintNotify.cpp
+  dialogue/nodialog.c
+  view/initpses.c
+  view/psdisplay.c
+  view/printgl.c
+  view/tableH.c
+  editing/print.c
+)
+
+set(_print_includes
+  ${CMAKE_SOURCE_DIR}/thotlib/include
+  ${CMAKE_SOURCE_DIR}/thotlib/internals/h
+  ${CMAKE_SOURCE_DIR}/thotlib/internals/var
+  ${CMAKE_SOURCE_DIR}/thotlib/internals/f
+  ${CMAKE_SOURCE_DIR}/compat
+  ${CMAKE_BINARY_DIR}
+  ${FREETYPE_INCLUDE_DIRS}
+  ${FONTCONFIG_INCLUDE_DIRS}
+  ${GTK3_INCLUDE_DIRS}
+  ${wxWidgets_INCLUDE_DIRS}
+)
+set(_print_definitions ${wxWidgets_DEFINITIONS} WX_PRECOMP GL_GLEXT_PROTOTYPES)
+
+add_library(print_appPP OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/base/AmayaApp.cpp)
+target_compile_definitions(print_appPP PRIVATE ${_print_definitions} _GLPRINT)
+add_library(print_paginatePP OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/tree/paginate.c)
+target_compile_definitions(print_paginatePP PRIVATE ${_print_definitions} PAGINEETIMPRIME)
+
+add_executable(print
+  ${PRINT_SRCS}
+  $<TARGET_OBJECTS:print_appPP>
+  $<TARGET_OBJECTS:print_paginatePP>
+)
+target_compile_definitions(print PRIVATE ${_print_definitions})
+foreach(_t print print_appPP print_paginatePP)
+  target_include_directories(${_t} PRIVATE ${_print_includes})
+  target_compile_options(${_t} PRIVATE
+    ${FREETYPE_CFLAGS_OTHER} ${FONTCONFIG_CFLAGS_OTHER} ${GTK3_CFLAGS_OTHER})
+endforeach()
+foreach(src ${PRINT_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/tree/paginate.c)
+  if(src MATCHES "\\.c$")
+    set_source_files_properties(${src} PROPERTIES LANGUAGE CXX)
+  endif()
+endforeach()
+target_link_libraries(print PRIVATE
+  CSS
+  ${wxWidgets_LIBRARIES}
+  OpenGL::GL
+  OpenGL::GLU
+  ${FREETYPE_LIBRARIES}
+  ${FONTCONFIG_LIBRARIES}
+  ZLIB::ZLIB
+  PNG::PNG
+  ${JPEG_LIBRARIES}
+  pthread
+  dl
+  m
+)
+set_target_properties(print PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/amaya)
+install(TARGETS print DESTINATION bin)
