@@ -240,8 +240,15 @@ int ustrcmp (const CHAR_T *str1, const CHAR_T *str2)
   -------------------------------------------------------------*/
 CHAR_T *ustrcpy (CHAR_T *dest, const CHAR_T *src)
 {
-  /* Compatibility of wcscpy: ANSI, WIN NT and WIN 9x */
-  return (CHAR_T*) wcscpy ((wchar_t *)dest, (wchar_t *)src);
+  /* Thot shifts text inside its buffers with ustrcpy/ustrncpy, i.e. with
+     overlapping source and destination.  wcscpy/wcsncpy are undefined on
+     overlapping ranges, and current glibc copies in vector-sized chunks, which
+     duplicated and scrambled text after an edit (e.g. "text" -> "tteexxtt").
+     memmove is defined for overlapping ranges and gives the same result
+     otherwise. */
+  size_t n = wcslen ((const wchar_t *)src) + 1;
+  memmove (dest, src, n * sizeof (CHAR_T));
+  return dest;
 }
 
 
@@ -325,8 +332,13 @@ CHAR_T *ustrncmp (const CHAR_T *str1, const CHAR_T *str2, unsigned int count)
   -------------------------------------------------------------*/
 CHAR_T *ustrncpy (CHAR_T *dest, const CHAR_T *src, unsigned int count)
 {
-  /* Compatibility of wcsncpy: ANSI, WIN NT and WIN 9x */
-  return (CHAR_T*) wcsncpy ((wchar_t*)dest, (wchar_t*)src, (size_t)count);
+  /* overlap-safe wcsncpy (see ustrcpy): copy up to count characters, stopping
+     at the terminating EOS, then pad with EOS up to count */
+  size_t n = wcsnlen ((const wchar_t *)src, (size_t)count);
+  memmove (dest, src, n * sizeof (CHAR_T));
+  if (n < (size_t)count)
+    memset (dest + n, 0, ((size_t)count - n) * sizeof (CHAR_T));
+  return dest;
 }
 
 
