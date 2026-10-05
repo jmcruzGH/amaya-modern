@@ -1198,9 +1198,7 @@ ThotBool IsHTTPPath (const char *path)
     return FALSE;
 
   if ((!strncmp (path, "http:", 5) != 0)
-#ifdef SSL
-      || !strncmp (path, "https:", 6)
-#endif /* SSL */
+      || !strncmp (path, "https:", 6)  /* libcurl: always available */
       || !strncmp (path, "ftp:", 4)
       || !strncmp (path, "internal:", 9))
     return TRUE;
@@ -1266,9 +1264,7 @@ ThotBool IsFilePath (const char *path)
 ThotBool IsValidProtocol (const char *url)
 {
   if (!strncmp (url, "http:", 5)
-#ifdef SSL
-      || !strncmp (url, "https:", 6)
-#endif /* SSL */
+      || !strncmp (url, "https:", 6)  /* libcurl: always available */
       || !strncmp (url, "internal:", 9)
       || !strncmp (url, "ftp:", 4))
     /* experimental */

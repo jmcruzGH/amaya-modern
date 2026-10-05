@@ -47,7 +47,7 @@ add_compile_definitions(
   # Disable optional subsystems we are not porting in Phase 1
   NO_ANNOT          # annotation library
   NO_DAV            # WebDAV library  
-  # SSL kept conditional -- Phase 3 will replace libwww with libcurl
+  # https: is always supported (libcurl); no SSL define needed
 )
 
 # ── Find packages ─────────────────────────────────────────────────────────────

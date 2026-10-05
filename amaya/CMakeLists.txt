@@ -167,8 +167,7 @@ target_include_directories(amaya PRIVATE
 
 target_compile_definitions(amaya PRIVATE
   ${wxWidgets_DEFINITIONS}
-  # Phase 1: local file + HTTP-only; SSL compiled out
-  # Phase 3: add -DSSL once libcurl HTTPS is wired in
+  # http: and https: are both handled by libcurl (no SSL define needed)
 )
 
 target_link_libraries(amaya PRIVATE
