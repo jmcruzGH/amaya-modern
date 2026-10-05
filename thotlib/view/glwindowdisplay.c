@@ -1339,10 +1339,15 @@ void SetGlPipelineState ()
   
   if (!Software_Mode)
     {
-      /* default value is true because I've seen performance
-       * improvments on windows when badbuffer is true */
-      TtaSetEnvBoolean("ENABLE_BAD_BUFFER", TRUE, FALSE);
-      TtaGetEnvBoolean ("ENABLE_BAD_BUFFER", &badbuffer);
+      /* GL_PARTIAL_REDRAW=yes trusts the back buffer after a buffer swap
+       * and redraws only the changed areas (what the old ENABLE_BAD_BUFFER
+       * preference did by default, for speed on old Windows drivers).  With
+       * current drivers and compositors the back buffer is undefined after
+       * SwapBuffers, so partial redraws show stale or misplaced content:
+       * the default is now full redraws.  A new name is used because Amaya
+       * saved ENABLE_BAD_BUFFER=yes in every user's thot.rc. */
+      TtaSetEnvBoolean ("GL_PARTIAL_REDRAW", FALSE, FALSE);
+      TtaGetEnvBoolean ("GL_PARTIAL_REDRAW", &badbuffer);
       SetBadCard (!badbuffer);
     }
   
@@ -1516,7 +1521,7 @@ void GL_window_copy_area (int frame, int xf, int yf, int x_source, int y_source,
 
       /*Hardware rendering faster than Reading pixel from buffer
         (here glcopypixels)*/
-      if (!Software_Mode)
+      if (!Software_Mode || GetBadCard ())
 	{
 	  DefClip (frame, -1, -1, -1, -1);
           return;

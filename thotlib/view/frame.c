@@ -150,6 +150,15 @@ void DefClip (int frame, int xstart, int ytop, int xstop, int ybottom)
         }
     }
 
+#ifdef _GL
+  /* When the back buffer cannot be trusted after a buffer swap (the default,
+     see SetBadCard), a partial redraw would be drawn over stale content:
+     always redraw the whole frame. */
+  if (GetBadCard () &&
+      !(xstart == xstop && xstart == 0 && ytop == ybottom && ytop == 0))
+    xstart = xstop = -1;
+#endif /* _GL */
+
   pFrame = &ViewFrameTable[frame - 1];
   scrollx = pFrame->FrXOrg;	
   scrolly = pFrame->FrYOrg; 

@@ -1039,4 +1039,13 @@ int WDrawString (wchar_t *buff, int lg, int frame, int x, int y,
 void SetBadCard (ThotBool badbuffer)
 {
 }
+
+/*----------------------------------------------------------------------
+  GetBadCard : the print program never displays a swapped buffer, so
+  partial redraws are always fine here (see gltimer.c for the editor).
+  ----------------------------------------------------------------------*/
+ThotBool GetBadCard ()
+{
+  return FALSE;
+}
 #endif /* _GL */

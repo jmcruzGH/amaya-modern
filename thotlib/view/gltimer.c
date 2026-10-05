@@ -73,7 +73,11 @@
 #ifdef _WX
 static wxAmayaTimer * AnimTimer = NULL; 
 #endif /* _WX */
-static ThotBool BadGLCard = FALSE;
+/* TRUE: do not trust the back buffer after a buffer swap, i.e. always
+   redraw the whole frame.  Modern drivers and compositors leave the back
+   buffer undefined after SwapBuffers, so this is the safe default; set
+   GL_PARTIAL_REDRAW=yes in thot.rc to restore partial redraws. */
+static ThotBool BadGLCard = TRUE;
 /* Animation Smoothness*/
 #define FPS 25 /*Frame Per Second*/
 #define INTERVAL 0.02 /*1/FPS*/ /* should be 1/25 ... 1/50 */
