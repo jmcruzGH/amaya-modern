@@ -5801,6 +5801,59 @@ void CheckDocHeader (char *fileName, ThotBool *xmlDec, ThotBool *docType,
 }
 
 /*----------------------------------------------------------------------
+  FindHTML5MetaCharset
+  Looks in buf, before <body>, for an HTML5 declaration
+  <meta charset="utf-8"> (quotes optional).  Returns TRUE if a known
+  charset was found.
+  ----------------------------------------------------------------------*/
+static ThotBool FindHTML5MetaCharset (char *buf, CHARSET *charset,
+                                      char *charsetname)
+{
+  char *p = buf, *end, *c, save, quote;
+  char *limit = (char*)StrCaseStr (buf, "<body");
+  int   k;
+
+  while ((p = (char*)StrCaseStr (p, "<meta")) != NULL && (!limit || p < limit))
+    {
+      end = strchr (p, '>');
+      if (!end)
+        break;
+      save = *end;
+      *end = EOS;
+      c = (char*)StrCaseStr (p, "charset");
+      /* an attribute of its own, not the charset in content="...; charset=" */
+      if (c && (c[-1] == ' ' || c[-1] == '\t' || c[-1] == '\n' || c[-1] == '\r')
+          && !StrCaseStr (p, "http-equiv"))
+        {
+          c += 7;
+          while (*c == ' ' || *c == '\t') c++;
+          if (*c == '=')
+            {
+              c++;
+              while (*c == ' ' || *c == '\t') c++;
+              quote = (*c == '"' || *c == '\'') ? *c++ : EOS;
+              k = 0;
+              while (*c != EOS && k < MAX_LENGTH - 1 &&
+                     (quote ? *c != quote :
+                      (*c != ' ' && *c != '\t' && *c != '/')))
+                charsetname[k++] = *c++;
+              charsetname[k] = EOS;
+              *end = save;
+              if (k > 0)
+                {
+                  *charset = TtaGetCharset (charsetname);
+                  return (*charset != UNDEFINED_CHARSET);
+                }
+              return FALSE;
+            }
+        }
+      *end = save;
+      p = end + 1;
+    }
+  return FALSE;
+}
+
+/*----------------------------------------------------------------------
   CheckCharsetInMeta
   Parses the loaded file to detect if it includes a charset value 
   in a META element 
@@ -5895,6 +5948,10 @@ void CheckCharsetInMeta (char *fileName, CHARSET *charset, char *charsetname)
                     }
                 }
             }
+          /* HTML5 form: <meta charset="..."> */
+          if (*charset == UNDEFINED_CHARSET &&
+              FindHTML5MetaCharset (&buffer[i], charset, charsetname))
+            endOfSniffedFile = TRUE;
           /* looks for the <body> element */
           if (!endOfSniffedFile)
             {
