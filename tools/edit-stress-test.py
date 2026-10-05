@@ -58,5 +58,8 @@ x('key','ctrl+s'); time.sleep(2); x('key','ctrl+q'); time.sleep(3)
 subprocess.run('pkill amaya; pkill openbox; pkill Xvfb',shell=True)
 saved=re.sub(r'\s+',' ',open('/tmp/corrupt.html',encoding='utf-8').read())
 got=re.search(r'<p>(.*?)</p>',saved).group(1)
+# HTML collapses runs of white space (and the saved file is compared that
+# way), so normalize the expected text the same way
+text=re.sub(r'\s+',' ',text)
 print("OK" if got==text else "MISMATCH")
 if got!=text: print(" expected:",text); print(" got:     ",got); print(" ops:",ops)
