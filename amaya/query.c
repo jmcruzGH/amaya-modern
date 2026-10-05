@@ -254,8 +254,23 @@ static size_t header_cb(char *buffer, size_t size, size_t nitems, void *userdata
   char *end = header + len - 1;
   while (end > header && (*end == '\r' || *end == '\n')) *end-- = '\0';
 
+  /* Status line (one per response; several with redirections):
+     "HTTP/1.1 404 Not Found", "HTTP/2 200".  Start afresh for each
+     response so that headers of a redirection do not linger. */
+  if (strncmp(header, "HTTP/", 5) == 0) {
+    char *p = strchr(header, ' ');
+    if (p) p = strchr(p + 1, ' ');          /* skip the status code */
+    if (me->http_headers.reason) TtaFreeMemory(me->http_headers.reason);
+    me->http_headers.reason = (p && p[1]) ? TtaStrdup(p + 1) : NULL;
+    if (me->http_headers.content_type)
+      { TtaFreeMemory(me->http_headers.content_type); me->http_headers.content_type = NULL; }
+    if (me->http_headers.charset)
+      { TtaFreeMemory(me->http_headers.charset); me->http_headers.charset = NULL; }
+    if (me->http_headers.content_length)
+      { TtaFreeMemory(me->http_headers.content_length); me->http_headers.content_length = NULL; }
+  }
   /* Content-Type */
-  if (strncasecmp(header, "Content-Type:", 13) == 0) {
+  else if (strncasecmp(header, "Content-Type:", 13) == 0) {
     char *val = header + 13;
     while (*val == ' ') val++;
     if (me->http_headers.content_type) TtaFreeMemory(me->http_headers.content_type);
@@ -266,6 +281,11 @@ static size_t header_cb(char *buffer, size_t size, size_t nitems, void *userdata
       char *cs = strcasestr(semi + 1, "charset=");
       if (cs) {
         cs += 8;
+        if (*cs == '"') {                       /* charset="utf-8" */
+          cs++;
+          char *q = strchr(cs, '"');
+          if (q) *q = '\0';
+        }
         if (me->http_headers.charset) TtaFreeMemory(me->http_headers.charset);
         me->http_headers.charset = TtaStrdup(cs);
       }
@@ -305,6 +325,70 @@ void AmayaCurlPoll(void)
   curl_check_multi_info();
 }
 
+/* -- Errors -------------------------------------------------------------
+   As the libwww version did: when the caller wants HTML errors (loading a
+   document), an HTTP error page sent by the server is displayed like a
+   normal page; the error is flagged (AMAYA_NET_ERROR, so "Finished!" is not
+   shown) and reported in the status bar.  When there is no server answer at
+   all (connection refused, unknown host, TLS failure...), a small page
+   stating the reason is generated instead of a blank document. */
+static void html_escape_to(FILE *f, const char *s)
+{
+  for (; s && *s; s++)
+    switch (*s) {
+    case '<': fputs("&lt;", f); break;
+    case '>': fputs("&gt;", f); break;
+    case '&': fputs("&amp;", f); break;
+    default:  fputc(*s, f);
+    }
+}
+
+static int report_error(AHTReqContext *me, CURLcode res)
+{
+  char message[300];
+  if (res != CURLE_OK)
+    snprintf(message, sizeof(message), "%s", curl_easy_strerror(res));
+  else
+    snprintf(message, sizeof(message), "HTTP %ld%s%s", me->http_status,
+             me->http_headers.reason ? " " : "",
+             me->http_headers.reason ? me->http_headers.reason : "");
+  for (char *c = message; *c; c++)
+    if (*c == '%' || *c == '\r' || *c == '\n')
+      *c = ' ';
+  if (me->docid > 0)
+    TtaSetStatus(me->docid, 1, message, NULL);
+  if (!me->error_html || !me->outputfile)
+    return HT_ERROR;
+
+  if (me->docid > 0)
+    DocNetworkStatus[me->docid] |= AMAYA_NET_ERROR;
+  if (res == CURLE_OK && TtaGetFileSize(me->outputfile) > 0)
+    /* display the error page sent by the server */
+    return HT_OK;
+
+  FILE *f = fopen(me->outputfile, "w");
+  if (!f)
+    return HT_ERROR;
+  fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+        "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+        "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head>"
+        "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
+        "<title>Cannot load page</title></head><body>\n"
+        "<h1>Cannot load page</h1>\n<p>", f);
+  html_escape_to(f, me->urlName);
+  fputs("</p>\n<p>", f);
+  html_escape_to(f, message);
+  fputs("</p>\n</body></html>\n", f);
+  fclose(f);
+  if (me->http_headers.content_type)
+    TtaFreeMemory(me->http_headers.content_type);
+  me->http_headers.content_type = TtaStrdup("text/html");
+  if (me->http_headers.charset)
+    TtaFreeMemory(me->http_headers.charset);
+  me->http_headers.charset = TtaStrdup("utf-8");
+  return HT_OK;
+}
+
 /* ── Check completed transfers ──────────────────────────────────────────── */
 
 static void curl_check_multi_info(void)
@@ -331,22 +415,21 @@ static void curl_check_multi_info(void)
     }
     me->http_headers.status = (int)me->http_status;
 
-    /* Determine success/failure */
-    int amaya_status;
-    if (msg->data.result == CURLE_OK && me->http_status >= 200 && me->http_status < 400)
-      amaya_status = HT_OK;
-    else if (me->http_status >= 400)
-      amaya_status = HT_ERROR;
-    else
-      amaya_status = HT_ERROR;
-
-    me->reqStatus = HT_IDLE;
-
-    /* Close output file before callback reads it */
+    /* Close output file before the callback reads it */
     if (me->output) {
       fclose(me->output);
       me->output = NULL;
     }
+
+    /* Determine success/failure */
+    int amaya_status;
+    CURLcode res = msg->data.result;
+    if (res == CURLE_OK && me->http_status >= 200 && me->http_status < 400)
+      amaya_status = HT_OK;
+    else
+      amaya_status = report_error(me, res);
+
+    me->reqStatus = HT_IDLE;
 
     /* Update document request counter */
     AHTDocId_Status *ds = GetDocIdStatus(me->docid, s_doc_list);
