@@ -19,6 +19,9 @@
 
 #include "thot_gui.h"
 #include "thot_sys.h"
+#ifdef _WX
+extern void TtaScheduleFrameRedraw (int frame);
+#endif /* _WX */
 #include "libmsg.h"
 #include "message.h"
 #include "language.h"
@@ -4689,7 +4692,13 @@ void TtcPaste (Document doc, View view)
           /* close the undo sequence */
           CloseHistorySequence (pDoc);
           if (dispMode == DisplayImmediately)
-            TtaSetDisplayMode (doc, dispMode);
+            {
+              TtaSetDisplayMode (doc, dispMode);
+#ifdef _WX
+              /* make sure the pasted content reaches the screen */
+              TtaScheduleFrameRedraw (frame);
+#endif /* _WX */
+            }
         }
     }
 }

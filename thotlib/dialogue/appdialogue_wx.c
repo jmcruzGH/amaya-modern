@@ -2545,3 +2545,31 @@ void TtaRaiseDoctypePanels(int doctype)
 }
 
 #endif /* _WX */
+
+#ifdef _WX
+/*----------------------------------------------------------------------
+  TtaScheduleFrameRedraw: queue a full redraw of the frame, to be done once
+  the current event has been handled.  Used after pasting: when the data
+  comes from another application, GTK fetches it in a nested event loop and,
+  depending on timing, the redraw done by the paste itself may not reach the
+  screen (seen with Ctrl+V; not reproducible under a debugger).
+  ----------------------------------------------------------------------*/
+extern void DefClip (int frame, int xstart, int ytop, int xstop, int ybottom);
+void TtaScheduleFrameRedraw (int frame)
+{
+#ifdef _GL
+  if (frame <= 0 || frame >= MAX_FRAME || wxTheApp == NULL)
+    return;
+  Document doc = FrameTable[frame].FrDoc;
+  wxTheApp->CallAfter ([frame, doc]() {
+      if (doc > 0 && FrameTable[frame].WdFrame &&
+          FrameTable[frame].FrDoc == doc)
+        {
+          DefClip (frame, -1, -1, -1, -1);
+          FrameTable[frame].DblBuffNeedSwap = TRUE;
+          GL_DrawAll ();
+        }
+    });
+#endif /* _GL */
+}
+#endif /* _WX */
