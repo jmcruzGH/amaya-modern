@@ -1020,17 +1020,7 @@ void AmayaNormalWindow::OnMenuItem( wxCommandEvent& event )
     FrameToView (GetPageContainer()->GetMContextFrame(), &doc, &view);
   else
     FrameToView (TtaGiveActiveFrame(), &doc, &view);
-  if (action_id >= 0)
-    /* Run the action once GTK has finished handling the menu click.  Under
-       wx 3 / GTK 3, an action that closes a document (File > Close tab)
-       rebuilds the menus while GTK is still inside the menu callback; the
-       menu state is then corrupted ("g_signal_handler_disconnect: assertion
-       failed") and later menu commands and shortcuts are ignored. */
-    CallAfter([action_id, doc, view]() {
-        AmayaWindow::DoAmayaAction( action_id, doc, view );
-      });
-  else
-    AmayaWindow::DoAmayaAction( action_id, doc, view );
+  AmayaWindow::DoAmayaAction( action_id, doc, view );
   if (action_id == -1)
     // Open recent documents
     event.Skip();
