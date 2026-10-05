@@ -34,7 +34,8 @@ subprocess.Popen('./amaya /tmp/corrupt.html',shell=True,env=env,cwd=os.path.join
 def x(*a): subprocess.run(['xdotool',*a],env=env)
 words=["file","XY","longer-word","a","éç"]
 ops=[]
-for k in range(15):
+NOPS=int(os.environ.get("NOPS","15"))
+for k in range(NOPS):
     pos=random.randint(0,40); kind=random.choice(["del","bs","sel","ins"]); n=random.randint(1,8); w=random.choice(words)
     x('mousemove','60','148','click','1'); time.sleep(0.4); x('key','Home'); time.sleep(0.2)
     for i in range(pos): x('key','Right')
@@ -53,6 +54,10 @@ for k in range(15):
         x('type','--delay','80',w); text=text[:pos]+w+text[pos+n:]
     else:
         x('type','--delay','80',w); text=text[:pos]+w+text[pos:]
+    # Adjacent spaces are displayed as one and the caret cannot stop between
+    # them, so caret positions count a run of spaces as one: keep the model
+    # in that form
+    text=re.sub(r' {2,}',' ',text)
     ops.append((kind,pos,n,w)); time.sleep(0.4)
 x('key','ctrl+s'); time.sleep(2); x('key','ctrl+q'); time.sleep(3)
 subprocess.run('pkill amaya; pkill openbox; pkill Xvfb',shell=True)
