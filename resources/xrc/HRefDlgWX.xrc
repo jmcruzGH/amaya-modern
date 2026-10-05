@@ -42,6 +42,7 @@
               </object>
               <object class="sizeritem">
                 <object class="wxComboBox" name="wxID_COMBOBOX">
+                  <style>wxTE_PROCESS_ENTER</style>
                   <content/>
                   <size>400,-1</size>
                   <focused>1</focused>

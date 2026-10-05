@@ -116,6 +116,7 @@
       </object>
       <object class="sizeritem">
         <object class="wxComboBox" name="wxID_ATTR_COMBO_VALUE">
+          <style>wxTE_PROCESS_ENTER</style>
           <content/>
         </object>
         <option>1</option>

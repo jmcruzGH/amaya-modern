@@ -33,6 +33,7 @@
                   </object>
                   <object class="sizeritem">
                     <object class="wxTextCtrl" name="wxID_NAME">
+                      <style>wxTE_PROCESS_ENTER</style>
                       <value>h2</value>
                       <size>200,-1</size>
                       <focused>1</focused>

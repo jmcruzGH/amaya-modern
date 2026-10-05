@@ -27,6 +27,7 @@
       </object>
       <object class="sizeritem">
         <object class="wxComboBox" name="wxID_TOOL_URL">
+          <style>wxTE_PROCESS_ENTER</style>
           <content/>
           <size>-1,-1</size>
         </object>

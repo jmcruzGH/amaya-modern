@@ -53,7 +53,7 @@
           </object>
           <object class="sizeritem">
             <object class="wxTextCtrl" name="wxID_PASSWD">
-              <style>wxTE_PASSWORD</style>
+              <style>wxTE_PASSWORD|wxTE_PROCESS_ENTER</style>
             </object>
             <flag>wxEXPAND</flag>
             <border>5</border>

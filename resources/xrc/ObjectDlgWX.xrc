@@ -30,6 +30,7 @@
               </object>
               <object class="sizeritem">
                 <object class="wxTextCtrl" name="wxID_URL">
+                  <style>wxTE_PROCESS_ENTER</style>
                   <size>400,-1</size>
                   <focused>1</focused>
                 </object>
@@ -94,6 +95,7 @@
               </object>
               <object class="sizeritem">
                 <object class="wxTextCtrl" name="wxID_ALT">
+                  <style>wxTE_PROCESS_ENTER</style>
                   <size>300,-1</size>
                 </object>
                 <flag>wxEXPAND</flag>

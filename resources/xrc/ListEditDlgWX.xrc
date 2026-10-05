@@ -31,6 +31,7 @@
           </object>
           <object class="sizeritem">
             <object class="wxTextCtrl" name="wxID_TEXT">
+              <style>wxTE_PROCESS_ENTER</style>
               <focused>1</focused>
             </object>
             <flag>wxEXPAND</flag>

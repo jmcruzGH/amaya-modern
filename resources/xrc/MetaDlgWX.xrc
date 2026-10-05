@@ -17,6 +17,7 @@
           </object>
           <object class="sizeritem">
             <object class="wxTextCtrl" name="wxID_NAME"/>
+            <style>wxTE_PROCESS_ENTER</style>
             <option>1</option>
             <flag>wxALL</flag>
             <border>4</border>

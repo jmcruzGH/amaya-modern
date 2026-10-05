@@ -1224,6 +1224,7 @@
               </object>
               <object class="sizeritem">
                 <object class="wxComboBox" name="wxID_VALUE_DAV_RESOURCES"/>
+                <style>wxTE_PROCESS_ENTER</style>
                 <option>1</option>
                 <flag>wxEXPAND</flag>
               </object>
@@ -1301,6 +1302,7 @@
               <orient>wxHORIZONTAL</orient>
               <object class="sizeritem">
                 <object class="wxTextCtrl" name="wxID_TEXT_NEW_TEMPLATE"/>
+                <style>wxTE_PROCESS_ENTER</style>
                 <option>1</option>
               </object>
               <object class="sizeritem">
