@@ -4530,6 +4530,10 @@ void TtcPasteFromClipboard (Document doc, View view)
       wxTheClipboard->Close();
       TTALOGDEBUG_0( TTA_LOG_CLIPBOARD, _T("Closed the clipboard.\n") );
     }
+  /* back to the regular clipboard for later operations */
+  wxTheClipboard->UsePrimarySelection(false);
+  /* make sure the pasted content reaches the screen (see TtcPaste) */
+  TtaScheduleFrameRedraw (GetWindowNumber (doc, view));
 #endif /* _WX */
 }
 
