@@ -40,6 +40,7 @@
 #include "AmayaNormalWindow.h"
 #include "AmayaHelpWindow.h"
 #include "AmayaFrame.h"
+#include "displayview_f.h"
 #include "AmayaCanvas.h"
 #include "AmayaApp.h"
 #include "AmayaConfirmCloseTab.h"
@@ -137,7 +138,18 @@ bool AmayaAdvancedNotebook::ClosePage(int page_id)
       if (!GetAmayaWindow()->IsKindOf(CLASSINFO(AmayaHelpWindow))  &&
           AmayaNormalWindow::GetNormalWindowCount() == 1)
         {
-          TtaExecuteMenuAction("NewTab", 1, 1, FALSE);
+          /* Open the "empty" placeholder tab before closing the last one.
+             This used to pass document 1 / view 1, which only worked while
+             document 1 still existed: after closing it once and opening
+             another file (document 2), NewTab silently did nothing and the
+             last tab was deleted, leaving a window with no document. */
+          Document cdoc = 0;
+          View     cview = 0;
+          FrameToView (frame->GetFrameId(), &cdoc, &cview);
+          TtaExecuteMenuAction("NewTab", cdoc ? cdoc : 1, cview ? cview : 1, FALSE);
+          if (GetPageCount() == 1)
+            /* no placeholder tab was created: keep this one */
+            return false;
           result = false;
         }
       else

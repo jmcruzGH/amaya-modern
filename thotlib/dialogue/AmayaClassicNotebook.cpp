@@ -38,6 +38,7 @@
 #include "AmayaWindow.h"
 #include "AmayaNormalWindow.h"
 #include "AmayaFrame.h"
+#include "displayview_f.h"
 #include "AmayaCanvas.h"
 #include "AmayaApp.h"
 #include "AmayaConfirmCloseTab.h"
@@ -94,7 +95,20 @@ bool AmayaClassicNotebook::ClosePage(int page_id)
   if(GetPageCount()==1 &&
      AmayaNormalWindow::GetNormalWindowCount()==1)
 	{
-      TtaExecuteMenuAction("NewTab", 1, 1, FALSE);
+      /* use the document being closed, not document 1 (see
+         AmayaAdvancedNotebook::ClosePage) */
+      Document cdoc = 0;
+      View     cview = 0;
+      AmayaFrame *frame = page->GetActiveFrame();
+      if (frame)
+        FrameToView (frame->GetFrameId(), &cdoc, &cview);
+      TtaExecuteMenuAction("NewTab", cdoc ? cdoc : 1, cview ? cview : 1, FALSE);
+      if (GetPageCount() == 1)
+        {
+          /* no placeholder tab was created: keep this one */
+          page->Show();
+          return false;
+        }
 	  result = false;
 	}
   
