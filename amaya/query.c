@@ -593,7 +593,18 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
   }
   me->easy = easy;
 
-  curl_easy_setopt(easy, CURLOPT_URL, ref);
+  ThotBool is_post = (mode & AMAYA_FORM_POST) || (mode & AMAYA_FILE_POST);
+  if (formdata && !is_post && formdata[0] != EOS) {
+    /* GET form: send the data as the query part of the URL */
+    char *q = strchr(ref, '?');
+    if (q) *q = EOS;                      /* the form replaces any query */
+    char *full = (char *)TtaGetMemory(strlen(ref) + strlen(formdata) + 2);
+    sprintf(full, "%s?%s", ref, formdata);
+    curl_easy_setopt(easy, CURLOPT_URL, full);   /* curl copies the URL */
+    TtaFreeMemory(full);
+  }
+  else
+    curl_easy_setopt(easy, CURLOPT_URL, ref);
   TtaFreeMemory(ref);
   curl_easy_setopt(easy, CURLOPT_PRIVATE, (void*)me);
   curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
@@ -617,9 +628,11 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
     curl_easy_setopt(easy, CURLOPT_WRITEDATA, (void*)me);
   }
 
-  /* POST with form data */
-  if (formdata) {
-    curl_easy_setopt(easy, CURLOPT_POSTFIELDS, formdata);
+  /* Form data: POST only for AMAYA_FORM_POST/AMAYA_FILE_POST (as libwww);
+     for a GET form the data was appended to the URL above.  The caller may
+     free formdata as soon as we return, so curl must keep its own copy. */
+  if (formdata && is_post) {
+    curl_easy_setopt(easy, CURLOPT_COPYPOSTFIELDS, formdata);
     if (content_type) {
       char ct_header[256];
       snprintf(ct_header, sizeof(ct_header), "Content-Type: %s", content_type);
