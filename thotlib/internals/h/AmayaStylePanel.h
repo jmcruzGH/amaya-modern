@@ -93,7 +93,7 @@ protected:
   AmayaBaseToolBar *m_tbar1, *m_tbar2;
   wxColourData colour_data;
 
-  typedef enum{
+  enum{
     OPACITY,
     STROKE_OPACITY,
     FILL_OPACITY,

@@ -161,7 +161,12 @@ ThotBool TtaFileExist (CONST char *filename)
 ThotBool TtaFileUnlink (CONST char *filename)
 {
 #ifdef _WX
-  return wxRemoveFile(TtaConvMessageToWX(filename));
+  /* wx 3 logs an error dialog/message when the file does not exist;
+     unlink() semantics: just report failure */
+  wxString wx_name = TtaConvMessageToWX(filename);
+  if (!wxFileExists(wx_name))
+    return FALSE;
+  return wxRemoveFile(wx_name);
 #else /* _WX */
   int         ret;
   char       *name;

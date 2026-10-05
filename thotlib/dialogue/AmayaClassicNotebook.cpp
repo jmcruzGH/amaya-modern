@@ -337,8 +337,8 @@ void AmayaClassicNotebook::OnContextMenu( wxContextMenuEvent & event )
   long flags    = 0;
   int page_id   = 0;
   wxPoint point = event.GetPosition();
-  wxPoint origin = GetClientAreaOrigin();
 #ifdef _MACOS_26
+  wxPoint origin = GetClientAreaOrigin();
   point = ScreenToClient(point);
   point.y += origin.y; 
   page_id   = HitTest(point, &flags);
