@@ -153,10 +153,25 @@ void DefClip (int frame, int xstart, int ytop, int xstop, int ybottom)
 #ifdef _GL
   /* When the back buffer cannot be trusted after a buffer swap (the default,
      see SetBadCard), a partial redraw would be drawn over stale content:
-     always redraw the whole frame. */
+     redraw the whole visible frame.  Take the union of the requested area
+     and the visible frame (rather than replacing the request): a scroll
+     requests the newly exposed strip, in document coordinates, before it
+     moves the frame origin, and that strip must not be lost. */
   if (GetBadCard () &&
-      !(xstart == xstop && xstart == 0 && ytop == ybottom && ytop == 0))
-    xstart = xstop = -1;
+      !(xstart == xstop && xstart == 0 && ytop == ybottom && ytop == 0) &&
+      !(xstart == xstop && xstart == -1))
+    {
+      pFrame = &ViewFrameTable[frame - 1];
+      GetSizesFrame (frame, &width, &height);
+      if (xstart > pFrame->FrXOrg)
+        xstart = pFrame->FrXOrg;
+      if (xstop < pFrame->FrXOrg + width)
+        xstop = pFrame->FrXOrg + width;
+      if (ytop > pFrame->FrYOrg)
+        ytop = pFrame->FrYOrg;
+      if (ybottom < pFrame->FrYOrg + height)
+        ybottom = pFrame->FrYOrg + height;
+    }
 #endif /* _GL */
 
   pFrame = &ViewFrameTable[frame - 1];
