@@ -158,6 +158,18 @@ static AHTDocId_Status *get_or_create_docid_status(int docid)
 
 /* ── AHTReqContext lifecycle ────────────────────────────────────────────── */
 
+/* requests in progress (used by StopRequest) */
+static HTList *s_pending = NULL;
+
+/* register a request, reusing a free slot of the list if there is one */
+static void pending_add(AHTReqContext *me)
+{
+  if (!s_pending) return;
+  for (HTList *cur = s_pending->next; cur; cur = cur->next)
+    if (cur->object == NULL) { cur->object = me; return; }
+  HTList_addObject(s_pending, me);
+}
+
 AHTReqContext *AHTReqContext_new(int docid)
 {
   AHTReqContext *me = (AHTReqContext*)TtaGetMemory(sizeof(AHTReqContext));
@@ -170,6 +182,10 @@ AHTReqContext *AHTReqContext_new(int docid)
 ThotBool AHTReqContext_delete(AHTReqContext *me)
 {
   if (!me) return FALSE;
+  if (s_pending)
+    for (HTList *cur = s_pending->next; cur; cur = cur->next)
+      if (cur->object == me)
+        cur->object = NULL;
   if (me->easy) {
     curl_multi_remove_handle(s_curlm, me->easy);
     curl_easy_cleanup(me->easy);
@@ -306,6 +322,13 @@ static void curl_check_multi_info(void)
 
     /* Get final HTTP status */
     curl_easy_getinfo(easy, CURLINFO_RESPONSE_CODE, &me->http_status);
+    /* after redirections, report the final URL (as libwww did) */
+    char *effective = NULL;
+    curl_easy_getinfo(easy, CURLINFO_EFFECTIVE_URL, &effective);
+    if (effective && me->urlName && strcmp(effective, me->urlName)) {
+      TtaFreeMemory(me->urlName);
+      me->urlName = TtaStrdup(effective);
+    }
     me->http_headers.status = (int)me->http_status;
 
     /* Determine success/failure */
@@ -335,6 +358,11 @@ static void curl_check_multi_info(void)
 
 static void deliver_result(AHTReqContext *me, int status)
 {
+  if (me->sync_done) {
+    *me->sync_done = TRUE;
+    if (me->sync_status)
+      *me->sync_status = status;
+  }
   if (me->terminate_cbf) {
     me->terminate_cbf(me->docid, status,
                       me->urlName, me->outputfile,
@@ -357,6 +385,65 @@ void InvokeGetObjectWWW_callback(int docid, char *urlName, char *outputfile,
 
 /* ── GetObjectWWW -- the main fetch entry point ─────────────────────────── */
 
+/* Synchronous requests: drive the transfer here until it has ended (the
+   termination callback has then been called), still handling GUI events so
+   that the interface stays responsive, as libwww's LoopForStop did. */
+static int wait_for_request(AHTReqContext *me, int docid)
+{
+  ThotBool done = FALSE;
+  int      status = HT_ERROR;
+  me->sync_done = &done;
+  me->sync_status = &status;
+  SetStopButton(docid);
+  while (!done) {
+    int still_running = 0, numfds = 0;
+    curl_multi_perform(s_curlm, &still_running);
+    curl_check_multi_info();
+    if (done)
+      break;
+    curl_multi_poll(s_curlm, NULL, 0, 50, &numfds);
+    TtaHandlePendingEvents();
+  }
+  /* as libwww's version did: compensate the decrement done by ResetStop,
+     which would otherwise mark the document as no longer loading while
+     its own load (e.g. the page that needed this CSS) is still in
+     progress -- its images would then never be fetched */
+  FilesLoading[docid]++;
+  ResetStop(docid);
+  return status;
+}
+
+static int object_counter = 0;
+
+/* Create a temporary file name, as the libwww version did: CSS files go to
+   subdirectory 0, everything else to a subdirectory named after the docid.
+   The name is written into the caller's buffer, which callers then read. */
+static void GetOutputFileName(char *outputfile, int tempsubdir)
+{
+  char dir[MAX_LENGTH];
+  /* the per-document directory may not exist yet (e.g. when the first
+     document of a session is a remote one) */
+  snprintf(dir, sizeof(dir), "%s%c%d", TempFileDirectory, DIR_SEP, tempsubdir);
+  if (!TtaCheckDirectory(dir))
+    TtaMakeDirectory(dir);
+  sprintf(outputfile, "%s%c%d%c%04dAM", TempFileDirectory, DIR_SEP,
+          tempsubdir, DIR_SEP, object_counter);
+  object_counter++;
+}
+
+static int fail_request(int docid, char *urlName, char *outputfile,
+                        ThotBool error_html, TTcbf *terminate_cbf,
+                        void *context_tcbf)
+{
+  if (outputfile)
+    outputfile[0] = EOS;
+  if (error_html && docid > 0)
+    DocNetworkStatus[docid] |= AMAYA_NET_ERROR;
+  InvokeGetObjectWWW_callback(docid, urlName, outputfile, terminate_cbf,
+                              context_tcbf, HT_ERROR);
+  return HT_ERROR;
+}
+
 int GetObjectWWW(int docid, int refdoc, char *urlName,
                  const char *formdata, char *outputfile,
                  int mode,
@@ -364,21 +451,48 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
                  TTcbf *terminate_cbf, void *context_tcbf,
                  ThotBool error_html, const char *content_type)
 {
-  if (!s_curlm || !urlName) return HT_ERROR;
+  if (urlName == NULL || outputfile == NULL) {
+    TtaSetStatus(docid, 1, TtaGetMessage(AMAYA, AM_BAD_URL), urlName);
+    return fail_request(docid, urlName, outputfile, error_html,
+                        terminate_cbf, context_tcbf);
+  }
+  /* a 'docImage' that was already downloaded */
+  if (!strncmp("internal:", urlName, 9)) {
+    strcpy(outputfile, urlName);
+    InvokeGetObjectWWW_callback(docid, urlName, outputfile,
+                                terminate_cbf, context_tcbf, HT_OK);
+    return HT_OK;
+  }
+  if (!s_curlm ||
+      (strncmp(urlName, "http://", 7) && strncmp(urlName, "https://", 8))) {
+    TtaSetStatus(docid, 1, TtaGetMessage(AMAYA, AM_GET_UNSUPPORTED_PROTOCOL),
+                 urlName);
+    return fail_request(docid, urlName, outputfile, error_html,
+                        terminate_cbf, context_tcbf);
+  }
 
-  /* Phase 3: HTTP only.  Skip anything that isn't http:// or file:// */
-  if (strncmp(urlName, "http://",  7) != 0 &&
-      strncmp(urlName, "file://",  7) != 0 &&
-      strncmp(urlName, "/",        1) != 0) {
-    /* For HTTPS, remove this check -- libcurl handles it natively */
-    if (terminate_cbf)
-      terminate_cbf(docid, HT_ERROR, urlName, outputfile, NULL, NULL, context_tcbf);
-    return HT_ERROR;
+  /* temporary file that receives the body; its name goes back to the caller */
+  GetOutputFileName(outputfile, (mode & AMAYA_LOAD_CSS) ? 0 : docid);
+  if (TtaFileExist(outputfile))
+    TtaFileUnlink(outputfile);
+
+  /* normalize/escape the URL (spaces etc.) */
+  char *esc_url = EscapeURL(urlName);
+  char *ref = NULL;
+  if (esc_url) {
+    ref = AmayaParseUrl(esc_url, "", AMAYA_PARSE_ALL);
+    TtaFreeMemory(esc_url);
+  }
+  if (ref == NULL || ref[0] == EOS) {
+    TtaFreeMemory(ref);
+    TtaSetStatus(docid, 1, TtaGetMessage(AMAYA, AM_BAD_URL), urlName);
+    return fail_request(docid, urlName, outputfile, error_html,
+                        terminate_cbf, context_tcbf);
   }
 
   AHTReqContext *me = AHTReqContext_new(docid);
   me->urlName         = TtaStrdup(urlName);
-  me->outputfile      = outputfile ? TtaStrdup(outputfile) : NULL;
+  me->outputfile      = TtaStrdup(outputfile);
   me->mode            = mode;
   me->incremental_cbf = incremental_cbf;
   me->context_icbf    = context_icbf;
@@ -388,10 +502,16 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
 
   /* Build the easy handle */
   CURL *easy = curl_easy_init();
-  if (!easy) { AHTReqContext_delete(me); return HT_ERROR; }
+  if (!easy) {
+    AHTReqContext_delete(me);
+    TtaFreeMemory(ref);
+    return fail_request(docid, urlName, outputfile, error_html,
+                        terminate_cbf, context_tcbf);
+  }
   me->easy = easy;
 
-  curl_easy_setopt(easy, CURLOPT_URL, urlName);
+  curl_easy_setopt(easy, CURLOPT_URL, ref);
+  TtaFreeMemory(ref);
   curl_easy_setopt(easy, CURLOPT_PRIVATE, (void*)me);
   curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(easy, CURLOPT_MAXREDIRS, 10L);
@@ -404,7 +524,8 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
     me->output = fopen(outputfile, "wb");
     if (!me->output) {
       AHTReqContext_delete(me);
-      return HT_ERROR;
+      return fail_request(docid, urlName, outputfile, error_html,
+                          terminate_cbf, context_tcbf);
     }
     curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, write_to_file_cb);
     curl_easy_setopt(easy, CURLOPT_WRITEDATA, (void*)me);
@@ -438,11 +559,18 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
 
   me->reqStatus = HT_BUSY;
   get_or_create_docid_status(docid)->counter++;
+  pending_add(me);
+
+  /* make sure the polling timer runs (it used to start only when a libwww
+     socket was registered, which libcurl never does) */
+  wxAmayaSocketEvent::GetEventLoop()->Start();
+
+  if ((mode & AMAYA_SYNC) || (mode & AMAYA_ISYNC))
+    return wait_for_request(me, docid);
 
   /* Kick the multi to start the transfer */
   int still_running = 0;
   curl_multi_perform(s_curlm, &still_running);
-
   return HT_OK;
 }
 
@@ -515,7 +643,6 @@ int PutObjectWWW(int docid, char *fileName, char *urlName,
  */
 
 /* Global pending list -- populated in GetObjectWWW/PutObjectWWW */
-static HTList *s_pending = NULL;
 
 void StopRequest(int docid)
 {
@@ -528,6 +655,13 @@ void StopRequest(int docid)
       curl_multi_remove_handle(s_curlm, me->easy);
       curl_easy_cleanup(me->easy);
       me->easy = NULL;
+      if (me->output) { fclose(me->output); me->output = NULL; }
+      AHTDocId_Status *ds = GetDocIdStatus(me->docid, s_doc_list);
+      if (ds && ds->counter > 0) ds->counter--;
+      if (me->sync_done) {
+        *me->sync_done = TRUE;
+        if (me->sync_status) *me->sync_status = HT_INTERRUPTED;
+      }
       if (me->terminate_cbf)
         me->terminate_cbf(docid, HT_INTERRUPTED,
                           me->urlName, me->outputfile,

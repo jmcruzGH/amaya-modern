@@ -77,6 +77,9 @@ typedef struct _AHTReqContext {
 
   /* status line components filled by the header callback */
   long           http_status;      /* e.g. 200, 404 */
+  /* synchronous requests: set by deliver_result when the request ends */
+  ThotBool      *sync_done;
+  int           *sync_status;
   char           status_urlName[MAX_LENGTH]; /* for status bar display   */
 
 } AHTReqContext;
