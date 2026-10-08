@@ -2768,6 +2768,7 @@ void IndentListItem (Document doc, View view)
       while (item != last);
       TtaRegisterElementCreate (el, doc);
       TtaCloseUndoSequence (doc);
+      TtaSetDocumentModified (doc);
       /* ask Thot to display changes made in the document */
       TtaSetDisplayMode (doc, dispMode);
       TtaSelectElement (doc, el);
@@ -2930,6 +2931,7 @@ void UnindentListItem (Document doc, View view)
           while (item);
         }
       TtaCloseUndoSequence (doc);
+      TtaSetDocumentModified (doc);
       /* ask Thot to display changes made in the document */
       TtaSetDisplayMode (doc, dispMode);
       TtaSelectElement (doc, el);
