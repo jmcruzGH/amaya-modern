@@ -87,6 +87,9 @@ find_package(CURL REQUIRED)
 if(NOT CURL_FOUND)
   message(FATAL_ERROR "libcurl not found. Install: sudo apt install libcurl4-openssl-dev")
 endif()
+# OpenSSL: libcurl's TLS backend; used directly to report certificate
+# problems and to load the user's trusted certificates
+find_package(OpenSSL REQUIRED)
 
 # ── Include paths common to all targets ──────────────────────────────────────
 # These replicate the THOTINCLUDES variable from configure.in

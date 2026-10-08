@@ -80,6 +80,10 @@ typedef struct _AHTReqContext {
   /* synchronous requests: set by deliver_result when the request ends */
   ThotBool      *sync_done;
   int           *sync_status;
+  /* TLS: server certificate and verification result (https only) */
+  struct _TlsInfo *tls;
+  /* libcurl's detailed error message (CURLOPT_ERRORBUFFER) */
+  char           curl_error[256];
   char           status_urlName[MAX_LENGTH]; /* for status bar display   */
 
 } AHTReqContext;

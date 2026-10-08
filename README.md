@@ -135,6 +135,22 @@ need porting.
 
 ---
 
+## Web browsing: files and settings
+
+All in `~/.amaya/` (Amaya's per-user directory):
+
+| File / setting | Purpose |
+|---|---|
+| `cookies.txt` | Persistent cookies (Netscape format, mode 0600), loaded at start-up and saved at exit. Session cookies are never written. |
+| `ENABLE_COOKIES=no` in `thot.rc` | Disable cookies altogether. |
+| `trusted-certs.pem` | Certificates trusted **in addition to** the system's authorities (`/etc/ssl/certs`). A site's own certificate is enough. When a certificate is rejected, the error page shows why, the certificate's details and SHA-256 fingerprint, and (when trusting would help) the PEM text to append here. |
+| `GL_PARTIAL_REDRAW=yes` in `thot.rc` | Restore partial screen redraws (not recommended with current drivers). |
+
+To trust an authority for **all** programs instead (Firefox excepted), add
+it to the system: `sudo cp ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`.
+
+---
+
 ## Open decisions
 
 - **C compiled as C++.**  Every `.c` file in `amaya/` and `thotlib/` is

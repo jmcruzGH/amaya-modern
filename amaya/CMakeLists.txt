@@ -185,6 +185,8 @@ target_link_libraries(amaya PRIVATE
   ${EXPAT_LIBRARIES}
   $<$<BOOL:${RAPTOR2_FOUND}>:${RAPTOR2_LIBRARIES}>
   $<$<BOOL:${CURL_FOUND}>:${CURL_LIBRARIES}>
+  OpenSSL::SSL
+  OpenSSL::Crypto
   pthread
   dl
   m

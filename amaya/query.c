@@ -52,6 +52,11 @@
 /* libcurl */
 #include <curl/curl.h>
 #include <fcntl.h>
+#include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/pem.h>
+#include <openssl/evp.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <string.h>
@@ -160,6 +165,125 @@ static AHTDocId_Status *get_or_create_docid_status(int docid)
 
 /* ── AHTReqContext lifecycle ────────────────────────────────────────────── */
 
+/* ── TLS certificates ───────────────────────────────────────────────────
+   libcurl (OpenSSL) checks HTTPS servers against the system's trusted
+   authorities (/etc/ssl/certs).  Here, for every new TLS connection:
+   - certificates in <APP_HOME>/trusted-certs.pem are trusted as well
+     (a site's own certificate is enough: partial chains are accepted);
+   - the server certificate and the reason of a verification failure are
+     recorded, so that the error page can show them. */
+typedef struct _TlsInfo {
+  char reason[200];        /* why the certificate was rejected */
+  int  x509_error;         /* OpenSSL X509_V_ERR_..., 0 if none */
+  char subject[400];
+  char issuer[400];
+  char not_before[64];
+  char not_after[64];
+  char sha256[3 * 32 + 1]; /* AB:CD:... */
+  char *pem;               /* server certificate (depth 0), allocated */
+} TlsInfo;
+
+static char s_trusted_file[MAX_LENGTH] = "";
+static int  s_tls_ex_index = -1;
+
+static void asn1_time_text(const ASN1_TIME *t, char *buf, size_t len)
+{
+  BIO *b = BIO_new(BIO_s_mem());
+  buf[0] = EOS;
+  if (!b) return;
+  if (ASN1_TIME_print(b, t)) {
+    int n = BIO_read(b, buf, (int)len - 1);
+    buf[n > 0 ? n : 0] = EOS;
+  }
+  BIO_free(b);
+}
+
+static void record_cert(TlsInfo *ti, X509 *cert)
+{
+  unsigned char md[EVP_MAX_MD_SIZE];
+  unsigned int  mdlen = 0;
+  X509_NAME_oneline(X509_get_subject_name(cert), ti->subject, sizeof(ti->subject));
+  X509_NAME_oneline(X509_get_issuer_name(cert), ti->issuer, sizeof(ti->issuer));
+  asn1_time_text(X509_get0_notBefore(cert), ti->not_before, sizeof(ti->not_before));
+  asn1_time_text(X509_get0_notAfter(cert), ti->not_after, sizeof(ti->not_after));
+  ti->sha256[0] = EOS;
+  if (X509_digest(cert, EVP_sha256(), md, &mdlen))
+    for (unsigned int i = 0; i < mdlen && 3 * i + 3 < sizeof(ti->sha256); i++)
+      snprintf(ti->sha256 + 3 * i, sizeof(ti->sha256) - 3 * i,
+               i + 1 < mdlen ? "%02X:" : "%02X", md[i]);
+  BIO *b = BIO_new(BIO_s_mem());
+  if (b && PEM_write_bio_X509(b, cert)) {
+    char *data = NULL;
+    long n = BIO_get_mem_data(b, &data);
+    if (ti->pem) TtaFreeMemory(ti->pem);
+    ti->pem = (char *)TtaGetMemory(n + 1);
+    memcpy(ti->pem, data, n);
+    ti->pem[n] = EOS;
+  }
+  if (b) BIO_free(b);
+}
+
+/* called by OpenSSL for every certificate of the chain */
+static int tls_verify_cb(int preverify_ok, X509_STORE_CTX *xctx)
+{
+  SSL *ssl = (SSL *)X509_STORE_CTX_get_ex_data(xctx,
+                              SSL_get_ex_data_X509_STORE_CTX_idx());
+  TlsInfo *ti = (ssl && s_tls_ex_index >= 0) ?
+    (TlsInfo *)SSL_CTX_get_ex_data(SSL_get_SSL_CTX(ssl), s_tls_ex_index) : NULL;
+  if (ti) {
+    int depth = X509_STORE_CTX_get_error_depth(xctx);
+    X509 *cert = X509_STORE_CTX_get_current_cert(xctx);
+    if (depth == 0 && cert)
+      record_cert(ti, cert);
+    if (!preverify_ok && ti->x509_error == 0) {
+      ti->x509_error = X509_STORE_CTX_get_error(xctx);
+      snprintf(ti->reason, sizeof(ti->reason), "%s",
+               X509_verify_cert_error_string(ti->x509_error));
+    }
+  }
+  return preverify_ok;
+}
+
+static CURLcode tls_ctx_cb(CURL *easy, void *sslctx, void *userptr)
+{
+  SSL_CTX *ctx = (SSL_CTX *)sslctx;
+  (void)easy;
+  if (s_tls_ex_index >= 0)
+    SSL_CTX_set_ex_data(ctx, s_tls_ex_index, userptr);
+  SSL_CTX_set_verify(ctx, SSL_CTX_get_verify_mode(ctx), tls_verify_cb);
+  if (s_trusted_file[0] != EOS && TtaFileExist(s_trusted_file)) {
+    X509_STORE *store = SSL_CTX_get_cert_store(ctx);
+    if (store) {
+      X509_STORE_load_file(store, s_trusted_file);
+      /* a trusted site certificate is enough, even without its CA */
+      X509_STORE_set_flags(store, X509_V_FLAG_PARTIAL_CHAIN);
+    }
+  }
+  return CURLE_OK;
+}
+
+static void tls_setup(CURL *easy, AHTReqContext *me)
+{
+  if (strncmp(me->urlName ? me->urlName : "", "https:", 6))
+    return;
+  if (!me->tls)
+    me->tls = (TlsInfo *)TtaGetMemory(sizeof(TlsInfo));
+  memset(me->tls, 0, sizeof(TlsInfo));
+  curl_easy_setopt(easy, CURLOPT_SSL_CTX_FUNCTION, tls_ctx_cb);
+  curl_easy_setopt(easy, CURLOPT_SSL_CTX_DATA, me->tls);
+  /* without CA cache, every new connection gets a fresh store */
+  curl_easy_setopt(easy, CURLOPT_CA_CACHE_TIMEOUT, 0L);
+}
+
+static void tls_free(AHTReqContext *me)
+{
+  if (me->tls) {
+    if (me->tls->pem) TtaFreeMemory(me->tls->pem);
+    TtaFreeMemory(me->tls);
+    me->tls = NULL;
+  }
+}
+
 /* requests in progress (used by StopRequest) */
 static HTList *s_pending = NULL;
 
@@ -199,6 +323,7 @@ ThotBool AHTReqContext_delete(AHTReqContext *me)
   }
   if (me->output)    { fclose(me->output);       me->output    = NULL; }
   if (me->put_input) { fclose(me->put_input);    me->put_input = NULL; }
+  tls_free(me);
   if (me->urlName)   { TtaFreeMemory(me->urlName); me->urlName = NULL; }
   if (me->outputfile){ TtaFreeMemory(me->outputfile); me->outputfile = NULL; }
   if (me->error_stream) { TtaFreeMemory(me->error_stream); me->error_stream = NULL; }
@@ -346,11 +471,68 @@ static void html_escape_to(FILE *f, const char *s)
     }
 }
 
+/* certificate section of the error page */
+static void write_cert_details(FILE *f, AHTReqContext *me, TlsInfo *ti)
+{
+  /* trusting the certificate only helps when its issuer is the problem */
+  ThotBool trust_helps = (ti->x509_error == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
+                          ti->x509_error == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN ||
+                          ti->x509_error == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
+                          ti->x509_error == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT ||
+                          ti->x509_error == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE);
+  fputs("<h2>Server certificate</h2>\n<table border=\"1\">\n", f);
+  const char *labels[] = {"Subject", "Issued by", "Valid from", "Valid until",
+                          "SHA-256 fingerprint"};
+  const char *values[] = {ti->subject, ti->issuer, ti->not_before, ti->not_after,
+                          ti->sha256};
+  for (int i = 0; i < 5; i++) {
+    fputs("<tr><th align=\"left\">", f); fputs(labels[i], f);
+    fputs("</th><td>", f);
+    if (i == 4 && strlen(values[i]) > 48) {
+      /* 32 bytes: two lines of 16, so that the page can wrap it */
+      fwrite(values[i], 1, 48, f);
+      fputs("<br />", f);
+      html_escape_to(f, values[i] + 48);
+    }
+    else
+      html_escape_to(f, values[i]);
+    fputs("</td></tr>\n", f);
+  }
+  fputs("</table>\n", f);
+  if (ti->x509_error == 0 && me->curl_error[0]) {
+    fputs("<p>Details: ", f); html_escape_to(f, me->curl_error); fputs("</p>\n", f);
+  }
+  if (trust_helps && ti->pem && s_trusted_file[0]) {
+    fputs("<h2>Trusting this certificate</h2>\n"
+          "<p>Amaya trusts the certification authorities of the system "
+          "(/etc/ssl/certs) and the certificates in</p>\n<pre>", f);
+    html_escape_to(f, s_trusted_file);
+    fputs("</pre>\n<p>If you are sure that this certificate belongs to this "
+          "site (compare its SHA-256 fingerprint with one obtained from a "
+          "source you trust), append the following text to that file and "
+          "reload the page.  Only this certificate will be trusted; remove "
+          "it from the file to undo.</p>\n<pre>", f);
+    html_escape_to(f, ti->pem);
+    fputs("</pre>\n", f);
+  }
+  else if (!trust_helps)
+    fputs("<p>Trusting this certificate would not solve this problem "
+          "(for example, it has expired or was issued for another site "
+          "name).</p>\n", f);
+}
+
 static int report_error(AHTReqContext *me, CURLcode res)
 {
   char message[300];
-  if (res != CURLE_OK)
-    snprintf(message, sizeof(message), "%s", curl_easy_strerror(res));
+  TlsInfo *ti = me->tls;
+  ThotBool cert_problem = (res == CURLE_PEER_FAILED_VERIFICATION &&
+                           ti && (ti->x509_error || ti->subject[0]));
+  if (cert_problem)
+    snprintf(message, sizeof(message), "Certificate not accepted: %s",
+             ti->x509_error ? ti->reason : me->curl_error);
+  else if (res != CURLE_OK)
+    snprintf(message, sizeof(message), "%s%s%s", curl_easy_strerror(res),
+             me->curl_error[0] ? ": " : "", me->curl_error);
   else
     snprintf(message, sizeof(message), "HTTP %ld%s%s", me->http_status,
              me->http_headers.reason ? " " : "",
@@ -381,7 +563,10 @@ static int report_error(AHTReqContext *me, CURLcode res)
   html_escape_to(f, me->urlName);
   fputs("</p>\n<p>", f);
   html_escape_to(f, message);
-  fputs("</p>\n</body></html>\n", f);
+  fputs("</p>\n", f);
+  if (cert_problem)
+    write_cert_details(f, me, ti);
+  fputs("</body></html>\n", f);
   fclose(f);
   if (me->http_headers.content_type)
     TtaFreeMemory(me->http_headers.content_type);
@@ -717,6 +902,9 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
   curl_easy_setopt(easy, CURLOPT_MAXREDIRS, 10L);
   curl_easy_setopt(easy, CURLOPT_USERAGENT, "Amaya/11.4.7-modern (libcurl)");
   cookies_setup(easy);
+  tls_setup(easy, me);
+  me->curl_error[0] = EOS;
+  curl_easy_setopt(easy, CURLOPT_ERRORBUFFER, me->curl_error);
   curl_easy_setopt(easy, CURLOPT_HEADERFUNCTION, header_cb);
   curl_easy_setopt(easy, CURLOPT_HEADERDATA, (void*)me);
 
@@ -837,6 +1025,9 @@ int PutObjectWWW(int docid, char *fileName, char *urlName,
   curl_easy_setopt(easy, CURLOPT_INFILESIZE_LARGE, (curl_off_t)st.st_size);
   curl_easy_setopt(easy, CURLOPT_USERAGENT, "Amaya/11.4.7-modern (libcurl)");
   cookies_setup(easy);
+  tls_setup(easy, me);
+  me->curl_error[0] = EOS;
+  curl_easy_setopt(easy, CURLOPT_ERRORBUFFER, me->curl_error);
   curl_easy_setopt(easy, CURLOPT_HEADERFUNCTION, header_cb);
   curl_easy_setopt(easy, CURLOPT_HEADERDATA, (void*)me);
   curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, write_to_mem_cb);
@@ -977,6 +1168,16 @@ void QueryInit(void)
   s_alive   = TRUE;
 
   curl_multi_setopt(s_curlm, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long)MAX_CONNECTIONS);
+
+  /* TLS: user's trusted certificates; slot for per-connection data */
+  {
+    const char *home = TtaGetEnvString("APP_HOME");
+    if (home && home[0] != EOS)
+      snprintf(s_trusted_file, sizeof(s_trusted_file), "%s%ctrusted-certs.pem",
+               home, DIR_SEP);
+    if (s_tls_ex_index < 0)
+      s_tls_ex_index = SSL_CTX_get_ex_new_index(0, NULL, NULL, NULL, NULL);
+  }
 
   /* cookies: one store for all transfers (Amaya is single-threaded) */
   TtaSetEnvBoolean("ENABLE_COOKIES", TRUE, FALSE);
