@@ -51,6 +51,8 @@
 
 /* libcurl */
 #include <curl/curl.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
@@ -469,6 +471,98 @@ void InvokeGetObjectWWW_callback(int docid, char *urlName, char *outputfile,
 
 /* ── GetObjectWWW -- the main fetch entry point ─────────────────────────── */
 
+/* ── Cookies ────────────────────────────────────────────────────────────
+   One cookie store, shared by every transfer, so that a session cookie
+   received with one page (e.g. after a login form) is sent with the next
+   requests.  Persistent cookies are kept in <APP_HOME>/cookies.txt (Netscape
+   format, as curl/wget use), loaded at start-up and saved at exit; session
+   cookies (no expiry date) are not saved, as in other browsers.
+   Set ENABLE_COOKIES=no in thot.rc to disable cookies altogether. */
+static CURLSH  *s_share = NULL;
+static ThotBool s_cookies = TRUE;
+
+/* computed at start-up: at exit, QueryClose runs after the registry
+   (APP_HOME) has been freed */
+static char s_cookie_file[MAX_LENGTH] = "";
+
+static void cookie_file_name(char *buf, size_t len)
+{
+  snprintf(buf, len, "%s", s_cookie_file);
+}
+
+static void cookies_load(void)
+{
+  char name[MAX_LENGTH], line[4096];
+  const char *home = TtaGetEnvString("APP_HOME");
+  if (home == NULL || home[0] == EOS) {
+    s_cookie_file[0] = EOS;              /* nowhere safe to keep cookies */
+    return;
+  }
+  snprintf(s_cookie_file, sizeof(s_cookie_file), "%s%ccookies.txt",
+           home, DIR_SEP);
+  cookie_file_name(name, sizeof(name));
+  FILE *f = fopen(name, "r");
+  if (!f) return;
+  CURL *easy = curl_easy_init();
+  if (easy) {
+    curl_easy_setopt(easy, CURLOPT_SHARE, s_share);
+    while (fgets(line, sizeof(line), f)) {
+      size_t l = strlen(line);
+      while (l && (line[l-1] == '\n' || line[l-1] == '\r')) line[--l] = EOS;
+      /* comments, but "#HttpOnly_" lines are cookies */
+      if (l == 0 || (line[0] == '#' && strncmp(line, "#HttpOnly_", 10)))
+        continue;
+      curl_easy_setopt(easy, CURLOPT_COOKIELIST, line);
+    }
+    curl_easy_cleanup(easy);
+  }
+  fclose(f);
+}
+
+static void cookies_save(void)
+{
+  char name[MAX_LENGTH], tmp[MAX_LENGTH + 8];
+  struct curl_slist *list = NULL;
+  if (s_cookie_file[0] == EOS) return;
+  CURL *easy = curl_easy_init();
+  if (!easy) return;
+  curl_easy_setopt(easy, CURLOPT_SHARE, s_share);
+  curl_easy_getinfo(easy, CURLINFO_COOKIELIST, &list);
+  cookie_file_name(name, sizeof(name));
+  snprintf(tmp, sizeof(tmp), "%s.new", name);
+  int fd = open(tmp, O_WRONLY | O_CREAT | O_TRUNC, 0600);   /* private */
+  FILE *f = (fd >= 0) ? fdopen(fd, "w") : NULL;
+  if (f) {
+    fputs("# Netscape HTTP Cookie File\n"
+          "# Written by Amaya; session cookies are not kept.\n\n", f);
+    for (struct curl_slist *c = list; c; c = c->next) {
+      /* fields: domain, subdomains, path, secure, expiry, name, value */
+      const char *t = c->data;
+      int tabs = 0;
+      while (*t && tabs < 4) if (*t++ == '\t') tabs++;
+      if (tabs == 4 && atol(t) > 0)
+        fprintf(f, "%s\n", c->data);
+    }
+    if (fclose(f) == 0)
+      rename(tmp, name);
+    else
+      unlink(tmp);
+  }
+  else if (fd >= 0)
+    close(fd);
+  curl_slist_free_all(list);
+  curl_easy_cleanup(easy);
+}
+
+/* to be called on every new transfer */
+static void cookies_setup(CURL *easy)
+{
+  if (!s_cookies || !s_share) return;
+  curl_easy_setopt(easy, CURLOPT_SHARE, s_share);
+  curl_easy_setopt(easy, CURLOPT_COOKIEFILE, "");  /* enable the engine */
+}
+
+
 /* Synchronous requests: drive the transfer here until it has ended (the
    termination callback has then been called), still handling GUI events so
    that the interface stays responsive, as libwww's LoopForStop did. */
@@ -616,6 +710,7 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
   curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(easy, CURLOPT_MAXREDIRS, 10L);
   curl_easy_setopt(easy, CURLOPT_USERAGENT, "Amaya/11.4.7-modern (libcurl)");
+  cookies_setup(easy);
   curl_easy_setopt(easy, CURLOPT_HEADERFUNCTION, header_cb);
   curl_easy_setopt(easy, CURLOPT_HEADERDATA, (void*)me);
 
@@ -734,6 +829,7 @@ int PutObjectWWW(int docid, char *fileName, char *urlName,
   curl_easy_setopt(easy, CURLOPT_READDATA, src);
   curl_easy_setopt(easy, CURLOPT_INFILESIZE_LARGE, (curl_off_t)st.st_size);
   curl_easy_setopt(easy, CURLOPT_USERAGENT, "Amaya/11.4.7-modern (libcurl)");
+  cookies_setup(easy);
   curl_easy_setopt(easy, CURLOPT_HEADERFUNCTION, header_cb);
   curl_easy_setopt(easy, CURLOPT_HEADERDATA, (void*)me);
   curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, write_to_mem_cb);
@@ -862,6 +958,7 @@ void AHTRequest_setCustomAcceptHeader(HTRequest *request, const char *value)
   (void)request; (void)value;
 }
 
+
 /* ── Lifecycle ──────────────────────────────────────────────────────────── */
 
 void QueryInit(void)
@@ -873,6 +970,17 @@ void QueryInit(void)
   s_alive   = TRUE;
 
   curl_multi_setopt(s_curlm, CURLMOPT_MAX_TOTAL_CONNECTIONS, (long)MAX_CONNECTIONS);
+
+  /* cookies: one store for all transfers (Amaya is single-threaded) */
+  TtaSetEnvBoolean("ENABLE_COOKIES", TRUE, FALSE);
+  TtaGetEnvBoolean("ENABLE_COOKIES", &s_cookies);
+  if (s_cookies) {
+    s_share = curl_share_init();
+    if (s_share) {
+      curl_share_setopt(s_share, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
+      cookies_load();
+    }
+  }
 
   /* Register our poll function with the wx event loop */
   wxAmayaSocketEvent::GetEventLoop()->SetCurlPoll(AmayaCurlPoll, CURL_POLL_MS);
@@ -896,6 +1004,11 @@ void QueryClose(void)
   }
 
   curl_multi_cleanup(s_curlm);
+  if (s_share) {
+    cookies_save();
+    curl_share_cleanup(s_share);
+    s_share = NULL;
+  }
   curl_global_cleanup();
   s_curlm = NULL;
   s_alive = FALSE;
