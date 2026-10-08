@@ -2624,6 +2624,57 @@ void CreateMap (Document doc, View view)
 }
 
 /*----------------------------------------------------------------------
+  SelectionInFormField
+  TRUE when the selection is in a form field (or in a form, outside any
+  list item): there, Tab and Shift+Tab move between fields, as in other
+  browsers, instead of indenting list items.
+  ----------------------------------------------------------------------*/
+static ThotBool SelectionInFormField (Document doc, Element *field)
+{
+  Element             el;
+  ElementType         elType;
+  SSchema             sshtml;
+  int                 firstChar, lastChar;
+  ThotBool            inItem = FALSE;
+
+  *field = NULL;
+  sshtml = TtaGetSSchema ("HTML", doc);
+  TtaGiveFirstSelectedElement (doc, &el, &firstChar, &lastChar);
+  if (el == NULL || sshtml == NULL)
+    return FALSE;
+  for (; el; el = TtaGetParent (el))
+    {
+      elType = TtaGetElementType (el);
+      if (elType.ElSSchema != sshtml)
+        continue;
+      switch (elType.ElTypeNum)
+        {
+        case HTML_EL_Text_Input:
+        case HTML_EL_Password_Input:
+        case HTML_EL_File_Input:
+        case HTML_EL_Text_Area:
+        case HTML_EL_Option_Menu:
+        case HTML_EL_Checkbox_Input:
+        case HTML_EL_Radio_Input:
+        case HTML_EL_Submit_Input:
+        case HTML_EL_Reset_Input:
+        case HTML_EL_Button_Input:
+        case HTML_EL_BUTTON_:
+          *field = el;
+          return TRUE;
+        case HTML_EL_List_Item:
+          inItem = TRUE;
+          break;
+        case HTML_EL_Form:
+          return !inItem;
+        default:
+          break;
+        }
+    }
+  return FALSE;
+}
+
+/*----------------------------------------------------------------------
   IndentListItem
   ----------------------------------------------------------------------*/
 void IndentListItem (Document doc, View view)
@@ -2633,6 +2684,13 @@ void IndentListItem (Document doc, View view)
   Element             el, last, item, child, sibling;
   SSchema             sshtml;
   int                 firstChar, lastChar, i;
+
+  Element             field;
+  if (SelectionInFormField (doc, &field))
+    {
+      NextLinkOrFormElement (doc, view);
+      return;
+    }
 
   sshtml  = TtaGetSSchema ("HTML", doc);
   TtaGiveFirstSelectedElement (doc, &el, &firstChar, &lastChar);
@@ -2727,6 +2785,17 @@ void UnindentListItem (Document doc, View view)
   SSchema             sshtml;
   int                 firstChar, lastChar, i;
   ThotBool            emptylist = FALSE;
+
+  Element             field;
+  if (SelectionInFormField (doc, &field))
+    {
+      /* search backwards from the field itself, not from its text,
+         which follows the field element and would find it again */
+      if (field)
+        TtaSelectElement (doc, field);
+      PreviousLinkOrFormElement (doc, view);
+      return;
+    }
 
   sshtml  = TtaGetSSchema ("HTML", doc);
   TtaGiveFirstSelectedElement (doc, &el, &firstChar, &lastChar);
