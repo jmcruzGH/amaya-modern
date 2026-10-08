@@ -218,16 +218,27 @@ void AmayaNormalWindow::RegisterThotToolPanels()
   // detect an old panel configuration
   if (s == NULL || strstr (s, "AmayaXHTMLToolPanel"))
     TtaSetEnvString("CLASSIC_PANEL_ORDER",
-                    "AmayaElementToolPanel;AmayaApplyClassToolPanel;"
+                    "AmayaElementToolPanel;AmayaStyleToolPanel;AmayaApplyClassToolPanel;"
                     "AmayaAttributeToolPanel;AmayaSpeCharToolPanel;"
                     "StyleListToolPanel;AmayaExplorerToolPanel",
                     TRUE);
+  else if (strstr (s, "AmayaStyleToolPanel") == NULL)
+    {
+      // the Style panel was missing in earlier builds of this port:
+      // put it back at its usual place, just after the Elements panel
+      wxString order = TtaConvMessageToWX(s);
+      if (order.Replace(wxT("AmayaElementToolPanel"),
+                        wxT("AmayaElementToolPanel;AmayaStyleToolPanel"), false) == 0)
+        order = wxT("AmayaStyleToolPanel;") + order;
+      TtaSetEnvString("CLASSIC_PANEL_ORDER",
+                      (const char *)order.mb_str(wxConvUTF8), TRUE);
+    }
 
   RegisterToolPanelClass(CLASSINFO(AmayaExplorerToolPanel));
   RegisterToolPanelClass(CLASSINFO(AmayaElementToolPanel));
   RegisterToolPanelClass(CLASSINFO(AmayaAttributeToolPanel));
   RegisterToolPanelClass(CLASSINFO(AmayaApplyClassToolPanel));
-  // RegisterToolPanelClass(CLASSINFO(AmayaStyleToolPanel)); // disabled: wx3 color button crash
+  RegisterToolPanelClass(CLASSINFO(AmayaStyleToolPanel));
   RegisterToolPanelClass(CLASSINFO(AmayaSpeCharToolPanel));
 }
 
@@ -309,7 +320,7 @@ void AmayaNormalWindow::SaveConfig()
       TtaSetEnvBoolean("EDIT_TOOLBAR", TRUE, TRUE);
       // and set the default order
       TtaSetEnvString("CLASSIC_PANEL_ORDER",
-                      "AmayaElementToolPanel;AmayaApplyClassToolPanel;"
+                      "AmayaElementToolPanel;AmayaStyleToolPanel;AmayaApplyClassToolPanel;"
                       "StyleListToolPanel;AmayaExplorerToolPanel;AmayaAttributeToolPanel;"
                       "AmayaSpeCharToolPanel",
                        TRUE);

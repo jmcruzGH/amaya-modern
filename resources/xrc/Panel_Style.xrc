@@ -209,7 +209,6 @@
               <object class="spacer"/>
               <object class="sizeritem">
                 <object class="wxSpinCtrl" name="wxID_SPIN_SVG_OPACITY">
-                  <style>wxTE_PROCESS_ENTER</style>
                   <size>64,-1</size>
                   <value>100</value>
                   <min>0</min>
@@ -242,7 +241,6 @@
               </object>
               <object class="sizeritem">
                 <object class="wxSpinCtrl" name="wxID_SPIN_SVG_FILL_OPACITY">
-                  <style>wxTE_PROCESS_ENTER</style>
                   <size>64,-1</size>
                   <value>100</value>
                   <min>0</min>
@@ -275,7 +273,6 @@
               </object>
               <object class="sizeritem">
                 <object class="wxSpinCtrl" name="wxID_SPIN_SVG_STROKE_OPACITY">
-                  <style>wxTE_PROCESS_ENTER</style>
                   <size>64,-1</size>
                   <value>100</value>
                   <min>0</min>
@@ -298,7 +295,6 @@
               <object class="spacer"/>
               <object class="sizeritem">
                 <object class="wxSpinCtrl" name="wxID_SPIN_SVG_STROKE_WIDTH">
-                  <style>wxTE_PROCESS_ENTER</style>
                   <size>64,-1</size>
                   <value>1</value>
                   <min>0</min>

@@ -72,6 +72,8 @@ AmayaColorButton::AmayaColorButton(wxWindow* parent, wxWindowID id, const wxColo
 wxControl(parent, id, pos, size, style, wxDefaultValidator, name)
 {
   SetMinSize(wxSize(16,16));
+  if (col.IsOk())
+    SetBackgroundColour(col);
 }
 
 /*----------------------------------------------------------------------
@@ -80,7 +82,11 @@ bool AmayaColorButton::Create(wxWindow* parent, wxWindowID id, const wxColour& c
      const wxPoint& pos, const wxSize& size, long style, const wxString& name)
 {
   SetMinSize(wxSize(16,16));
-  return wxControl::Create(parent, id, pos, size, style, wxDefaultValidator, name);
+  if (!wxControl::Create(parent, id, pos, size, style, wxDefaultValidator, name))
+    return false;
+  if (col.IsOk())
+    SetBackgroundColour(col);
+  return true;
 }
 
 /*----------------------------------------------------------------------
