@@ -349,6 +349,9 @@ int AmayaApp::OnExit()
 #ifndef _GLPRINT
   // stop network loop
   m_SocketEventLoop->Stop();
+  /* TtaQuit, below, closes the network layer (QueryClose): it must not
+     find a dangling pointer to the deleted loop */
+  wxAmayaSocketEvent::InitSocketEvent (NULL);
   delete m_SocketEventLoop;
   m_SocketEventLoop = NULL;
 

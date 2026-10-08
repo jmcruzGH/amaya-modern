@@ -50,7 +50,7 @@ void wxAmayaSocketEvent::InitSocketEvent( wxAmayaSocketEventLoop * p_eventloop )
   TTALOGDEBUG_0( TTA_LOG_SOCKET | TTA_LOG_INIT, _T("wxAmayaSocketEvent::InitSocketEvent") );
   m_pEventLoop = p_eventloop;
   /* if there is a socket, start the pulling */
-  if (m_SocketFDMax > 0)
+  if (m_pEventLoop && m_SocketFDMax > 0)
     m_pEventLoop->Start();
 }
 

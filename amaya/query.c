@@ -471,6 +471,12 @@ void InvokeGetObjectWWW_callback(int docid, char *urlName, char *outputfile,
 
 /* ── GetObjectWWW -- the main fetch entry point ─────────────────────────── */
 
+/* the network event loop, or NULL once it has been deleted at exit */
+static wxAmayaSocketEventLoop *event_loop(void)
+{
+  return wxAmayaSocketEvent::GetEventLoop();
+}
+
 /* ── Cookies ────────────────────────────────────────────────────────────
    One cookie store, shared by every transfer, so that a session cookie
    received with one page (e.g. after a login form) is sent with the next
@@ -760,7 +766,7 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
 
   /* make sure the polling timer runs (it used to start only when a libwww
      socket was registered, which libcurl never does) */
-  wxAmayaSocketEvent::GetEventLoop()->Start();
+  if (event_loop()) event_loop()->Start();
 
   if ((mode & AMAYA_SYNC) || (mode & AMAYA_ISYNC))
     return wait_for_request(me, docid);
@@ -863,7 +869,7 @@ int PutObjectWWW(int docid, char *fileName, char *urlName,
   me->reqStatus = HT_BUSY;
   get_or_create_docid_status(docid)->counter++;
   pending_add(me);
-  wxAmayaSocketEvent::GetEventLoop()->Start();
+  if (event_loop()) event_loop()->Start();
 
   /* the save code checks the result right after the call */
   if ((mode & AMAYA_SYNC) || (mode & AMAYA_ISYNC))
@@ -983,13 +989,13 @@ void QueryInit(void)
   }
 
   /* Register our poll function with the wx event loop */
-  wxAmayaSocketEvent::GetEventLoop()->SetCurlPoll(AmayaCurlPoll, CURL_POLL_MS);
+  if (event_loop()) event_loop()->SetCurlPoll(AmayaCurlPoll, CURL_POLL_MS);
 }
 
 void QueryClose(void)
 {
   if (!s_curlm) return;
-  wxAmayaSocketEvent::GetEventLoop()->ClearCurlPoll();
+  if (event_loop()) event_loop()->ClearCurlPoll();
 
   /* Cancel all pending transfers */
   if (s_pending) {
