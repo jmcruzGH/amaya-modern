@@ -84,7 +84,6 @@ static HTList  *s_doc_list     = NULL;   /* list of AHTDocId_Status entries */
 static ThotBool s_alive        = FALSE;  /* QueryInit called */
 static ThotBool s_can_do_stop  = TRUE;
 static ThotBool s_ftp_flag     = FALSE;
-static wxTimer *s_poll_timer   = NULL;
 
 /* Maximum simultaneous connections */
 #define MAX_CONNECTIONS 8
@@ -231,9 +230,11 @@ static int tls_verify_cb(int preverify_ok, X509_STORE_CTX *xctx)
   TlsInfo *ti = (ssl && s_tls_ex_index >= 0) ?
     (TlsInfo *)SSL_CTX_get_ex_data(SSL_get_SSL_CTX(ssl), s_tls_ex_index) : NULL;
   if (ti) {
-    int depth = X509_STORE_CTX_get_error_depth(xctx);
-    X509 *cert = X509_STORE_CTX_get_current_cert(xctx);
-    if (depth == 0 && cert)
+    /* the site's own certificate: verification goes from the top of the
+       chain down and stops at the first failure, so depth 0 is not always
+       reached (e.g. an untrusted intermediate): take it from the context */
+    X509 *cert = X509_STORE_CTX_get0_cert(xctx);
+    if (cert && ti->subject[0] == EOS)
       record_cert(ti, cert);
     if (!preverify_ok && ti->x509_error == 0) {
       ti->x509_error = X509_STORE_CTX_get_error(xctx);
