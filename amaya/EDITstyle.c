@@ -55,7 +55,9 @@
 #endif /* _WX */
 
 
-static char         ListBuffer[MAX_CSS_LENGTH];
+/* list of class names for the "Apply class" panel; modern style sheets
+   define many classes (MAX_CSS_LENGTH, 4000, overflowed on real sites) */
+static char         ListBuffer[64000];
 static int          NbClass = 0;
 static char         CurrentClass[200];
 static Element      ClassReference;
@@ -1783,7 +1785,11 @@ static void PutClassName (Attribute attr, char *className, char *buf,
         {
           len = strlen (name);
           len++; /* add the \0 */
-          if (len >= *free)
+          /* the name needs len bytes plus its leading '.'; inserting it in
+             the middle also shifts the tail of the list (up to the final
+             \0) by that amount: keep one byte free (was 'len >= *free',
+             which wrote one byte past the buffer) */
+          if (len + 1 >= *free)
             return;
           if (previous && i > 1 && i  <= *nb)
             {
@@ -2005,7 +2011,7 @@ void CreateClass (Document doc, View view)
         InitConfirm (doc, 1, TtaGetMessage (LIB, TMSG_SEL_CLASS));
       else
         {
-          NbClass = BuildClassList (doc, ListBuffer, MAX_CSS_LENGTH, elHtmlName);  
+          NbClass = BuildClassList (doc, ListBuffer, sizeof (ListBuffer), elHtmlName);  
           /* preselect the entry corresponding to the class of the element. */
           if (!strcmp (schName, "MathML"))
             attrType.AttrTypeNum = MathML_ATTR_class;
@@ -2091,7 +2097,7 @@ void ApplyClass (Document doc, View view)
     }
 
   /* updating the class name selector. */
-  NbClass = BuildClassList (doc, ListBuffer, MAX_CSS_LENGTH, "(no_class)");
+  NbClass = BuildClassList (doc, ListBuffer, sizeof (ListBuffer), "(no_class)");
   if (el)
     {
       /* preselect the entry corresponding to the class of the first selected
