@@ -94,7 +94,10 @@ void AddToBuffer (const char *orig)
   lg = strlen (orig) + 1;
   if ((int)strlen (FormBuf) + lg > FormLength)
     {
-      /* it is necessary to extend the FormBuf */
+      /* it is necessary to extend the FormBuf: at least double it, so
+         that building a long query does not reallocate at every step */
+      if (lg < FormLength)
+        lg = FormLength;
       if (lg < PARAM_INCREMENT)
         lg = PARAM_INCREMENT;
       status = TtaRealloc (FormBuf, sizeof (char) * (FormLength + lg));      
@@ -108,6 +111,37 @@ void AddToBuffer (const char *orig)
     }
   else
     strcat (FormBuf, orig);
+}
+
+/*----------------------------------------------------------------------
+  AppendAt
+  Appends orig to FormBuf, whose current length *len is known (no strlen
+  of the whole buffer), extending FormBuf geometrically when needed.
+  Used by AddElement, which appends one character at a time: with
+  AddToBuffer, encoding a long value (e.g. an ASP.NET __VIEWSTATE field
+  of 100 KB) took time proportional to the square of its length.
+  ----------------------------------------------------------------------*/
+static void AppendAt (const char *orig, int *len)
+{
+  void               *status;
+  int                 lg, extra;
+
+  lg = strlen (orig);
+  if (*len + lg + 1 > FormLength)
+    {
+      extra = FormLength;
+      if (extra < lg + 1)
+        extra = lg + 1;
+      if (extra < PARAM_INCREMENT)
+        extra = PARAM_INCREMENT;
+      status = TtaRealloc (FormBuf, sizeof (char) * (FormLength + extra));
+      if (status == NULL)
+        return;
+      FormBuf = (char *)status;
+      FormLength += extra;
+    }
+  memcpy (&FormBuf[*len], orig, lg + 1);
+  *len += lg;
 }
 
 /*----------------------------------------------------------------------
@@ -156,6 +190,7 @@ static void AddElement (const unsigned char *element, CHARSET charset)
   CHAR_T           wc;
   char            tmp[4];
   char            tmp2[2];
+  int             len;
 
   strcpy (tmp, "%");
   strcpy (tmp2, "a");
@@ -165,6 +200,7 @@ static void AddElement (const unsigned char *element, CHARSET charset)
       FormLength = PARAM_INCREMENT;
       FormBuf[0] = EOS;
     }
+  len = strlen (FormBuf);
   while (*element)
     {
       /* for valid standard ASCII chars */
@@ -187,15 +223,15 @@ static void AddElement (const unsigned char *element, CHARSET charset)
             case '%':
             case '@':
               EscapeChar (&tmp[1], *element);
-              AddToBuffer (tmp);
+              AppendAt (tmp, &len);
               break;
             case SPACE:
               tmp2[0] = '+';
-              AddToBuffer (tmp2);
+              AppendAt (tmp2, &len);
               break;
             default:
               tmp2[0] = *element;
-              AddToBuffer (tmp2);
+              AppendAt (tmp2, &len);
               break;
             }
         }
@@ -213,14 +249,14 @@ static void AddElement (const unsigned char *element, CHARSET charset)
           if (tmp2[0] == '\n')
             {
               EscapeChar (&tmp[1], __CR__);
-              AddToBuffer (&tmp[0]);
+              AppendAt (&tmp[0], &len);
               EscapeChar (&tmp[1], EOL);
-              AddToBuffer (&tmp[0]);
+              AppendAt (&tmp[0], &len);
             }
           else
             {
               EscapeChar (&tmp[1], tmp2[0]);
-              AddToBuffer (tmp);
+              AppendAt (tmp, &len);
             }
         }
       element++;
