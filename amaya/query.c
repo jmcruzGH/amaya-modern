@@ -738,8 +738,9 @@ int GetObjectWWW(int docid, int refdoc, char *urlName,
   /* Form data: POST only for AMAYA_FORM_POST/AMAYA_FILE_POST (as libwww);
      for a GET form the data was appended to the URL above.  The caller may
      free formdata as soon as we return, so curl must keep its own copy. */
-  if (formdata && is_post) {
-    curl_easy_setopt(easy, CURLOPT_COPYPOSTFIELDS, formdata);
+  if (is_post) {
+    /* a form with no named field still posts (an empty body), as libwww did */
+    curl_easy_setopt(easy, CURLOPT_COPYPOSTFIELDS, formdata ? formdata : "");
     if (content_type) {
       char ct_header[256];
       snprintf(ct_header, sizeof(ct_header), "Content-Type: %s", content_type);
