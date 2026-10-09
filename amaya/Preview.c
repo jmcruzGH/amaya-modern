@@ -17,6 +17,10 @@
  *      . otherwise (remote document, or a folder that cannot be written)
  *        the copy goes into a preview folder and gets a <base href> that
  *        points back to the original location.
+ *  - A local XHTML document that contains SVG or MathML is always given
+ *    as a copy named .xhtml: written with namespace prefixes (<svg:svg>),
+ *    it is only understood by the browser's XML parser, which is used for
+ *    local files only when their name ends in .xhtml.
  *    Preview copies are removed when Amaya exits.
  *
  *  Settings (in ~/.amaya/thot.rc, section [amaya]):
@@ -471,7 +475,7 @@ void PreviewInBrowser (Document doc, View view)
   char        prog[200];
   const char *url, *name, *suffix, *target;
   char       *p;
-  ThotBool    modified, local, nextToOriginal = FALSE;
+  ThotBool    modified, local, nextToOriginal = FALSE, needXml;
   int         stemlen;
   struct stat st;
   int         err;
@@ -505,7 +509,23 @@ void PreviewInBrowser (Document doc, View view)
       strcpy (path, url);
     }
 
-  if (!modified && (!local || stat (path, &st) == 0))
+  /* XHTML with SVG or MathML written with namespace prefixes (<svg:svg>)
+     is only understood by the XML parser, which browsers use for local
+     files only when their name ends in .xhtml */
+  needXml = (local && DocumentTypes[xmlDoc] == docHTML &&
+             DocumentMeta[xmlDoc] && DocumentMeta[xmlDoc]->xmlformat &&
+             (TtaGetSSchema ("SVG", xmlDoc) ||
+              TtaGetSSchema ("MathML", xmlDoc)));
+  if (needXml)
+    {
+      suffix = strrchr (path, '.');
+      if (suffix && (!strcasecmp (suffix, ".xhtml") ||
+                     !strcasecmp (suffix, ".xht") ||
+                     !strcasecmp (suffix, ".xml")))
+        needXml = FALSE;
+    }
+
+  if (!modified && !needXml && (!local || stat (path, &st) == 0))
     /* give the browser the original document */
     target = local ? path : url;
   else
@@ -554,6 +574,8 @@ void PreviewInBrowser (Document doc, View view)
         stemlen = suffix - name;
       else
         suffix = DefaultSuffix (xmlDoc);
+      if (needXml)
+        suffix = ".xhtml";
       if (stemlen > 100)
         stemlen = 100;
       if (nextToOriginal)
@@ -563,7 +585,17 @@ void PreviewInBrowser (Document doc, View view)
       else
         snprintf (previewName, sizeof (previewName), "%s%cdoc%d-%.*s%s",
                   dir, DIR_SEP, (int)xmlDoc, stemlen, name, suffix);
-      if (!ExportForPreview (xmlDoc, source, previewName))
+      if (!modified && stat (path, &st) == 0)
+        {
+          /* same content as the file, under a name that the browser
+             reads as XHTML */
+          if (!TtaFileCopy (path, previewName))
+            {
+              TtaSetStatus (doc, view, "Preview: cannot write %s", previewName);
+              return;
+            }
+        }
+      else if (!ExportForPreview (xmlDoc, source, previewName))
         {
           TtaSetStatus (doc, view,
                         "Preview: this kind of document cannot be previewed%s", "");

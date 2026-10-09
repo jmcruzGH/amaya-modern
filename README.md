@@ -163,6 +163,11 @@ external browser (Firefox by default), which runs JavaScript and modern CSS:
   style sheets work; for a remote page it goes to a preview folder and gets
   a `<base href>` pointing back to the page's address.  Copies are removed
   when Amaya exits.
+- a local XHTML document containing SVG or MathML is always given as a
+  copy named `.xhtml` (identical when there are no unsaved changes):
+  written with namespace prefixes (`<svg:svg>`, as Amaya does), it is only
+  understood by the browser's XML parser, which browsers use for local
+  files only when the name ends in `.xhtml`.
 
 | Setting in `thot.rc` | Purpose |
 |---|---|
