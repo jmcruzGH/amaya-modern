@@ -14,6 +14,7 @@
 #include "wx/spinctrl.h"
 #include "wx/socket.h"
 #include "wx/hashmap.h"
+#include "wx/bmpbndl.h"
 
 #include "thot_gui.h"
 #include "thot_sys.h"
@@ -882,6 +883,23 @@ ThotBool TtaMakePage( int window_id, int page_id, Document doc)
 }
 
 /*----------------------------------------------------------------------
+  IsSVGFile returns TRUE if the file looks like an SVG image.
+  ----------------------------------------------------------------------*/
+static ThotBool IsSVGFile (const char *filename)
+{
+  char   buf[1025];
+  size_t n;
+  FILE  *f = fopen (filename, "rb");
+
+  if (f == NULL)
+    return FALSE;
+  n = fread (buf, 1, sizeof (buf) - 1, f);
+  fclose (f);
+  buf[n] = EOS;
+  return (strstr (buf, "<svg") != NULL);
+}
+
+/*----------------------------------------------------------------------
   ----------------------------------------------------------------------*/
 int TtaGetIconIndex (const char * filename)
 {
@@ -891,8 +909,22 @@ int TtaGetIconIndex (const char * filename)
     return iter->second;
   else
     {
-      wxImage img(TtaConvMessageToWX(filename), wxBITMAP_TYPE_ANY);
+      // site icons may be in a format that wxImage cannot read (SVG, or an
+      // error page instead of an image): don't let wx log about it
+      wxLogNull noLog;
+      wxImage img;
       wxIcon icon;
+#ifdef wxHAS_SVG
+      if (IsSVGFile (filename))
+        {
+          wxBitmapBundle svg = wxBitmapBundle::FromSVGFile (path, wxSize (16, 16));
+          if (svg.IsOk ())
+            img = svg.GetBitmap (wxSize (16, 16)).ConvertToImage ();
+        }
+      else
+#endif /* wxHAS_SVG */
+        if (wxImage::CanRead (path))
+          img.LoadFile (path, wxBITMAP_TYPE_ANY);
       if(img.IsOk())
         {
           img.Rescale(16, 16, wxIMAGE_QUALITY_HIGH);
