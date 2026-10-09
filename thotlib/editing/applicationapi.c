@@ -178,7 +178,7 @@ ThotWidget TtaGetViewFrame (Document document, View view)
 /*----------------------------------------------------------------------
   CoreHandler est un handler d'erreur fatale.                     
   ----------------------------------------------------------------------*/
-static void ErrorHandler ()
+static void ErrorHandler (int sig)
 {
 #ifndef _WINDOWS
   signal (SIGBUS, SIG_DFL);
@@ -193,6 +193,17 @@ static void ErrorHandler ()
   fprintf (stderr, "%s", TtaGetMessage (LIB, TMSG_DEBUG_ERROR));
   if (ThotLocalActions [T_backuponfatal] != NULL)
     (*ThotLocalActions [T_backuponfatal]) ();
+#ifndef _WINDOWS
+  if (sig == SIGSEGV || sig == SIGBUS || sig == SIGABRT)
+    {
+      /* a real crash: once the open documents are saved, let it happen
+         (default action restored above), so that a core dump or a
+         debugger shows where it was */
+      fprintf (stderr, " (signal %d)\n", sig);
+      raise (sig);
+      return;
+    }
+#endif /* _WINDOWS */
   {
 #if defined(_GTK) && !defined(NODISPLAY)
     gtk_exit (1);
@@ -240,6 +251,12 @@ static void QuitHandler ()
   ----------------------------------------------------------------------*/
 void InitErrorHandler ()
 {
+#if defined(__SANITIZE_ADDRESS__)
+  /* AddressSanitizer build: let ASan report crashes itself */
+  signal (SIGINT, (void (*)(int))QuitHandler);
+  signal (SIGTERM, (void (*)(int))QuitHandler);
+  return;
+#endif /* __SANITIZE_ADDRESS__ */
 #ifndef _WINDOWS
   signal (SIGBUS, (void (*)(int))ErrorHandler);
   signal (SIGHUP, (void (*)(int))ErrorHandler);
@@ -600,7 +617,7 @@ void ThotExit (int result)
   fflush (stderr);
   fflush (stdout);
   if (result)
-    ErrorHandler ();
+    ErrorHandler (0);
   else
     {
 #if defined(_GTK) && !defined(NODISPLAY)
