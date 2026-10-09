@@ -149,6 +149,29 @@ All in `~/.amaya/` (Amaya's per-user directory):
 To trust an authority for **all** programs instead (Firefox excepted), add
 it to the system: `sudo cp ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`.
 
+### Preview in browser
+
+**File > Preview in browser** (F12) shows the current document in an
+external browser (Firefox by default), which runs JavaScript and modern CSS:
+
+- a document without unsaved changes is given as is (its file, or its
+  http/https address);
+- a document with unsaved changes (in the formatted or the source view) is
+  first written to a preview copy, so the browser shows what is being
+  edited without saving it.  For a local file, the copy is a hidden file
+  next to it, `.<name>.amaya-preview.<ext>`, so relative links, images and
+  style sheets work; for a remote page it goes to a preview folder and gets
+  a `<base href>` pointing back to the page's address.  Copies are removed
+  when Amaya exits.
+
+| Setting in `thot.rc` | Purpose |
+|---|---|
+| `PREVIEW_BROWSER=firefox` | Browser command; may have arguments, and `%u` where the file or address goes (otherwise it is appended), e.g. `firefox --new-window %u`. |
+| `PREVIEW_DIR=...` | Folder for the copies of remote pages.  Default: `~/snap/<browser>/common/amaya-preview` when the browser is a snap (a snap cannot read hidden folders such as `~/.amaya`, nor `/tmp`), otherwise `~/.amaya/preview`. |
+
+A snap browser cannot open documents kept in hidden folders (e.g.
+`~/.something/page.html`) or under `/tmp`.
+
 ---
 
 ## Open decisions
@@ -180,6 +203,16 @@ cmake --build . --target amaya_schemas
 
 This builds the `amaya_str_compiler` and `amaya_app_compiler` host tools and
 reruns them against the changed schema sources.
+
+*Currently the host tools do not build* (they include the wx headers), so a
+change to a `.A` file must also be made by hand in `amaya/generated/`.  For a
+new menu entry in `EDITOR.A` that means: the `#define` of its label in
+`EDITOR.h` (labels are numbered in menu order, so the following ones shift by
+one, and `MAX_EDITOR_LABEL` grows), the `extern`, `TteAddMenuAction` and
+`TteAddMenuItem` lines in `EDITORAPP.c` (plus the item count in `TteAddMenu`
+and the action count in `TteInitMenus`), and the label, with the same
+renumbering, in every `config/*-amayadialogue` file.  The function name must
+also appear in `config/amaya.profiles`, or the entry stays hidden.
 
 ---
 

@@ -317,6 +317,7 @@ AmayaClose
 TtcCopySelection
 TtcSearchText
 SendByMail
+PreviewInBrowser
 ShowLogFile
 UpdateShowError
 
