@@ -54,7 +54,7 @@ void VerticalScroll (int frame, int delta, int selection)
   PtrBox              srcbox;
   ViewFrame          *pFrame;
   PtrAbstractBox      pAb;
-  ThotBool            add;
+  ThotBool            add, scrolled = FALSE;
   
   if (delta != 0 && GL_prepare (frame))
     {
@@ -134,6 +134,7 @@ void VerticalScroll (int frame, int delta, int selection)
                   /* recompute scrolls */
                   CheckScrollingWidthHeight (frame);
                   UpdateScrollbars (frame);
+                  scrolled = TRUE;
                 }
               
               if (selection != 0)
@@ -146,8 +147,12 @@ void VerticalScroll (int frame, int delta, int selection)
                     /* On reallume la selection deja visualisee */
                   }
 #ifdef _GL
-	      /* to be sure the scrolled page has been displayed */
-	      GL_Swap( frame );
+	      /* to be sure the scrolled page has been displayed; but at the
+	         top or the bottom nothing was drawn, and a swap would show
+	         the stale picture of the back buffer (the view jumped by a
+	         few pixels, and back on the next wheel step) */
+	      if (scrolled)
+	        GL_Swap( frame );
 #endif /* _GL */
             }
         }
@@ -223,14 +228,12 @@ void HorizontalScroll (int frame, int delta, int selection)
               RedrawFrameBottom (frame, 0, NULL);
               /* recompute the scroll bars */
               UpdateScrollbars (frame);
-            }
 #ifdef _GL
-#ifdef DEBUG_MAC
-printf ("HorizontalScroll:GL_Swap frame=%d\n",frame);
-#endif /* DEBUG_MAC */
-          /* to be sure the scrolled page has been displayed */
-          GL_Swap( frame );
+              /* to be sure the scrolled page has been displayed (not when
+                 nothing was drawn: the back buffer holds a stale picture) */
+              GL_Swap( frame );
 #endif /* _GL */
+            }
         }
     }
 }
@@ -664,6 +667,9 @@ void ShowBox (int frame, PtrBox pBox, int position, int percent,
     VerticalScroll (frame, dy, 1);
   else if (GL_prepare (frame))
     {
+      /* the box is already in place: redraw the whole frame, as the swap
+         below shows the back buffer, which may hold a stale picture */
+      DefClip (frame, -1, -1, -1, -1);
       RedrawFrameBottom (frame, dy, NULL);
 #ifdef _GL
       /* to be sure the scrolled page has been displayed */
