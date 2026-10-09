@@ -134,7 +134,7 @@ static void InitFormLanguage (Document doc, View view, PtrElement firstSel,
   languageCode[0] = EOS;
   if (currAttr && currAttr->AeAttrText)
     CopyBuffer2MBs (currAttr->AeAttrText, 0, (unsigned char*)languageCode,
-                    MAX_TXT_LEN);
+                    MAX_TXT_LEN - 1);
   if (languageCode[0] == EOS)
     {
       /* look for the inherited attribute value Language */
@@ -145,7 +145,7 @@ static void InitFormLanguage (Document doc, View view, PtrElement firstSel,
           /* the attribute value is a RFC-1766 code. Convert it into */
           /* a language name */
           CopyBuffer2MBs (pHeritAttr->AeAttrText, 0,
-                          (unsigned char*)languageCode, MAX_TXT_LEN);
+                          (unsigned char*)languageCode, MAX_TXT_LEN - 1);
           language = TtaGetLanguageIdFromName (languageCode);
           strcat (label, TtaGetLanguageName(language));
         }

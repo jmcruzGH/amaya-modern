@@ -1879,14 +1879,14 @@ void SVGElementCreated (Element el, Document doc)
       attr = TtaGetAttribute (el, attrType);
       if (!attr)
         {
-          sprintf (msgBuffer, "Attribute rx mandatory in ellipse");
+          snprintf (msgBuffer, sizeof (msgBuffer), "Attribute rx mandatory in ellipse");
           XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
         }
       attrType.AttrTypeNum = SVG_ATTR_ry;
       attr = TtaGetAttribute (el, attrType);
       if (!attr)
         {
-          sprintf (msgBuffer, "Attribute ry mandatory in ellipse");
+          snprintf (msgBuffer, sizeof (msgBuffer), "Attribute ry mandatory in ellipse");
           XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
         }
     }

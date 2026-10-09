@@ -1972,7 +1972,7 @@ void FillContent (PtrElement pEl, PtrAbstractBox pAb, PtrDocument pDoc)
               /* initialize the new image context */
               lg = ustrlen (pEl->ElText->BuContent) * 2 + 1;
               text = (char *)TtaGetMemory (lg);
-              CopyBuffer2MBs (pEl->ElText, 0, (unsigned char *)text, lg);
+              CopyBuffer2MBs (pEl->ElText, 0, (unsigned char *)text, lg - 1);
               NewPictInfo (pAb, text, UNKNOWN_FORMAT, False);
               TtaFreeMemory(text);
             }

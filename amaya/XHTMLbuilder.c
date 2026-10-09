@@ -184,7 +184,7 @@ static void CheckNamespace (Element el, Document doc)
   if (DocumentMeta[doc] && DocumentMeta[doc]->xmlformat &&
       TtaGiveNamespaceDeclaration (doc, el) == NULL)
     {
-      sprintf (msgBuffer, "Mandatory namespace for %s will be added when saving",
+      snprintf (msgBuffer, sizeof (msgBuffer), "Mandatory namespace for %s will be added when saving",
                TtaGetElementTypeName(TtaGetElementType(el)));
       lineNum = TtaGetElementLineNumber(el);
       XmlParseError (warningMessage, (unsigned char*)msgBuffer, lineNum);
@@ -226,7 +226,7 @@ void CheckMandatoryAttribute (Element el, Document doc, int attrNum)
       name = GetXMLAttributeName (attrType, elType, doc);
       if (name)
         {
-          sprintf (msgBuffer, "Missing mandatory attribute %s for element %s",
+          snprintf (msgBuffer, sizeof (msgBuffer), "Missing mandatory attribute %s for element %s",
                    name, TtaGetElementTypeName(elType));
           lineNum = TtaGetElementLineNumber(el);
           if (DocumentMeta[doc] && DocumentMeta[doc]->xmlformat)
@@ -322,7 +322,7 @@ void XhtmlElementComplete (ParserData *context, Element el, int *error)
           name1 = TtaStrdup ( TtaGetElementTypeName(elType));
           if (name1)
             {
-              sprintf (msgBuffer, "A <%s> element cannot be a child of <%s> element",
+              snprintf (msgBuffer, sizeof (msgBuffer), "A <%s> element cannot be a child of <%s> element",
                        name1, TtaGetElementTypeName(parentType));
               XmlParseError (errorParsing,  (unsigned char *)msgBuffer,
                              TtaGetElementLineNumber(el));
@@ -1406,7 +1406,7 @@ static void XhtmlTypeAttrValue (char *val,
         HTMLParseError (context->doc, msgBuffer, 0);
       MapHTMLAttribute ("unknown_attr", &attrType, NULL,
                         &level, context->doc);
-      sprintf (msgBuffer, "type=%s", val);
+      snprintf (msgBuffer, sizeof (msgBuffer), "type=%s", val);
       CreateHTMLAttribute (context->lastElement, attrType, msgBuffer, TRUE,
                            context->doc, &currentAttribute, &lastAttrElement);
     }
@@ -1416,7 +1416,7 @@ static void XhtmlTypeAttrValue (char *val,
     {
       if (elType.ElTypeNum != HTML_EL_Input)
         {
-          sprintf (msgBuffer, "Duplicate attribute \"type = %s\"", val);
+          snprintf (msgBuffer, sizeof (msgBuffer), "Duplicate attribute \"type = %s\"", val);
           if (isXML)
             XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
           else
@@ -1594,7 +1594,7 @@ void CreateAttrWidthPercentPxl (const char *buffer, Element el,
 // Replaced by sprintf format
 //          if (strlen (buffer) > MaxMsgLength - 30)
 //            buffer[MaxMsgLength - 30] = EOS;
-          sprintf (msgBuffer, "Invalid attribute value \"%*s\"", 30, buffer);
+          snprintf (msgBuffer, sizeof (msgBuffer), "Invalid attribute value \"%.30s\"", buffer);
           HTMLParseError (doc, msgBuffer, 0);
         }
 
@@ -1738,7 +1738,7 @@ void CreateAttrHeightPercentPxl (const char *buffer, Element el,
 // Replaced by sprintf format
 //          if (strlen (buffer) > MaxMsgLength - 30)
 //            buffer[MaxMsgLength - 30] = EOS;
-          sprintf (msgBuffer, "Invalid attribute value \"%*s\"", 30, buffer);
+          snprintf (msgBuffer, sizeof (msgBuffer), "Invalid attribute value \"%.30s\"", buffer);
           HTMLParseError (doc, msgBuffer, 0);
         }
 
@@ -1860,7 +1860,7 @@ void CreateAttrIntSize (char *buffer, Element el, Document doc)
         TtaRemoveAttribute (el, attr, doc);
       if (strlen (buffer) > MaxMsgLength - 30)
         buffer[MaxMsgLength - 30] = EOS;
-      sprintf (msgBuffer, "Invalid attribute value \"%s\"", buffer);
+      snprintf (msgBuffer, sizeof (msgBuffer), "Invalid attribute value \"%s\"", buffer);
       HTMLParseError (doc, msgBuffer, 0);
     }
 }
@@ -1969,7 +1969,7 @@ void EndOfHTMLAttributeValue (char *attrValue, AttributeMapping *lastMappedAttr,
                               attrType.AttrSSchema = elType.ElSSchema;
                               attrType.AttrTypeNum =
                                 pHTMLAttributeMapping[0].ThotAttribute;
-                              sprintf (msgBuffer, "%s=%s", attrName,attrValue);
+                              snprintf (msgBuffer, sizeof (msgBuffer), "%s=%s", attrName,attrValue);
                               CreateHTMLAttribute (lastAttrElement, attrType,
                                                    msgBuffer, TRUE, context->doc,
                                                    &currentAttribute, &lastAttrElement);

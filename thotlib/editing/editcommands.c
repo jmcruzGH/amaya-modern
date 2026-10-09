@@ -1078,7 +1078,7 @@ static ThotBool GiveAbsBoxForLanguage (int frame, PtrAbstractBox *pAb,
                                            NULL, &pElAttr); 
         if (pHeritAttr != NULL && pHeritAttr->AeAttrText != NULL)
           {
-            CopyBuffer2MBs (pHeritAttr->AeAttrText, 0, text, 100);
+            CopyBuffer2MBs (pHeritAttr->AeAttrText, 0, text, 99);
             language = TtaGetLanguageIdFromName ((char*)text);
           }
         else

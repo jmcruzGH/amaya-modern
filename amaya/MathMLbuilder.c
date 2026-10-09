@@ -766,7 +766,7 @@ static ThotBool CheckMathSubExpressions (Element el, int type1, int type2, int t
       if (child)
         /* no child expected and there is one, error */
         {
-          sprintf (msgBuffer, "No subexpression allowed in %s",
+          snprintf (msgBuffer, sizeof (msgBuffer), "No subexpression allowed in %s",
                    TtaGetElementTypeName (TtaGetElementType (el)));
           XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
           result = FALSE;
@@ -776,7 +776,7 @@ static ThotBool CheckMathSubExpressions (Element el, int type1, int type2, int t
     if (!child)
       /* a first child is expected and it's missing */
       {
-        sprintf (msgBuffer, "Missing subexpression in %s",
+        snprintf (msgBuffer, sizeof (msgBuffer), "Missing subexpression in %s",
                  TtaGetElementTypeName (TtaGetElementType (el)));
         XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
         result = FALSE;
@@ -806,7 +806,7 @@ static ThotBool CheckMathSubExpressions (Element el, int type1, int type2, int t
             if (child)
               /* this second child is not expected, error */
               {
-                sprintf (msgBuffer, "Only 1 subexpression allowed in %s",
+                snprintf (msgBuffer, sizeof (msgBuffer), "Only 1 subexpression allowed in %s",
                          TtaGetElementTypeName (TtaGetElementType (el)));
                 XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
                 result = FALSE;
@@ -817,7 +817,7 @@ static ThotBool CheckMathSubExpressions (Element el, int type1, int type2, int t
             if (!child)
               /* a second child is expected and it's missing */
               {
-                sprintf (msgBuffer, "2 subexpressions required in %s",
+                snprintf (msgBuffer, sizeof (msgBuffer), "2 subexpressions required in %s",
                          TtaGetElementTypeName (TtaGetElementType (el)));
                 XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
                 result = FALSE;
@@ -844,7 +844,7 @@ static ThotBool CheckMathSubExpressions (Element el, int type1, int type2, int t
                     if (child)
                       /* this third child is not expected, error */
                       {
-                        sprintf (msgBuffer, "Only 2 subexpressions allowed in %s",
+                        snprintf (msgBuffer, sizeof (msgBuffer), "Only 2 subexpressions allowed in %s",
                                  TtaGetElementTypeName (TtaGetElementType (el)));
                         XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
                         result = FALSE;
@@ -855,7 +855,7 @@ static ThotBool CheckMathSubExpressions (Element el, int type1, int type2, int t
                     if (!child)
                       /* a third child is expected and it's missing */
                       {
-                        sprintf (msgBuffer, "3 subexpressions required in %s",
+                        snprintf (msgBuffer, sizeof (msgBuffer), "3 subexpressions required in %s",
                                  TtaGetElementTypeName (TtaGetElementType (el)));
                         XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
                         result = FALSE;
@@ -881,7 +881,7 @@ static ThotBool CheckMathSubExpressions (Element el, int type1, int type2, int t
                     if (child)
                       /* this fourth child is unexpected */
                       {
-                        sprintf (msgBuffer,"Only 3 subexpressions allowed in %s",
+                        snprintf (msgBuffer, sizeof (msgBuffer),"Only 3 subexpressions allowed in %s",
                                  TtaGetElementTypeName (TtaGetElementType (el)));
                         XmlParseError (errorParsing, (unsigned char *)msgBuffer, 0);
                         result = FALSE;

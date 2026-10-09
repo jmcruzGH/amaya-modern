@@ -1276,7 +1276,7 @@ bool AmayaLangAttributeSubpanel::SetAttrListElem(PtrAttrListElem elem)
           /* the attribute value is a RFC-1766 code. Convert it into */
           /* a language name */
           CopyBuffer2MBs (pHeritAttr->AeAttrText, 0,
-                          (unsigned char*)languageCode, MAX_TXT_LEN);
+                          (unsigned char*)languageCode, MAX_TXT_LEN - 1);
           language = TtaGetLanguageIdFromName (languageCode);
           herit = TtaConvMessageToWX(TtaGetLanguageName(language));
         }
@@ -1286,7 +1286,7 @@ bool AmayaLangAttributeSubpanel::SetAttrListElem(PtrAttrListElem elem)
       if (elem->val && elem->val->AeAttrText)
         {
           CopyBuffer2MBs (elem->val->AeAttrText, 0, (unsigned char*)languageCode,
-                        MAX_TXT_LEN);
+                        MAX_TXT_LEN - 1);
           lang = TtaConvMessageToWX(TtaGetLanguageNameFromCode(languageCode));
         }
       else if (elem->restr.RestrDefVal)

@@ -2024,7 +2024,7 @@ void CreateClass (Document doc, View view)
           attr = TtaGetAttribute (ClassReference, attrType);
           if (attr)
             {
-              len = 50;
+              len = 49;
               TtaGiveTextAttributeValue (attr, a_class, &len);
               strcpy (CurrentClass, a_class);
             }
@@ -2131,7 +2131,7 @@ void ApplyClass (Document doc, View view)
 
   if (attr)
     {
-      len = 50;
+      len = 49;
       TtaGiveTextAttributeValue (attr, a_class, &len);
 #ifdef _WX
       a_class_with_dot[0] = EOS;

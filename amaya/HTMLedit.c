@@ -341,7 +341,7 @@ void RemoveLink (Element el, Document doc)
           if (attr)
             {
               /* copy the HREF attribute into the buffer */
-              length = MAX_LENGTH;
+              length = MAX_LENGTH - 1;
               TtaGiveTextAttributeValue (attr, buffer, &length);
               NormalizeURL (buffer, doc, pathname, documentname, NULL);
               RemoveStyle (pathname, doc, TRUE, TRUE, NULL, CSS_EXTERNAL_STYLE);

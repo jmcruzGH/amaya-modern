@@ -2406,7 +2406,7 @@ static void ProcessStartGI (const char* GIname)
               (!strcmp (pHTMLGIMapping[entry].XMLname, "td") ||
                !strcmp (pHTMLGIMapping[entry].XMLname, "th")))
             {
-              sprintf (msgBuffer, "Tags <table>, <tbody> and <tr> added");
+              snprintf (msgBuffer, sizeof (msgBuffer), "Tags <table>, <tbody> and <tr> added");
               HTMLParseError (HTMLcontext.doc, msgBuffer, 0);
               /* generate mandatory parent elements */ 
               ProcessStartGI ("table");
@@ -2417,7 +2417,7 @@ static void ProcessStartGI (const char* GIname)
                    !strcmp (pHTMLGIMapping[entry].XMLname, "tr"))
             {
               /* generate mandatory parent elements */ 
-              sprintf (msgBuffer, "Tags <table> and <tbody> added");
+              snprintf (msgBuffer, sizeof (msgBuffer), "Tags <table> and <tbody> added");
               HTMLParseError (HTMLcontext.doc, msgBuffer, 0);
               ProcessStartGI ("table");
             }

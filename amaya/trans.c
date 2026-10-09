@@ -537,7 +537,7 @@ static ThotBool MatchAttributes (strSymbDesc *pSymb, Element elem)
           TtaGiveAttributeType (attr, &AttrTyp, &AttrKind);
           if (AttrKind == 2 && !pAttr->IsInt)
             {
-              length = MAX_LENGTH;
+              length = MAX_LENGTH - 1;
               TtaGiveTextAttributeValue (attr, buf, &length);
               result = !strcmp ((char *)pAttr->TextVal, (char *)buf);
             }
@@ -1278,7 +1278,7 @@ static void CopySubTreeChildren (Element father, Document doc)
       attrFound = TtaGetAttribute (elCour, attrType);
       if (attrFound != NULL)
         {
-          l = 10;
+          l = 9;
           TtaGiveTextAttributeValue (attrFound, label, &l);
           TtaRemoveAttribute (elCour, attrFound, doc);
           idf = atoi (label);
@@ -1322,7 +1322,7 @@ static void CopySubTrees (strNode * Root, Document doc)
       attrFound = TtaGetAttribute (elCour, attrType);	
       if (attrFound != NULL)
         {
-          l = 10;
+          l = 9;
           TtaGiveTextAttributeValue (attrFound, label, &l);
           idf = atoi (label);
           if (idf != 0)
@@ -2001,7 +2001,7 @@ static void ApplyTransformation (strMatch *sm, Document doc)
               domain = SearchForward;
               if (elFound != NULL)
                 {
-                  length = MAX_LENGTH;
+                  length = MAX_LENGTH - 1;
                   TtaGiveTextAttributeValue (attr, buf, &length);
                   found = !strcmp ((char *)buf, "Select");
                 }

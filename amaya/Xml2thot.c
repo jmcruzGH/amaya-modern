@@ -4027,7 +4027,7 @@ void XmlStyleSheetPi (char *PiData, Element piEl)
     if (!ok)
     {
     char  msgBuffer[MaxMsgLength];
-    sprintf (msgBuffer,
+    snprintf (msgBuffer, sizeof (msgBuffer),
     "xml-stylesheet : attribute \"type\" not defined or not supported");
     XmlParseError (errorParsing, msgBuffer, 0);
     }

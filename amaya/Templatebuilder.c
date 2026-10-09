@@ -311,7 +311,7 @@ void TemplateElementComplete (ParserData *context, Element el, int *error)
                       (ptr[len] == EOS || ptr[len] == SPACE))
                     {
                       // a loop is detected
-                      sprintf (msgBuffer, "Remove type %s for use element",
+                      snprintf (msgBuffer, sizeof (msgBuffer), "Remove type %s for use element",
                                ancestor_name);
                       XmlParseError (errorParsing, (unsigned char *)msgBuffer,
                                      TtaGetElementLineNumber(el));

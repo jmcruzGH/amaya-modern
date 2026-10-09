@@ -360,7 +360,7 @@ PSchema GetPExtension (Document doc, SSchema sSchema, CSSInfoPtr css,
                           if (attr)
                             {
                               /* get a buffer for the attribute value */
-                              length = MAX_LENGTH;
+                              length = MAX_LENGTH - 1;
                               TtaGiveTextAttributeValue (attr, buffer, &length);
                               found = (!strcasecmp (buffer, "STYLESHEET") ||
                                        !strcasecmp (buffer, "STYLE"));
@@ -423,7 +423,7 @@ PSchema GetPExtension (Document doc, SSchema sSchema, CSSInfoPtr css,
                           if (attr)
                             {
                               /* get a buffer for the attribute value */
-                              length = MAX_LENGTH;
+                              length = MAX_LENGTH - 1;
                               TtaGiveTextAttributeValue (attr, buffer, &length);
                               found = (!strcasecmp (buffer, "STYLESHEET") ||
                                        !strcasecmp (buffer, "STYLE"));

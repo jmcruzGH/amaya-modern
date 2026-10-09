@@ -1075,7 +1075,7 @@ static ThotBool ElemHasCondAttribute (PtrElement pEl, PtrCondition pCond,
                   else
                     {
                       CopyBuffer2MBs (pA->AeAttrText, 0, attrVal,
-                                      MAX_TXT_LEN);
+                                      MAX_TXT_LEN - 1);
                       /* test the attribute value */
                       j = 0; i = 0;
                       found = FALSE;

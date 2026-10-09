@@ -431,7 +431,7 @@ static void ProcessSymbol (void)
 	if (strcmp ((char *)ParsedSymb->Tag, "*") && (MapGI ((char *)ParsedSymb->Tag, &schema, 0) == -1))
 	  {
 	     ParsedError = TRUE;
-	     sprintf (msgBuffer, "unknown element %s", ParsedSymb->Tag);
+	     snprintf (msgBuffer, sizeof (msgBuffer), "unknown element %s", ParsedSymb->Tag);
 	     ErrorMessage ((unsigned char *)msgBuffer);
 	  }
      }
@@ -1418,7 +1418,7 @@ static void EndNode (unsigned char c)
 	if (MapGI ((char *)ParsedNode->Tag, &schema, 0) == -1)
 	  {
 	     ParsedError = TRUE;
-	     sprintf (msgBuffer, "unknown tag </%s>", ParsedNode->Tag);
+	     snprintf (msgBuffer, sizeof (msgBuffer), "unknown tag </%s>", ParsedNode->Tag);
 	     ErrorMessage ((unsigned char *)msgBuffer);
 	  }
      }
@@ -1449,7 +1449,7 @@ static void EndOptNodes (unsigned char c)
 	if (MapGI ((char *)ParsedNode->Tag, &schema, 0) == -1)
 	  {
 	     ParsedError = TRUE;
-	     sprintf (msgBuffer, "unknown tag </%s>", ParsedNode->Tag);
+	     snprintf (msgBuffer, sizeof (msgBuffer), "unknown tag </%s>", ParsedNode->Tag);
 	     ErrorMessage ((unsigned char *)msgBuffer);
 	  }
      }
@@ -1492,7 +1492,7 @@ static void SelectionRule (unsigned char c)
 
   if (SelRuleFlag)
     {
-      sprintf (msgBuffer, "Too much selection rules");
+      snprintf (msgBuffer, sizeof (msgBuffer), "Too much selection rules");
       ErrorMessage ((unsigned char *)msgBuffer);
     }
   else
@@ -1557,7 +1557,7 @@ static void EndRule (unsigned char c)
 	  (MapGI ((char *)ParsedNode->Tag, &schema, 0) == -1))
 	{
 	  ParsedError = TRUE;
-	  sprintf (msgBuffer, "unknown tag </%s>", ParsedNode->Tag);
+	  snprintf (msgBuffer, sizeof (msgBuffer), "unknown tag </%s>", ParsedNode->Tag);
 	  ErrorMessage ((unsigned char *)msgBuffer);
 	}
     }

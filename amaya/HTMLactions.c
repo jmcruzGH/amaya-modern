@@ -1289,7 +1289,7 @@ void CheckUniqueName (Element el, Document doc, Attribute attr,
               name = (char *)TtaGetMemory (MAX_LENGTH);
               TtaGiveTextAttributeValue (attr, name, &length);
               name[MAX_LENGTH-1] = EOS;
-              sprintf (msgBuffer, "Invalid ID value \"%s\"", name);
+              snprintf (msgBuffer, sizeof (msgBuffer), "Invalid ID value \"%s\"", name);
               lineNum = TtaGetElementLineNumber(el);
               if (DocumentMeta[doc] && DocumentMeta[doc]->xmlformat)
                 XmlParseError (errorParsing, (unsigned char *)msgBuffer, lineNum);
@@ -1306,7 +1306,7 @@ void CheckUniqueName (Element el, Document doc, Attribute attr,
                   name = (char *)TtaGetMemory (MAX_LENGTH);
                   TtaGiveTextAttributeValue (attr, name, &length);
                   name[MAX_LENGTH-1] = EOS;
-                  sprintf (msgBuffer, "Duplicate ID value \"%s\"", name);
+                  snprintf (msgBuffer, sizeof (msgBuffer), "Duplicate ID value \"%s\"", name);
                   lineNum = TtaGetElementLineNumber(el);
                   if (DocumentMeta[doc] && DocumentMeta[doc]->xmlformat)
                     XmlParseError (errorParsing, (unsigned char *)msgBuffer, lineNum);
