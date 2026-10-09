@@ -84,6 +84,7 @@ AmayaCanvas::AmayaCanvas( wxWindow * p_parent_window,
    m_glContext( NULL ),
    m_pSharedContext( p_shared_context ),
 #endif
+   m_PaintPending( false ),
    m_IsMouseSelecting( false ),
    m_MouseGrab (false)
 {
@@ -171,7 +172,12 @@ void AmayaCanvas::OnSize( wxSizeEvent& event )
   // call the generic callback
   if (new_width != FrameTable[frame].FrWidth ||
       new_height != FrameTable[frame].FrHeight)
-  FrameResizedCallback( frame, new_width, new_height );
+    {
+      /* until the window has really been resized, which a repaint follows,
+         swaps are held back (AmayaFrame::SwapBuffers) */
+      m_PaintPending = true;
+      FrameResizedCallback( frame, new_width, new_height );
+    }
 }
 
 /*----------------------------------------------------------------------
@@ -190,6 +196,7 @@ void AmayaCanvas::OnPaint( wxPaintEvent& event )
    * other windows will go wrong.
    */
   wxPaintDC dc(this);
+  m_PaintPending = false;
 
   // initialize the canvas context
   Init(); 

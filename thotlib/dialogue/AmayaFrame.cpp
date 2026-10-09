@@ -374,6 +374,22 @@ bool AmayaFrame::DisplayIsReady()
   -----------------------------------------------------------------------*/
 bool AmayaFrame::SwapBuffers()
 {
+  /* When a scrollbar is shown or hidden, the canvas gets its new size (and
+     Amaya redraws for it) before the toolkit has resized the canvas window.
+     A swap then shows the new picture in the old window: the whole view
+     jumped by the scrollbar's thickness, and back on the following repaint.
+     Hold such swaps back until that repaint, which redraws the frame; but
+     never more than a few, in case no repaint comes. */
+  static int held = 0;
+  if (DisplayIsReady () && m_pCanvas->PaintPending () && held < 10)
+    {
+      if (getenv ("AMAYA_TRACE_SWAP"))
+        fprintf (stderr, "swap held back (resize pending), frame %d\n", m_FrameId);
+      held++;
+      m_pCanvas->Refresh (false);
+      return FALSE;
+    }
+  held = 0;
   if (DisplayIsReady())
     {
       TTALOGDEBUG_1( TTA_LOG_DRAW, _T("AmayaFrame::SwapBuffers()[OK] - frame_id=%d"), m_FrameId );

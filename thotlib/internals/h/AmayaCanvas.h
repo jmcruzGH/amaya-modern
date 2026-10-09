@@ -77,6 +77,10 @@ public:
   virtual ~AmayaCanvas( );
 
   bool IsInit();
+  /* the canvas was resized and the repaint for the new size has not come
+     yet: buffer swaps would show a picture made for the new size in the
+     window still at the old size (see AmayaFrame::SwapBuffers) */
+  bool PaintPending() { return m_PaintPending; }
   
 protected:
   DECLARE_EVENT_TABLE()
@@ -107,6 +111,7 @@ protected:
 
 
   bool m_Init;
+  bool m_PaintPending;
   void Init();
   void Render();
 
