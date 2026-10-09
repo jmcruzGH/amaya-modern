@@ -1473,22 +1473,34 @@ void UpdateScrollbars (int frame)
     pageSize : The size of the page size in scroll units. This is the number of units the scrollbar will scroll when it is paged up or down. Often it is the same as the thumb size.
     refresh : true to redraw the scrollbar, false otherwise.
   */
+  /* The scrollbars stay in place, disabled when not needed, instead of
+     being shown and hidden: showing one shrank the canvas, and until the
+     toolkit had resized the canvas window the view was drawn 17 pixels
+     off (the page jumped, e.g. on the first click on a new page). */
+  FrameTable[frame].WdFrame->ShowScrollbar(2);
   if (width < l || x > 0)
     {
-      FrameTable[frame].WdFrame->ShowScrollbar(2);
+      FrameTable[frame].WdScrollH->Enable (true);
       FrameTable[frame].WdScrollH->SetScrollbar( x, width, l, width-13 );
     }
   else
-    FrameTable[frame].WdFrame->HideScrollbar(2);    
+    {
+      FrameTable[frame].WdScrollH->SetScrollbar( 0, 1, 1, 1 );
+      FrameTable[frame].WdScrollH->Enable (false);
+    }
 
+  FrameTable[frame].WdFrame->ShowScrollbar(1);
   if (height < h || y > 0)
     {
       /* slider smaller than the scroll window */
-      FrameTable[frame].WdFrame->ShowScrollbar(1);
+      FrameTable[frame].WdScrollV->Enable (true);
       FrameTable[frame].WdScrollV->SetScrollbar( y, height, h, height );
     }
   else
-    FrameTable[frame].WdFrame->HideScrollbar(1);
+    {
+      FrameTable[frame].WdScrollV->SetScrollbar( 0, 1, 1, 1 );
+      FrameTable[frame].WdScrollV->Enable (false);
+    }
 }
 
 /*----------------------------------------------------------------------
