@@ -318,6 +318,7 @@ TtcCopySelection
 TtcSearchText
 SendByMail
 PreviewInBrowser
+LoadCookies
 ShowLogFile
 UpdateShowError
 

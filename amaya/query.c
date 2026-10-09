@@ -682,19 +682,16 @@ static void cookie_file_name(char *buf, size_t len)
   snprintf(buf, len, "%s", s_cookie_file);
 }
 
-static void cookies_load(void)
+/* Feed the cookies of a Netscape-format file into the shared store.
+   Returns the number of cookies read; when domains is not NULL, it gets a
+   comma-separated list of the cookies' sites. */
+static int cookies_read_file(const char *name, char *domains, size_t dlen)
 {
-  char name[MAX_LENGTH], line[4096];
-  const char *home = TtaGetEnvString("APP_HOME");
-  if (home == NULL || home[0] == EOS) {
-    s_cookie_file[0] = EOS;              /* nowhere safe to keep cookies */
-    return;
-  }
-  snprintf(s_cookie_file, sizeof(s_cookie_file), "%s%ccookies.txt",
-           home, DIR_SEP);
-  cookie_file_name(name, sizeof(name));
+  char line[8192];
+  int  count = 0;
   FILE *f = fopen(name, "r");
-  if (!f) return;
+  if (domains && dlen) domains[0] = EOS;
+  if (!f) return -1;
   CURL *easy = curl_easy_init();
   if (easy) {
     curl_easy_setopt(easy, CURLOPT_SHARE, s_share);
@@ -704,11 +701,60 @@ static void cookies_load(void)
       /* comments, but "#HttpOnly_" lines are cookies */
       if (l == 0 || (line[0] == '#' && strncmp(line, "#HttpOnly_", 10)))
         continue;
-      curl_easy_setopt(easy, CURLOPT_COOKIELIST, line);
+      /* a cookie has 7 tab-separated fields */
+      int tabs = 0;
+      for (const char *t = line; *t; t++) if (*t == '\t') tabs++;
+      if (tabs < 6) continue;
+      if (curl_easy_setopt(easy, CURLOPT_COOKIELIST, line) != CURLE_OK)
+        continue;
+      count++;
+      if (domains && dlen) {
+        /* add the site to the list, once */
+        char site[256];
+        const char *d = line;
+        if (!strncmp(d, "#HttpOnly_", 10)) d += 10;
+        if (*d == '.') d++;
+        size_t n = strcspn(d, "\t");
+        if (n >= sizeof(site)) n = sizeof(site) - 1;
+        memcpy(site, d, n);
+        site[n] = EOS;
+        size_t used = strlen(domains);
+        char *found = strstr(domains, site);
+        ThotBool known = FALSE;
+        while (found) {
+          size_t e = (found - domains) + n;
+          if ((found == domains ||
+               (found - domains >= 2 && found[-2] == ',' && found[-1] == ' ')) &&
+              (domains[e] == EOS || domains[e] == ','))
+            { known = TRUE; break; }
+          found = strstr(found + 1, site);
+        }
+        if (!known) {
+          if (used + n + 6 < dlen)
+            snprintf(domains + used, dlen - used, "%s%s", used ? ", " : "", site);
+          else if (used + 5 < dlen && strcmp(domains + used - 3, "...") != 0)
+            snprintf(domains + used, dlen - used, ", ...");
+        }
+      }
     }
     curl_easy_cleanup(easy);
   }
   fclose(f);
+  return count;
+}
+
+static void cookies_load(void)
+{
+  char name[MAX_LENGTH];
+  const char *home = TtaGetEnvString("APP_HOME");
+  if (home == NULL || home[0] == EOS) {
+    s_cookie_file[0] = EOS;              /* nowhere safe to keep cookies */
+    return;
+  }
+  snprintf(s_cookie_file, sizeof(s_cookie_file), "%s%ccookies.txt",
+           home, DIR_SEP);
+  cookie_file_name(name, sizeof(name));
+  cookies_read_file(name, NULL, 0);
 }
 
 static void cookies_save(void)
@@ -752,6 +798,57 @@ static void cookies_setup(CURL *easy)
   if (!s_cookies || !s_share) return;
   curl_easy_setopt(easy, CURLOPT_SHARE, s_share);
   curl_easy_setopt(easy, CURLOPT_COOKIEFILE, "");  /* enable the engine */
+}
+
+/*----------------------------------------------------------------------
+  LoadCookies (File > Load cookies...)
+  Add the cookies of a Netscape-format cookie file (as written by curl,
+  wget, or contrib/firefox-cookies.py) to Amaya's cookies, e.g. to use in
+  Amaya a login made in another browser.  As any cookie received by Amaya,
+  session cookies are kept in memory only; cookies with an expiry date
+  are saved in cookies.txt at exit.  The file holds credentials, so Amaya
+  offers to delete it once it has been read.
+  ----------------------------------------------------------------------*/
+void LoadCookies (Document doc, View view)
+{
+  char domains[400], msg[600];
+  int  count;
+
+  if (!s_cookies || !s_share)
+    {
+      TtaSetStatus (doc, view, "Cookies are disabled (ENABLE_COOKIES=no)%s", "");
+      return;
+    }
+  const char *home = getenv ("HOME");
+  wxFileDialog dlg (NULL, wxT("Load cookies (Netscape cookie file)"),
+                    home ? wxString::FromUTF8 (home) : wxString (),
+                    wxEmptyString,
+                    wxT("Cookie files (*.txt)|*.txt|All files|*"),
+                    wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+  if (dlg.ShowModal () != wxID_OK)
+    return;
+  wxString path = dlg.GetPath ();
+  wxCharBuffer fname = path.mb_str (wxConvFile);
+  count = cookies_read_file (fname, domains, sizeof (domains));
+  if (count < 0)
+    {
+      TtaSetStatus (doc, view, "Cannot read %s", (const char *)fname);
+      return;
+    }
+  if (count == 0)
+    snprintf (msg, sizeof (msg), "No cookies found in that file");
+  else
+    snprintf (msg, sizeof (msg), "%d cookie%s loaded for: %s",
+              count, count > 1 ? "s" : "", domains);
+  TtaSetStatus (doc, view, "%s", msg);
+  if (count > 0 &&
+      wxMessageBox (wxString::FromUTF8 (msg) +
+                    wxT("\n\nThe file contains login credentials. Delete it now?"),
+                    wxT("Load cookies"), wxYES_NO | wxICON_QUESTION) == wxYES)
+    {
+      if (unlink (fname) != 0)
+        TtaSetStatus (doc, view, "Cookies loaded, but the file could not be deleted%s", "");
+    }
 }
 
 

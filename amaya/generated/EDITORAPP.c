@@ -411,6 +411,7 @@ extern void SendByMail (Document document, View view);
 extern void SetupAndPrint (Document document, View view);
 extern void PrintAs (Document document, View view);
 extern void PreviewInBrowser (Document document, View view);
+extern void LoadCookies (Document document, View view);
 extern void AmayaCloseTab (Document document, View view);
 extern void AmayaCloseWindow (Document document, View view);
 extern void AmayaClose (Document document, View view);
@@ -680,7 +681,7 @@ int main (int argc, char **argv)
     appName[19] = EOS;
   TtaInitialize (appName);
 
-  TteInitMenus (appName, 586);
+  TteInitMenus (appName, 587);
   TteAddMenuAction("HelpLocal", (Proc)HelpLocal, TRUE);
   TteAddMenuAction("DoAction", (Proc)DoAction, TRUE);
   TteAddMenuAction("NextLinkOrFormElement", (Proc)NextLinkOrFormElement, TRUE);
@@ -1024,6 +1025,7 @@ int main (int argc, char **argv)
   TteAddMenuAction("SetupAndPrint", (Proc)SetupAndPrint, FALSE);
   TteAddMenuAction("PrintAs", (Proc)PrintAs, FALSE);
   TteAddMenuAction("PreviewInBrowser", (Proc)PreviewInBrowser, FALSE);
+  TteAddMenuAction("LoadCookies", (Proc)LoadCookies, FALSE);
   TteAddMenuAction("AmayaCloseTab", (Proc)AmayaCloseTab, FALSE);
   TteAddMenuAction("AmayaCloseWindow", (Proc)AmayaCloseWindow, FALSE);
   TteAddMenuAction("AmayaClose", (Proc)AmayaClose, FALSE);
@@ -1269,7 +1271,7 @@ int main (int argc, char **argv)
   TteAddMenuAction("HelpAmaya", (Proc)HelpAmaya, FALSE);
 
   TteZeroMenu();
-  TteAddMenu (0, File, 24, "");
+  TteAddMenu (0, File, 25, "");
     TteAddMenuItem (File, -1, BNewTab, "NewTab", 'B', NULL);
     TteAddMenuItem (File, -1, BNewHtml, "SingleNewXHTML", 'B', "document_html.png");
   TteAddSubMenu (File, New1, 4);
@@ -1319,6 +1321,7 @@ int main (int argc, char **argv)
     TteAddMenuItem (File, -1, BSetUpandPrint, "SetupAndPrint", 'B', NULL);
     TteAddMenuItem (File, -1, BPrint, "PrintAs", 'B', NULL);
     TteAddMenuItem (File, -1, BPreviewInBrowser, "PreviewInBrowser", 'B', NULL);
+    TteAddMenuItem (File, -1, BLoadCookies, "LoadCookies", 'B', NULL);
     TteAddMenuItem (File, -1, 0, NULL, 'S', NULL);
     TteAddMenuItem (File, -1, BCloseTab, "AmayaCloseTab", 'B', NULL);
     TteAddMenuItem (File, -1, BCloseWindow, "AmayaCloseWindow", 'B', NULL);

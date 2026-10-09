@@ -177,6 +177,20 @@ external browser (Firefox by default), which runs JavaScript and modern CSS:
 A snap browser cannot open documents kept in hidden folders (e.g.
 `~/.something/page.html`) or under `/tmp`.
 
+### Load cookies
+
+**File > Load cookies…** adds the cookies of a Netscape-format cookie file
+(the format of `cookies.txt`, curl and wget) to Amaya's own, e.g. to use in
+Amaya a login made in another browser.  The status bar tells how many
+cookies were loaded and for which sites.  As with any cookie Amaya receives,
+session cookies stay in memory only and cookies with an expiry date are
+saved in `cookies.txt` at exit.  Such a file holds login credentials, so
+Amaya then offers to delete it.
+
+To get the cookies of one site from Firefox, see
+[`contrib/firefox-cookies.py`](contrib/firefox-cookies.py) and its security
+warning.
+
 ---
 
 ## Open decisions

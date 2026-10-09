@@ -83,6 +83,7 @@ MENUS
 	File button:BSetUpandPrint -> SetupAndPrint;
 	File button:BPrint -> PrintAs;
 	File button:BPreviewInBrowser -> PreviewInBrowser;
+	File button:BLoadCookies -> LoadCookies;
 	File Separator;
 	File button:BCloseTab -> AmayaCloseTab;
 	File button:BCloseWindow -> AmayaCloseWindow;
