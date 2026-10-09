@@ -2608,6 +2608,14 @@ void DisplayFrame (int frame)
       pFrame = &ViewFrameTable[frame - 1];
       if (pFrame->FrAbstractBox != NULL)
         {
+#ifdef _GL
+          /* the swap below shows the back buffer: when it is not trusted
+             (default, see SetBadCard), draw the whole frame, also when
+             nothing is pending (e.g. clearing a selection), otherwise the
+             swap shows a stale picture (the view jumped after a click) */
+          if (GetBadCard ())
+            DefClip (frame, -1, -1, -1, -1);
+#endif /* _GL */
           /* Drawing of the updated area */
           RedrawFrameBottom (frame, 0, NULL);	  
           /* recompute scrolls */
