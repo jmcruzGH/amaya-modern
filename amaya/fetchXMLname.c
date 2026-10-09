@@ -313,7 +313,10 @@ void MapXMLElementType (int XMLtype, const char *XMLname, ElementType *elType,
         i++;     
       /* look at all entries starting with the right character */
       do
-        if (!xmlformat && ptr == XHTMLElemMappingTable &&
+        if (ptr[i].XMLname[0] == EOS)
+          /* end of the table: unknown name */
+          break;
+        else if (!xmlformat && ptr == XHTMLElemMappingTable &&
             strcasecmp (ptr[i].XMLname, XMLname))
           /* it's not the tag */
           i++;

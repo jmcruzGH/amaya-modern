@@ -6918,6 +6918,12 @@ static void AddClassName (char *name, CSSInfoPtr css)
 }
 
 
+/* close the current item of the selector buffer sel[] without going
+   past its end; a selector too long for the buffer is not applied */
+#define CLOSE_SEL_ITEM \
+  do { if (cur < limit) *cur++ = EOS; \
+       else { *limit = EOS; cur = limit; tooLong = TRUE; } } while (0)
+
 /*----------------------------------------------------------------------
   ParseGenericSelector: Create a generic context for a given selector
   string.
@@ -6937,6 +6943,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
   PSchema            tsch;
   AttributeType      attrType;
   char              *deb, *cur, *sel, *next, *limit, c;
+  ThotBool           tooLong = FALSE;
   char              *schemaName, *mappedName, *saveURL;
   char              *names[MAX_ANCESTORS];
   ThotBool           pseudoFirstChild[MAX_ANCESTORS];
@@ -7011,7 +7018,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
              *selector != '>' && *selector != '+' &&
              !TtaIsBlank (selector) && cur < limit)
         *cur++ = *selector++;
-      *cur++ = EOS; /* close the first string  in sel[] */
+      CLOSE_SEL_ITEM; /* close the first string  in sel[] */
       noname = TRUE;
       if (deb[0] != EOS)
         /* the selector starts with an element name */
@@ -7066,7 +7073,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
                     *cur++ = *selector++;
                 }
               /* close the word */
-              *cur++ = EOS;
+              CLOSE_SEL_ITEM;
               /* point to the class in sel[] if it's a valid name */
               if (deb[0] <= 64)
                 {
@@ -7117,7 +7124,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
                      !TtaIsBlank (selector) && cur < limit)
                 *cur++ = *selector++;
               /* close the word */
-              *cur++ = EOS;
+              CLOSE_SEL_ITEM;
               /* point to the pseudo-class or pseudo-element in sel[] if it's
                  a valid name */
               if (!strcmp (deb, "first-child"))
@@ -7266,7 +7273,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
                      !TtaIsBlank (selector) && cur < limit)
                 *cur++ = *selector++;
               /* close the word */
-              *cur++ = EOS;
+              CLOSE_SEL_ITEM;
               /* point to the attribute in sel[] if it's valid name */
               if (deb[0] <= 64)
                 {
@@ -7311,7 +7318,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
                      !TtaIsBlank (selector) && cur < limit)
                 *cur++ = *selector++;
               /* close the word (attribute name) */
-              *cur++ = EOS;
+              CLOSE_SEL_ITEM;
               /* point to the attribute in sel[] if it's valid name */
               if (deb[0] <= 64)
                 {
@@ -7379,26 +7386,26 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
                       selector++;
                     }
                   deb = cur;
-                  while ((quoted && cur < limit &&
-                          (*selector != '"' ||
-                           (*selector == '"' && selector[-1] == '\\'))) ||
-                         (!quoted && *selector != ']'))
+                  while (*selector != EOS &&
+                         ((quoted &&
+                           (*selector != '"' || selector[-1] == '\\')) ||
+                          (!quoted && *selector != ']')))
                     {
-                      if (*selector == EOS)
+                      if (attrmatch[0] == Txtword && TtaIsBlank (selector))
                         {
-                          CSSPrintError ("Invalid attribute value", deb);
+                          CSSPrintError ("No space allowed here: ", selector);
                           DoApply = FALSE;
                         }
+                      if (cur < limit)
+                        *cur++ = *selector;
                       else
-                        {
-                          if (attrmatch[0] == Txtword && TtaIsBlank (selector))
-                            {
-                              CSSPrintError ("No space allowed here: ", selector);
-                              DoApply = FALSE;
-                            }
-                          *cur++ = *selector;
-                        }
+                        tooLong = TRUE;
                       selector++;
+                    }
+                  if (*selector == EOS)
+                    {
+                      CSSPrintError ("Invalid attribute value", deb);
+                      DoApply = FALSE;
                     }
                   /* there is a value */
                   if (quoted && *selector == '"')
@@ -7414,7 +7421,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
                     }
                   else
                     {
-                      *cur++ = EOS;
+                      CLOSE_SEL_ITEM;
                       attrvals[0] = deb;
                       selector++;
                     }
@@ -7422,9 +7429,21 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
               /* end of the attribute */
               else if (*selector != ']')
                 {
-                  selector[1] = EOS;
-                  CSSPrintError ("Invalid attribute", selector);
-                  selector += 2;
+                  if (*selector == EOS)
+                    /* unterminated attribute selector */
+                    CSSPrintError ("Invalid attribute", "");
+                  else if (selector[1] == EOS)
+                    {
+                      CSSPrintError ("Invalid attribute", selector);
+                      selector++;
+                    }
+                  else
+                    {
+                      /* show the wrong character and skip it */
+                      selector[1] = EOS;
+                      CSSPrintError ("Invalid attribute", selector);
+                      selector += 2;
+                    }
                   DoApply = FALSE;
                 }
               else
@@ -7444,7 +7463,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
                      !TtaIsBlank (selector) && cur < limit)
                 *cur++ = *selector++;
               /* close the word */
-              *cur++ = EOS;
+              CLOSE_SEL_ITEM;
               CSSPrintError ("Selector not supported:", deb);
               DoApply = FALSE;	    
             }
@@ -7456,7 +7475,7 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
 
       if (noname && !pseudoFirstChild[0] && attrnums[0] == 0 && attrnames[0] == NULL)
         {
-          *cur++ = EOS;
+          CLOSE_SEL_ITEM;
           CSSPrintError ("Invalid Selector", deb);
           DoApply = FALSE;	    
         }
@@ -7519,6 +7538,13 @@ static char *ParseGenericSelector (char *selector, char *cssRule,
           for (i = 0; i < nbattrs; i++)
               attrlevels[i]++;
         }
+    }
+
+  if (tooLong)
+    {
+      /* parts of the selector were truncated: don't apply the rule */
+      CSSPrintError ("Selector too long", "");
+      DoApply = FALSE;
     }
 
   /* Now update the list of classes defined by the CSS */
