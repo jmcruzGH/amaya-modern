@@ -211,13 +211,19 @@ reruns them against the changed schema sources.
 
 *Currently the host tools do not build* (they include the wx headers), so a
 change to a `.A` file must also be made by hand in `amaya/generated/`.  For a
-new menu entry in `EDITOR.A` that means: the `#define` of its label in
-`EDITOR.h` (labels are numbered in menu order, so the following ones shift by
-one, and `MAX_EDITOR_LABEL` grows), the `extern`, `TteAddMenuAction` and
-`TteAddMenuItem` lines in `EDITORAPP.c` (plus the item count in `TteAddMenu`
-and the action count in `TteInitMenus`), and the label, with the same
-renumbering, in every `config/*-amayadialogue` file.  The function name must
-also appear in `config/amaya.profiles`, or the entry stays hidden.
+new menu entry in `EDITOR.A`, `tools/add-editor-menu-item.py` does all of it:
+
+```bash
+tools/add-editor-menu-item.py BPrint BMyEntry MyAction 'My &entry...' 'pt=A minha &entrada...'
+```
+
+It adds the entry after an existing one (here `BPrint`) in `EDITOR.A`, the
+generated `EDITOR.h` and `EDITORAPP.c` (labels are numbered in menu order, so
+the following ones shift by one; item and action counts grow), the label in
+every `config/*-amayadialogue` file (same renumbering; English unless a
+translation is given), and the action in `config/amaya.profiles`, without
+which the entry stays hidden.  `MyAction (Document, View)` must then be
+written in a source file.
 
 ---
 
