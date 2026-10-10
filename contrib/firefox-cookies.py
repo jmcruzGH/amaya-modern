@@ -241,6 +241,7 @@ def main():
             % site) + ''.join(netscape_line(c) + '\n' for c in cookies)
     if args.output:
         fd = os.open(os.path.expanduser(args.output), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        os.fchmod(fd, 0o600)      # also when the file already existed
         with os.fdopen(fd, 'w') as f:
             f.write(text)
     else:
