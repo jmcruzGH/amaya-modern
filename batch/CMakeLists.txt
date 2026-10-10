@@ -93,6 +93,28 @@ set_target_properties(amaya_str_compiler PROPERTIES
 
 # ── amaya_app_compiler ───────────────────────────────────────────────────────
 # Reads .A (application schema source) + .STR (binary schema) → *APP.c + *.h
+add_executable(amaya_tra_compiler EXCLUDE_FROM_ALL
+  ${CMAKE_SOURCE_DIR}/batch/tra.c
+  ${CMAKE_SOURCE_DIR}/batch/writetra.c
+  ${CMAKE_SOURCE_DIR}/batch/tra_stubs.c
+  ${CMAKE_SOURCE_DIR}/thotlib/base/message_wx.c
+  ${CMAKE_SOURCE_DIR}/thotlib/base/registry_wx.c
+  ${CMAKE_SOURCE_DIR}/batch/parser.c
+  ${BATCH_THOTLIB_SRCS}
+)
+# As in the original Makefile, compiled as C++ ($(CXX)) with the project's
+# definitions (_WX): the shared thotlib sources use wx when _WX is set.
+get_target_property(TRA_SOURCES amaya_tra_compiler SOURCES)
+set_source_files_properties(${TRA_SOURCES} TARGET_DIRECTORY amaya_tra_compiler
+  PROPERTIES LANGUAGE CXX)
+target_compile_options(amaya_tra_compiler PRIVATE -DNODISPLAY -fpermissive -w
+  "-DCPP=\"/usr/bin/cpp -P -C -undef -nostdinc\"")
+target_include_directories(amaya_tra_compiler PRIVATE ${BATCH_INCLUDES})
+target_link_libraries(amaya_tra_compiler PRIVATE m ${wxWidgets_LIBRARIES})
+set_target_properties(amaya_tra_compiler PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/batch_tools
+)
+
 add_executable(amaya_app_compiler EXCLUDE_FROM_ALL
   ${CMAKE_SOURCE_DIR}/batch/app.c
   ${CMAKE_SOURCE_DIR}/batch/writeapp.c

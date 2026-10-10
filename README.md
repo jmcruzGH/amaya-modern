@@ -223,7 +223,20 @@ cmake --build . --target amaya_schemas
 This builds the `amaya_str_compiler` and `amaya_app_compiler` host tools and
 reruns them against the changed schema sources.
 
-*Currently the host tools do not build* (they include the wx headers), so a
+The translation schemas (`amaya/*.TRA`, used to save documents and to
+generate the source view) are made by `amaya_tra_compiler`, which builds:
+
+```bash
+cd build && make amaya_tra_compiler
+cd ../amaya   # HTMLT.T includes greek.sgml from here
+../build/batch_tools/amaya_tra_compiler HTMLT                          # HTMLT.TRA
+../build/batch_tools/amaya_tra_compiler -DXML HTMLT HTMLTX             # XHTML 1.0
+../build/batch_tools/amaya_tra_compiler -DXML -DXHTML11 HTMLT HTMLT11  # XHTML 1.1
+```
+
+(it also writes an `HTMLT.SCH` work file, which can be deleted).
+
+*The structure and application compilers do not build yet* (they include the wx headers), so a
 change to a `.A` file must also be made by hand in `amaya/generated/`.  For a
 new menu entry in `EDITOR.A`, `tools/add-editor-menu-item.py` does all of it:
 
