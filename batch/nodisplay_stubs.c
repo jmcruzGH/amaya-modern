@@ -9,7 +9,7 @@
  * and view functions that are not compiled in NODISPLAY mode.
  *
  * Generated for amaya-modern Phase 1.
- * (c) 2026 J. Magalhães Cruz <jmcruz@fe.up.pt> -- FEUP
+ * (c) 2026 JoseMCruz <jmcruz@fe.up.pt> -- FEUP
  */
 
 #include "thot_sys.h"
