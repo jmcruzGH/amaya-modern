@@ -14,7 +14,8 @@ Development stopped in 2012 (version 11.4.7), and the
 2018; this port makes it build and run well again.
 
 > This is an independent, unofficial port.  It is not a W3C or Inria
-> release and is not endorsed by them.
+> release and is not endorsed by them.  Most of its code was written by
+> Claude, Anthropic's AI model (see [Credits](#credits-and-licence)).
 
 ![Amaya editing a page: formatted view and structure view side by side](docs/screenshot.png)
 
@@ -510,6 +511,16 @@ Amaya was created at **Inria** and **W3C** by Irène Vatton, Vincent Quint,
 Laurent Carcone, José Kahan and many contributors, 1996–2012.
 This port: © 2026 J. Magalhães Cruz `<jmcruz@fe.up.pt>`, FEUP, University
 of Porto.
+
+**How this port was made.** Most of the port's code was written by
+[Claude](https://www.anthropic.com/claude), Anthropic's AI model, working
+as the main developer in Claude Code sessions: diagnosing the problems,
+writing the fixes and new features, testing them under a virtual X server
+and with AddressSanitizer, and writing this documentation.  J. Magalhães
+Cruz led the project.  He chose what to fix and in what order, tested every
+change on his own desktop, reported the bugs he found in daily use, and
+reviewed and published the result.  Commits written by Claude carry a
+`Co-Authored-By: Claude` line.
 
 Amaya is distributed under the
 [W3C Software Notice and License](https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231)
