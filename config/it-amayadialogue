@@ -146,214 +146,215 @@
 144 Elementi carattere
 145 Italico (i)
 146 Grassetto (b)
-147 Macchina da scrivere (tt)
-148 Grande (big)
-149 Piccolo (small)
-150 Span
-151 Pedice (sub)
-152 Indice (sup)
-153 Citazione (q)
-154 BiDi (bdo)
-155 Carattere (&xxx;)
-156 Immagine (img)...
-157 Riga orizzontale (hr)
-158 A capo (br)
-159 Preformattato (pre)
-160 Inserisci a tabella
-161 Tabella
-162 Inserisci a tabella
-163 Legenda (caption)
-164 Intestazione (thead)
-165 Corpo (tbody)
-166 Piede (tfoot)
-167 &Math
-168 Inserisci una formula
-169 Testo (mtext)
-170 Identificatore (mi)
-171 Numero (mn)
-172 Operatore (mo)
-173 Spazio (mspace)
-174 InvisibleTimes
-175 ApplyFunction
-176 Radice (mroot)
-177 Radice quadrata (msqrt)
-178 Ingloba (menclose)
-179 Frazione (mfrac)
-180 Pedice e indice (msubsup)
-181 Pedice (msub)
-182 Indice (msup)
-183 Sotto e sopra (munderover)
-184 Sotto (munder)
-185 Sopra (mover)
-186 Parentesi (mrow)
-187 Multiscript (mmultiscripts)
-188 Matrice (mtable)
-189 Graphics
-190 Linea
-191 Freccia
-192 Testo
-193 OggettoEsterno
-194 Gruppo
-195 Quadrato
-196 Rettangolo
-197 Rombo
-198 Triangolo
-199 Cerchio
-200 Ellisse
-201 PiuLinee
-202 Poligono
-203 Curva aperta
-204 Curva chiusa
-205 Modulo
-206 form
-207 Pulsante (input)
-208 Checkbox (input)
-209 Selettore di file (input)
-210 Controllo nascosto (input)
-211 Immagine (input)...
-212 Password (input)
-213 Pulsante radio (input)
-214 Reset (input)
-215 Invia (input)
-216 Testo (input)
-217 Gruppo di campi (fieldset)
-218 Etichetta (label)
-219 Menu (option)
-220 Sottomenu (optgroup)
-221 Area testo (textarea)
-222 Oggetto
-223 Oggetto (object)
-224 Parametro (param)
-225 Area mappabile
-226 Inserisci una mappa
-227 Cerchio (area)
-228 Poligono (area)
-229 Rettangolo (area)
-230 Struttura
-231 style
-232 Commento
-233 base
-234 meta
-235 link
-236 script
-237 noscript
-238 Divisione (div)
-239 Indirizzo (address)
-240 blockquote
-241 Cornice (iframe)
-242 ruby
-243 Tema
-244 Classico
-245 Moderno
-246 Senza tema
-247 Colore per il testo
-248 Seleziona un colore per il testo...
-249 Senza colore
-250 Colore di sfondo
-251 Seleziona un colore di sfondo...
-252 Senza colore
-253 Allineamento
-254 Sinistra
-255 Centrato
-256 Destra
-257 Giustificato
-258 Default
-259 Interlinea
-260 Singola
-261 Mezza
-262 Doppia
-263 Default
-264 Indentazione
-265 Incrementa
-266 Decrementa
-267 Default
-268 Carattere
-269 Selezionare un tipo di carattere...
-270 Default
-271 &Style...
-272 Crea una regola...
-273 Mostra lo stile applicato...
-274 Fogli di stile
-275 Collegamento...
-276 Apri...
-277 Disabilita...
-278 Abilita...
-279 Rimuovi...
-280 Copia URL
-281 Incolla URL
-282 Collega al precedente obiettivo
-283 Crea o cambia collegamento...
-284 Crea obiettivo
-285 Cancella ancora
-286 Aggiungi/Togli ID...
-287 Controllo ortografico...
-288 Trasforma...
-289 Codice pulito
-290 Modifica tabella
-291 Cambia la cella a data
-292 Cambia la cella a intestazione
-293 Unisci
-294 Unisci la cella a quella di destra
-295 Unisci la cella a quella sotto
-296 Riduci l'estensione orizzontale
-297 Riduci l'estensione verticale
-298 Seleziona la riga
-299 Inserisci una riga
-300 Aggiungi una riga
-301 Seleziona la colonna
-302 Inserisci una colonna
-303 Aggiungi una colonna
-304 Incolla prima
-305 Incolla dopo
-306 Cambia titolo...
-307 Cambia/Crea doctype
-308 Elimina doctype
-309 Aggiungi un doctype
-310 Cambia/Crea doctype XHTML 1.1
-311 Cambia/Crea doctype XHTML 1.0 Transitional
-312 Cambia/Crea doctype XHTML 1.0 Strict
-313 Cambia/Crea doctype XHTML 1.0 Basic
-314 Cambia/Crea doctype XHTML+RDFa
-315 Cambia/Crea doctype HTML 4.01 Transitional
-316 Cambia/Crea doctype HTML 4.01 Strict
-317 Numerazione delle sezioni
-318 Genera Indice
-319 Crea libro
-320 Inserisci timestamp
-321 Dichiarazione dei Namespace...
-322 A&nnotazioni
-323 Annota la selezione
-324 Annota il documento
-325 Muovi sulla selezione
-326 Salva la selezione come XPointer
-327 Muovi sull'Xpointer memorizzato
-328 Rispondi all'annotazione
-329 Registra
-330 Elimina
-331 Carica
-332 Personalizza la richiesta
-333 Filtro locale...
-334 &Cooperazione
-335 Lock resource
-336 Copia delle informazioni per il lock...
-337 Schemi
-338 Crea uno schema dal documento corrente
-339 Crea libreria...
-340 Crea area di testo...
-341 Usa un componente o un elemento...
-342 Crea un componente...
-343 Ripeti uso corrente...
-344 Crea e ripeti un uso...
-345 Crea un box da editare...
-346 Crea una nuona unione di tipi...
-347 **Import a library...
-348 &Javascript/DOM
-349 Attiva/Disattiva
-350 Esegui un comando
+147 Sottolineato (u)
+148 Macchina da scrivere (tt)
+149 Grande (big)
+150 Piccolo (small)
+151 Span
+152 Pedice (sub)
+153 Indice (sup)
+154 Citazione (q)
+155 BiDi (bdo)
+156 Carattere (&xxx;)
+157 Immagine (img)...
+158 Riga orizzontale (hr)
+159 A capo (br)
+160 Preformattato (pre)
+161 Inserisci a tabella
+162 Tabella
+163 Inserisci a tabella
+164 Legenda (caption)
+165 Intestazione (thead)
+166 Corpo (tbody)
+167 Piede (tfoot)
+168 &Math
+169 Inserisci una formula
+170 Testo (mtext)
+171 Identificatore (mi)
+172 Numero (mn)
+173 Operatore (mo)
+174 Spazio (mspace)
+175 InvisibleTimes
+176 ApplyFunction
+177 Radice (mroot)
+178 Radice quadrata (msqrt)
+179 Ingloba (menclose)
+180 Frazione (mfrac)
+181 Pedice e indice (msubsup)
+182 Pedice (msub)
+183 Indice (msup)
+184 Sotto e sopra (munderover)
+185 Sotto (munder)
+186 Sopra (mover)
+187 Parentesi (mrow)
+188 Multiscript (mmultiscripts)
+189 Matrice (mtable)
+190 Graphics
+191 Linea
+192 Freccia
+193 Testo
+194 OggettoEsterno
+195 Gruppo
+196 Quadrato
+197 Rettangolo
+198 Rombo
+199 Triangolo
+200 Cerchio
+201 Ellisse
+202 PiuLinee
+203 Poligono
+204 Curva aperta
+205 Curva chiusa
+206 Modulo
+207 form
+208 Pulsante (input)
+209 Checkbox (input)
+210 Selettore di file (input)
+211 Controllo nascosto (input)
+212 Immagine (input)...
+213 Password (input)
+214 Pulsante radio (input)
+215 Reset (input)
+216 Invia (input)
+217 Testo (input)
+218 Gruppo di campi (fieldset)
+219 Etichetta (label)
+220 Menu (option)
+221 Sottomenu (optgroup)
+222 Area testo (textarea)
+223 Oggetto
+224 Oggetto (object)
+225 Parametro (param)
+226 Area mappabile
+227 Inserisci una mappa
+228 Cerchio (area)
+229 Poligono (area)
+230 Rettangolo (area)
+231 Struttura
+232 style
+233 Commento
+234 base
+235 meta
+236 link
+237 script
+238 noscript
+239 Divisione (div)
+240 Indirizzo (address)
+241 blockquote
+242 Cornice (iframe)
+243 ruby
+244 Tema
+245 Classico
+246 Moderno
+247 Senza tema
+248 Colore per il testo
+249 Seleziona un colore per il testo...
+250 Senza colore
+251 Colore di sfondo
+252 Seleziona un colore di sfondo...
+253 Senza colore
+254 Allineamento
+255 Sinistra
+256 Centrato
+257 Destra
+258 Giustificato
+259 Default
+260 Interlinea
+261 Singola
+262 Mezza
+263 Doppia
+264 Default
+265 Indentazione
+266 Incrementa
+267 Decrementa
+268 Default
+269 Carattere
+270 Selezionare un tipo di carattere...
+271 Default
+272 &Style...
+273 Crea una regola...
+274 Mostra lo stile applicato...
+275 Fogli di stile
+276 Collegamento...
+277 Apri...
+278 Disabilita...
+279 Abilita...
+280 Rimuovi...
+281 Copia URL
+282 Incolla URL
+283 Collega al precedente obiettivo
+284 Crea o cambia collegamento...
+285 Crea obiettivo
+286 Cancella ancora
+287 Aggiungi/Togli ID...
+288 Controllo ortografico...
+289 Trasforma...
+290 Codice pulito
+291 Modifica tabella
+292 Cambia la cella a data
+293 Cambia la cella a intestazione
+294 Unisci
+295 Unisci la cella a quella di destra
+296 Unisci la cella a quella sotto
+297 Riduci l'estensione orizzontale
+298 Riduci l'estensione verticale
+299 Seleziona la riga
+300 Inserisci una riga
+301 Aggiungi una riga
+302 Seleziona la colonna
+303 Inserisci una colonna
+304 Aggiungi una colonna
+305 Incolla prima
+306 Incolla dopo
+307 Cambia titolo...
+308 Cambia/Crea doctype
+309 Elimina doctype
+310 Aggiungi un doctype
+311 Cambia/Crea doctype XHTML 1.1
+312 Cambia/Crea doctype XHTML 1.0 Transitional
+313 Cambia/Crea doctype XHTML 1.0 Strict
+314 Cambia/Crea doctype XHTML 1.0 Basic
+315 Cambia/Crea doctype XHTML+RDFa
+316 Cambia/Crea doctype HTML 4.01 Transitional
+317 Cambia/Crea doctype HTML 4.01 Strict
+318 Numerazione delle sezioni
+319 Genera Indice
+320 Crea libro
+321 Inserisci timestamp
+322 Dichiarazione dei Namespace...
+323 A&nnotazioni
+324 Annota la selezione
+325 Annota il documento
+326 Muovi sulla selezione
+327 Salva la selezione come XPointer
+328 Muovi sull'Xpointer memorizzato
+329 Rispondi all'annotazione
+330 Registra
+331 Elimina
+332 Carica
+333 Personalizza la richiesta
+334 Filtro locale...
+335 &Cooperazione
+336 Lock resource
+337 Copia delle informazioni per il lock...
+338 Schemi
+339 Crea uno schema dal documento corrente
+340 Crea libreria...
+341 Crea area di testo...
+342 Usa un componente o un elemento...
+343 Crea un componente...
+344 Ripeti uso corrente...
+345 Crea e ripeti un uso...
+346 Crea un box da editare...
+347 Crea una nuona unione di tipi...
+348 **Import a library...
+349 &Javascript/DOM
+350 Attiva/Disattiva
 351 Esegui un comando
-352 Aggiungi uno script esterno
-353 Inserisci uno script
-354 Controlla per aggiornare
-355 Aiuto Amaya...
-356 Suggerimenti del giorno...
-357 Informazioni su Amaya
+352 Esegui un comando
+353 Aggiungi uno script esterno
+354 Inserisci uno script
+355 Controlla per aggiornare
+356 Aiuto Amaya...
+357 Suggerimenti del giorno...
+358 Informazioni su Amaya

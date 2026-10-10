@@ -146,214 +146,215 @@
 144 Elemento carácter
 145 Itálica (i)
 146 Negrita (b)
-147 Teletipo (tt)
-148 Grande (big)
-149 Pequeña (small)
-150 Span
-151 Subíndice (sub)
-152 Superíndice (sup)
-153 Cita (q)
-154 BiDi override (bdo)
-155 Carácter (&xxx;)
-156 Imagen (img)...
-157 Línea Horizontal (hr)
-158 Salto de línea (br)
-159 Pre-formateado (pre)
-160 Insertar tabla
-161 Tabla
-162 Insertar tabla
-163 Leyenda (caption)
-164 thead
-165 tbody
-166 tfoot
-167 &Math
-168 Insertar fórmula
-169 Texto simple (mtext)
-170 Identificador (mi)
-171 Número (mn)
-172 Operador (mo)
-173 Espacio (mspace)
-174 InvisibleTimes
-175 ApplyFunction
-176 Raíz (mroot)
-177 Raíz cuadrada (msqrt)
-178 Enclose (menclose)
-179 Fracción (mfrac)
-180 Subíndice y superíndice (msubsup)
-181 Subíndice (msub)
-182 Superíndice (msup)
-183 Bajo y sobre (munderover)
-184 Bajo (munder)
-185 Sobre (mover)
-186 Paréntesis (mrow)
-187 Multiscripts (mmultiscripts)
-188 Matriz (mtable)
-189 Gráficos
-190 Linea
-191 Flecha
-192 Texto
-193 ForeignObject
-194 Grupo
-195 Cuadrado
-196 Rectángulo
-197 Rombo
-198 Triángulo
-199 Círculo
-200 Elipse
-201 **Polyline
-202 **Polygon
-203 **Open curve
-204 **Closed curve
-205 Formulario
-206 Insertar formulario (form)
-207 Botón (button)
-208 Casilla de verificación (checkbox input)
-209 Selector de archivo (file input)
-210 Oculto (hidden input)
-211 Imagen (image input)...
-212 Contraseña (password input)
-213 Radio (radio input)
-214 Reset (reset input)
-215 Enviar (submit input)
-216 Texto (text input)
-217 Campos (fieldset)
-218 Etiqueta (label)
-219 Menú (select)
-220 Submenú (optgroup)
-221 Área de texto (textarea)
-222 Objeto
-223 Objeto (objet)
-224 Parámetro (param)
-225 Área de mapa
-226 Insertar mapa
-227 Círculo (area)
-228 Polígono (area)
-229 Rectángulo (area)
-230 Estructura
-231 Estilo (style)
-232 C&omentario
-233 base
-234 meta
-235 Enlace (link)
-236 script
-237 noscript
-238 División (div)
-239 Dirección (address)
-240 blockquote
-241 Inline frame (iframe)
-242 ruby
-243 Tema
-244 Clásico
-245 Moderno
-246 Sin tema
-247 Color del texto
-248 Seleccionar un color del texto...
-249 Color no definido
-250 Color del fondo
-251 Seleccionar un color del fondo...
-252 Color no definido
-253 Alineación
-254 Izquierda
-255 Centrado
-256 Derecha
-257 Justificado
-258 Predeterminado
-259 Interlineado
-260 Sencillo
-261 Medio
-262 Doble
-263 Predeterminado
-264 Sangría
-265 Aumentar
-266 Reducir
-267 Predeterminado
-268 Fuente
-269 Seleccionar Fuente...
-270 Predeterminado
-271 &Estilo...
-272 Crear &regla...
-273 &Mostrar estilo aplicado...
-274 Hojas de estilo
-275 Enlazar hoja de estilo...
-276 Abrir hoja de estilo enlazada...
-277 Desactivar hoja de estilo enlazada...
-278 Acti&var hoja de estilo enlazada...
-279 Borrar enlace a hoja de estilo...
-280 Copiar localización
-281 Pegar localización
-282 Enlazar último destino &creado
-283 Crear o cambiar &enlace...
-284 Crear &destino (a / id)
-285 &Borrar ancla (a)
-286 &Crear/Borrar atributos id...
-287 &Revisar ortografía...
-288 &Transformar...
-289 Limpiar código
-290 Editar tabla
-291 Cambiar a celda de datos
-292 Cambiar a celda de cabecera
-293 Unir
-294 Unir con celda derecha
-295 Unir con celda inferior
-296 Reducir extensión horizontal
-297 Reducir extensión vertical
-298 Seleccionar fila
-299 Insertar fila delante
-300 Añadir fila detrás
-301 Seleccionar columna
-302 Insertar columna delante
-303 Añadir columna detrás
-304 Pegar delante
-305 Pegar detrás
-306 Título (title) ...
-307 Cambiar doct&ype
-308 &Borrar doctype
-309 Añadir doctype
-310 Cambiar a XHTML 1.1
-311 Cambiar a XHTML 1.0 Transitional
-312 Cambiar a XHTML 1.0 &Strict
-313 Cambiar a XHTML 1.0 Basic
-314 Cambiar a XHTML+RDFa
-315 Cambiar a HTML 4.01 Transitional
-316 Cambiar a HTML 4.01 Strict
-317 &Numerar encabezados
-318 &Generar índice de materias
-319 &Hacer libro
-320 Insertar fecha y hora actual
-321 **Namespace declarations...
-322 A&notaciones
-323 Anotar &selección
-324 Anotar &documento
-325 &Mover a selección
-326 Guardar selección como &XPointer
-327 Mover a &XPointer guardado
-328 &Responder a anotación
-329 &Enviar al servidor
-330 &Borrar
-331 &Cargar
-332 &Personalizar consulta...
-333 &Filtro local...
-334 &Cooperación
-335 Bloquear recurso
-336 Copiar información de bloqueo
-337 Plantillas
-338 Crear plantilla a partir de documento actual
-339 Crear biblioteca...
-340 Crear área de texto...
-341 Usar componente o elemento...
-342 Crear componente...
-343 Repetir uso actual...
-344 Crear y repetir uso...
-345 Crear caja de edición libre...
-346 Crear nueva unión de tipos...
-347 **Import a library...
-348 &Javascript/DOM
-349 Activar/Desactivar
-350 Ejecutar un comando
-351 Ejecutar un script externo
-352 Añadir un script externo
-353 Insertar un script
-354 Buscar actualizaciones
-355 Ayuda Amaya...
-356 Sugerencia del día...
-357 Acerca de Amaya
+147 Subrayado (u)
+148 Teletipo (tt)
+149 Grande (big)
+150 Pequeña (small)
+151 Span
+152 Subíndice (sub)
+153 Superíndice (sup)
+154 Cita (q)
+155 BiDi override (bdo)
+156 Carácter (&xxx;)
+157 Imagen (img)...
+158 Línea Horizontal (hr)
+159 Salto de línea (br)
+160 Pre-formateado (pre)
+161 Insertar tabla
+162 Tabla
+163 Insertar tabla
+164 Leyenda (caption)
+165 thead
+166 tbody
+167 tfoot
+168 &Math
+169 Insertar fórmula
+170 Texto simple (mtext)
+171 Identificador (mi)
+172 Número (mn)
+173 Operador (mo)
+174 Espacio (mspace)
+175 InvisibleTimes
+176 ApplyFunction
+177 Raíz (mroot)
+178 Raíz cuadrada (msqrt)
+179 Enclose (menclose)
+180 Fracción (mfrac)
+181 Subíndice y superíndice (msubsup)
+182 Subíndice (msub)
+183 Superíndice (msup)
+184 Bajo y sobre (munderover)
+185 Bajo (munder)
+186 Sobre (mover)
+187 Paréntesis (mrow)
+188 Multiscripts (mmultiscripts)
+189 Matriz (mtable)
+190 Gráficos
+191 Linea
+192 Flecha
+193 Texto
+194 ForeignObject
+195 Grupo
+196 Cuadrado
+197 Rectángulo
+198 Rombo
+199 Triángulo
+200 Círculo
+201 Elipse
+202 **Polyline
+203 **Polygon
+204 **Open curve
+205 **Closed curve
+206 Formulario
+207 Insertar formulario (form)
+208 Botón (button)
+209 Casilla de verificación (checkbox input)
+210 Selector de archivo (file input)
+211 Oculto (hidden input)
+212 Imagen (image input)...
+213 Contraseña (password input)
+214 Radio (radio input)
+215 Reset (reset input)
+216 Enviar (submit input)
+217 Texto (text input)
+218 Campos (fieldset)
+219 Etiqueta (label)
+220 Menú (select)
+221 Submenú (optgroup)
+222 Área de texto (textarea)
+223 Objeto
+224 Objeto (objet)
+225 Parámetro (param)
+226 Área de mapa
+227 Insertar mapa
+228 Círculo (area)
+229 Polígono (area)
+230 Rectángulo (area)
+231 Estructura
+232 Estilo (style)
+233 C&omentario
+234 base
+235 meta
+236 Enlace (link)
+237 script
+238 noscript
+239 División (div)
+240 Dirección (address)
+241 blockquote
+242 Inline frame (iframe)
+243 ruby
+244 Tema
+245 Clásico
+246 Moderno
+247 Sin tema
+248 Color del texto
+249 Seleccionar un color del texto...
+250 Color no definido
+251 Color del fondo
+252 Seleccionar un color del fondo...
+253 Color no definido
+254 Alineación
+255 Izquierda
+256 Centrado
+257 Derecha
+258 Justificado
+259 Predeterminado
+260 Interlineado
+261 Sencillo
+262 Medio
+263 Doble
+264 Predeterminado
+265 Sangría
+266 Aumentar
+267 Reducir
+268 Predeterminado
+269 Fuente
+270 Seleccionar Fuente...
+271 Predeterminado
+272 &Estilo...
+273 Crear &regla...
+274 &Mostrar estilo aplicado...
+275 Hojas de estilo
+276 Enlazar hoja de estilo...
+277 Abrir hoja de estilo enlazada...
+278 Desactivar hoja de estilo enlazada...
+279 Acti&var hoja de estilo enlazada...
+280 Borrar enlace a hoja de estilo...
+281 Copiar localización
+282 Pegar localización
+283 Enlazar último destino &creado
+284 Crear o cambiar &enlace...
+285 Crear &destino (a / id)
+286 &Borrar ancla (a)
+287 &Crear/Borrar atributos id...
+288 &Revisar ortografía...
+289 &Transformar...
+290 Limpiar código
+291 Editar tabla
+292 Cambiar a celda de datos
+293 Cambiar a celda de cabecera
+294 Unir
+295 Unir con celda derecha
+296 Unir con celda inferior
+297 Reducir extensión horizontal
+298 Reducir extensión vertical
+299 Seleccionar fila
+300 Insertar fila delante
+301 Añadir fila detrás
+302 Seleccionar columna
+303 Insertar columna delante
+304 Añadir columna detrás
+305 Pegar delante
+306 Pegar detrás
+307 Título (title) ...
+308 Cambiar doct&ype
+309 &Borrar doctype
+310 Añadir doctype
+311 Cambiar a XHTML 1.1
+312 Cambiar a XHTML 1.0 Transitional
+313 Cambiar a XHTML 1.0 &Strict
+314 Cambiar a XHTML 1.0 Basic
+315 Cambiar a XHTML+RDFa
+316 Cambiar a HTML 4.01 Transitional
+317 Cambiar a HTML 4.01 Strict
+318 &Numerar encabezados
+319 &Generar índice de materias
+320 &Hacer libro
+321 Insertar fecha y hora actual
+322 **Namespace declarations...
+323 A&notaciones
+324 Anotar &selección
+325 Anotar &documento
+326 &Mover a selección
+327 Guardar selección como &XPointer
+328 Mover a &XPointer guardado
+329 &Responder a anotación
+330 &Enviar al servidor
+331 &Borrar
+332 &Cargar
+333 &Personalizar consulta...
+334 &Filtro local...
+335 &Cooperación
+336 Bloquear recurso
+337 Copiar información de bloqueo
+338 Plantillas
+339 Crear plantilla a partir de documento actual
+340 Crear biblioteca...
+341 Crear área de texto...
+342 Usar componente o elemento...
+343 Crear componente...
+344 Repetir uso actual...
+345 Crear y repetir uso...
+346 Crear caja de edición libre...
+347 Crear nueva unión de tipos...
+348 **Import a library...
+349 &Javascript/DOM
+350 Activar/Desactivar
+351 Ejecutar un comando
+352 Ejecutar un script externo
+353 Añadir un script externo
+354 Insertar un script
+355 Buscar actualizaciones
+356 Ayuda Amaya...
+357 Sugerencia del día...
+358 Acerca de Amaya

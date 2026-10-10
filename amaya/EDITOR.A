@@ -185,6 +185,7 @@ MENUS
 	Types.Phrase toggle:TDeletion -> SetOnOffDEL;
         Types.Font toggle:TItalic -> SetOnOffItalic;
 	Types.Font toggle:TBold -> SetOnOffBold;
+	Types.Font toggle:TUnderline -> SetOnOffUnderline;
 	Types.Font toggle:TTeletype -> SetOnOffTeletype;
 	Types.Font toggle:TBig -> SetOnOffBig;
  	Types.Font toggle:TSmall -> SetOnOffSmall;

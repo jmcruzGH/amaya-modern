@@ -472,6 +472,7 @@ extern void SetOnOffINS (Document document, View view);
 extern void SetOnOffDEL (Document document, View view);
 extern void SetOnOffItalic (Document document, View view);
 extern void SetOnOffBold (Document document, View view);
+extern void SetOnOffUnderline (Document document, View view);
 extern void SetOnOffTeletype (Document document, View view);
 extern void SetOnOffBig (Document document, View view);
 extern void SetOnOffSmall (Document document, View view);
@@ -681,7 +682,7 @@ int main (int argc, char **argv)
     appName[19] = EOS;
   TtaInitialize (appName);
 
-  TteInitMenus (appName, 587);
+  TteInitMenus (appName, 588);
   TteAddMenuAction("HelpLocal", (Proc)HelpLocal, TRUE);
   TteAddMenuAction("DoAction", (Proc)DoAction, TRUE);
   TteAddMenuAction("NextLinkOrFormElement", (Proc)NextLinkOrFormElement, TRUE);
@@ -1096,6 +1097,7 @@ int main (int argc, char **argv)
   TteAddMenuAction("SetOnOffDEL", (Proc)SetOnOffDEL, FALSE);
   TteAddMenuAction("SetOnOffItalic", (Proc)SetOnOffItalic, FALSE);
   TteAddMenuAction("SetOnOffBold", (Proc)SetOnOffBold, FALSE);
+  TteAddMenuAction("SetOnOffUnderline", (Proc)SetOnOffUnderline, FALSE);
   TteAddMenuAction("SetOnOffTeletype", (Proc)SetOnOffTeletype, FALSE);
   TteAddMenuAction("SetOnOffBig", (Proc)SetOnOffBig, FALSE);
   TteAddMenuAction("SetOnOffSmall", (Proc)SetOnOffSmall, FALSE);
@@ -1426,9 +1428,10 @@ int main (int argc, char **argv)
     TteAddMenuItem (Types, Phrase, TAcronym, "SetOnOffAcronym", 'T', NULL);
     TteAddMenuItem (Types, Phrase, TInsertion, "SetOnOffINS", 'T', NULL);
     TteAddMenuItem (Types, Phrase, TDeletion, "SetOnOffDEL", 'T', NULL);
-  TteAddSubMenu (Types, Font, 10);
+  TteAddSubMenu (Types, Font, 11);
     TteAddMenuItem (Types, Font, TItalic, "SetOnOffItalic", 'T', NULL);
     TteAddMenuItem (Types, Font, TBold, "SetOnOffBold", 'T', NULL);
+    TteAddMenuItem (Types, Font, TUnderline, "SetOnOffUnderline", 'T', NULL);
     TteAddMenuItem (Types, Font, TTeletype, "SetOnOffTeletype", 'T', NULL);
     TteAddMenuItem (Types, Font, TBig, "SetOnOffBig", 'T', NULL);
     TteAddMenuItem (Types, Font, TSmall, "SetOnOffSmall", 'T', NULL);

@@ -6870,6 +6870,7 @@ void InitAmaya (NotifyEvent * event)
   SelectionInKBD = FALSE;
   SelectionInI = FALSE;
   SelectionInB = FALSE;
+  SelectionInU = FALSE;
   SelectionInTT = FALSE;
   SelectionInBIG = FALSE;
   SelectionInSMALL = FALSE;

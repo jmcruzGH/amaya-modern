@@ -3359,6 +3359,14 @@ void UpdateContextSensitiveMenus (Document doc, View view)
       TtaSetToggleItem (doc, 1, Types, TBold, newSelInElem);
     }
 
+  elType.ElTypeNum = HTML_EL_Underlined_text;
+  newSelInElem = IsSelInElement (firstSel, lastSel, elType, elTypeFirst, elTypeLast);
+  if (SelectionInU != newSelInElem)
+    {
+      SelectionInU = newSelInElem;
+      TtaSetToggleItem (doc, 1, Types, TUnderline, newSelInElem);
+    }
+
   elType.ElTypeNum = HTML_EL_Teletype_text;
   newSelInElem = IsSelInElement (firstSel, lastSel, elType, elTypeFirst, elTypeLast);
   if (SelectionInTT != newSelInElem)

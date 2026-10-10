@@ -5440,6 +5440,15 @@ void SetOnOffBold (Document document, View view)
 
 
 /*----------------------------------------------------------------------
+  SetOnOffUnderline
+  ----------------------------------------------------------------------*/
+void SetOnOffUnderline (Document document, View view)
+{
+  SetCharFontOrPhrase (document, HTML_EL_Underlined_text);
+}
+
+
+/*----------------------------------------------------------------------
   SetOnOffTeletype
   ----------------------------------------------------------------------*/
 void SetOnOffTeletype (Document document, View view)

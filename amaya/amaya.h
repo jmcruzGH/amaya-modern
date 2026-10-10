@@ -505,6 +505,7 @@ THOT_EXPORT ThotBool   SelectionInSAMP;
 THOT_EXPORT ThotBool   SelectionInKBD;
 THOT_EXPORT ThotBool   SelectionInI;
 THOT_EXPORT ThotBool   SelectionInB;
+THOT_EXPORT ThotBool   SelectionInU;
 THOT_EXPORT ThotBool   SelectionInTT;
 THOT_EXPORT ThotBool   SelectionInBIG;
 THOT_EXPORT ThotBool   SelectionInSMALL;

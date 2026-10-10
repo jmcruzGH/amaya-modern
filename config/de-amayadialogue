@@ -146,214 +146,215 @@
 144 Zeichen
 145 Kursiv (i)
 146 Fett (b)
-147 Gesperrt (tt)
-148 Groß (big)
-149 Klein (small)
-150 Span
-151 Tiefgestellt (sub)
-152 Hochgestellt (sup)
-153 Zitat (q)
-154 Textrichtung (bdo)
-155 Zeichen (&xxx;)
-156 Bild (img)...
-157 Horizontale Linie (hr)
-158 Zeilenumbruch (br)
-159 Vorformatiert (pre)
-160 Tabelle einfügen
-161 Tabelle
-162 Tabelle einfügen
-163 Überschrift (caption)
-164 Tabellenkopf (thead)
-165 Tabellenkörper (tbody)
-166 Tabellenfuß (tfoot)
-167 &Mathematik
-168 Formel einfügen
-169 Nur Text (mtext)
-170 Bezeichner (mi)
-171 Nummer (mn)
-172 Operator (mo)
-173 Leerzeichen (mspace)
-174 Unsichtbare Multiplikation
-175 Funktion anwenden (ApplyFunction)
-176 Wurzel (mroot)
-177 Quadratwurzel (msqrt)
-178 Einschluss (menclose)
-179 Bruch (mfrac)
-180 Index und Exponent (msubsup)
-181 Index (msub)
-182 Exponent (msup)
-183 Unter- und Überschrift (munderover)
-184 Unterschrift (munder)
-185 Überschrift (mover)
-186 Klammern (mrow)
-187 Vierfachindex (mmultiscripts)
-188 Matrix (mtable)
-189 Grafiken
-190 Linie
-191 Pfeil
-192 Text
-193 ForeignObject
-194 Gruppierung
-195 Quadrat
-196 Rechteck
-197 Raute
-198 Dreieck
-199 Kreis
-200 Elipse
-201 Linienzug
-202 Vieleck
-203 Offene Kurve
-204 Geschlossene Kurve
-205 Formular
-206 Formular einfügen
-207 Schaltfläche (input)
-208 Eingabefeld (input)
-209 Datei-Upload (input)
-210 Verstecktes Feld (input)
-211 Grafik (input)
-212 Kennwortfeld (input)
-213 Optionsfeld (input)
-214 Zurücksetzen (input)
-215 Senden (input)
-216 Textfeld (input)
-217 Feldgruppe (fieldset)
-218 Beschriftungstext (label)
-219 Auswahlfeld (option)
-220 Untermenü (optgroup)
-221 Mehrzeiliges Eingabefeld (textarea)
-222 Objekt
-223 Objekt (object)
-224 Parameter (param)
-225 Grafikbereich
-226 Grafik einfügen
-227 Kreis (area)
-228 Polygon (area)
-229 Rechteck (area)
-230 Versteckte Elemente
-231 Style
-232 Kommentar
-233 Adressbasis (base)
-234 Meta-Angabe (meta)
-235 Verweis (link)
-236 Script-Bereich (script)
-237 Noscript-Bereich (noscript)
-238 Block-Element (div)
-239 Adresse (address)
-240 Eingerücktes Zitat (blockquote)
-241 Eingebettete Frames (iframe)
-242 Ruby-Markup (ruby)
-243 Thema
-244 Klassisch
-245 Modern
-246 Kein
-247 Textfarbe
-248 Schriftfarbe wählen...
-249 Keine
-250 Hintergrundfarbe
-251 Hintergrundfarbe wählen...
-252 Keine
-253 Horizontale Ausrichtung
-254 Linksbündig
-255 Mittig
-256 Rechtsbündig
-257 Blocksatz
-258 Standard
-259 Zeilenmaß
-260 Einfach
-261 1,5 Zeilen
-262 Doppelt
-263 Standard
-264 Zeileneinzug
-265 Einzug vergrößern
-266 Einzug verkleinern
-267 Standard
-268 Zeichen
-269 Schriftart wählen...
-270 Standard
-271 &Style-Editor
-272 &Regel erstellen...
-273 Angewendeten Style einblenden...
-274 Stylesheets
-275 Verweis...
-276 Öffnen...
-277 Deaktivieren...
-278 Aktivieren...
-279 Entfernen...
-280 Adresse kopieren
-281 Adresse einfügen
-282 &Verweis zum vorherigen Ziel
-283 Verweis erstellen oder ändern...
-284 &Ziel erstellen
-285 Verweis oder Ziel &löschen
-286 ID hinzufü&gen/entfernen...
-287 Rechtschreibung...
-288 Transfor&mieren...
-289 Quelltext säubern
-290 Tabelle bearbeiten
-291 In Datenzelle ändern
-292 In Überschriftenzelle ändern
-293 Zellen verbinden
-294 Mit rechter Zelle verbinden
-295 Mit unterer Zelle verbinden
-296 Breite verkleinern
-297 Höhe verkleinern
-298 Zeile auswählen
-299 Zeile einfügen
-300 Zeile hinzufügen
-301 Spalte auswählen
-302 Spalte einfügen
-303 Spalte hinzufügen
-304 Einfügen (davor)
-305 Einfügen (danach)
-306 Titel ändern
-307 Dokumenttypdefinition ändern
-308 Dokumenttypdefinition entfernen
-309 Dokumenttypdefinition hinzufügen
-310 XHTML 1.1
-311 XHTML 1.0 Transitional
-312 XHTML 1.0 Strict
-313 XHTML 1.0 Basic
-314 XHTML+RDFa
-315 HTML 4.01 Transitional
-316 HTML 4.01 Strict
-317 Abschnitte nummerieren
-318 Inhaltsverzeichnis hinzufü&gen/aktualisieren
-319 Buch erstellen
-320 Zeitstempel einfügen
-321 Namespace-Deklarationen...
-322 A&nmerkungen
-323 Anmerkung wählen
-324 Dokument kommentieren
-325 Zur Auswahl verschieben
-326 Auswahl als &XPointer speichern
-327 Auf gespeicherten XPointer verschieben
-328 Anmerkung beantworten
-329 An Server veröffentlichen
-330 Löschen
-331 Laden
-332 Benutzerdefinierte Abfrage...
-333 Lokaler Filter...
-334 K&ooperation
-335 Ressource sperren
-336 Sperrinformation kopieren...
-337 Vorlagen
-338 Vorlage aus aktuellem Dokument erstellen
-339 Bibliothek erstellen...
-340 Textbereich erstellen...
-341 Komponente oder Element verwenden...
-342 Komponente erstellen...
-343 Wiederholen...
-344 Erstellen und wiederholen...
-345 Ungebundenes Bearbeitungsfeld erstellen...
-346 Typen-Gemeinschaft erstellen...
-347 Bibliothek importieren...
-348 &JavaScript/DOM
-349 Java-Unterstützung
-350 Befehl ausführen
-351 Externes Skript ausführen
-352 Externes Skript hinzufügen
-353 Skript einfügen
-354 Amaya aktualisieren
-355 &Hilfe
-356 Tipp des Tages...
-357 &Info
+147 Unterstrichen (u)
+148 Gesperrt (tt)
+149 Groß (big)
+150 Klein (small)
+151 Span
+152 Tiefgestellt (sub)
+153 Hochgestellt (sup)
+154 Zitat (q)
+155 Textrichtung (bdo)
+156 Zeichen (&xxx;)
+157 Bild (img)...
+158 Horizontale Linie (hr)
+159 Zeilenumbruch (br)
+160 Vorformatiert (pre)
+161 Tabelle einfügen
+162 Tabelle
+163 Tabelle einfügen
+164 Überschrift (caption)
+165 Tabellenkopf (thead)
+166 Tabellenkörper (tbody)
+167 Tabellenfuß (tfoot)
+168 &Mathematik
+169 Formel einfügen
+170 Nur Text (mtext)
+171 Bezeichner (mi)
+172 Nummer (mn)
+173 Operator (mo)
+174 Leerzeichen (mspace)
+175 Unsichtbare Multiplikation
+176 Funktion anwenden (ApplyFunction)
+177 Wurzel (mroot)
+178 Quadratwurzel (msqrt)
+179 Einschluss (menclose)
+180 Bruch (mfrac)
+181 Index und Exponent (msubsup)
+182 Index (msub)
+183 Exponent (msup)
+184 Unter- und Überschrift (munderover)
+185 Unterschrift (munder)
+186 Überschrift (mover)
+187 Klammern (mrow)
+188 Vierfachindex (mmultiscripts)
+189 Matrix (mtable)
+190 Grafiken
+191 Linie
+192 Pfeil
+193 Text
+194 ForeignObject
+195 Gruppierung
+196 Quadrat
+197 Rechteck
+198 Raute
+199 Dreieck
+200 Kreis
+201 Elipse
+202 Linienzug
+203 Vieleck
+204 Offene Kurve
+205 Geschlossene Kurve
+206 Formular
+207 Formular einfügen
+208 Schaltfläche (input)
+209 Eingabefeld (input)
+210 Datei-Upload (input)
+211 Verstecktes Feld (input)
+212 Grafik (input)
+213 Kennwortfeld (input)
+214 Optionsfeld (input)
+215 Zurücksetzen (input)
+216 Senden (input)
+217 Textfeld (input)
+218 Feldgruppe (fieldset)
+219 Beschriftungstext (label)
+220 Auswahlfeld (option)
+221 Untermenü (optgroup)
+222 Mehrzeiliges Eingabefeld (textarea)
+223 Objekt
+224 Objekt (object)
+225 Parameter (param)
+226 Grafikbereich
+227 Grafik einfügen
+228 Kreis (area)
+229 Polygon (area)
+230 Rechteck (area)
+231 Versteckte Elemente
+232 Style
+233 Kommentar
+234 Adressbasis (base)
+235 Meta-Angabe (meta)
+236 Verweis (link)
+237 Script-Bereich (script)
+238 Noscript-Bereich (noscript)
+239 Block-Element (div)
+240 Adresse (address)
+241 Eingerücktes Zitat (blockquote)
+242 Eingebettete Frames (iframe)
+243 Ruby-Markup (ruby)
+244 Thema
+245 Klassisch
+246 Modern
+247 Kein
+248 Textfarbe
+249 Schriftfarbe wählen...
+250 Keine
+251 Hintergrundfarbe
+252 Hintergrundfarbe wählen...
+253 Keine
+254 Horizontale Ausrichtung
+255 Linksbündig
+256 Mittig
+257 Rechtsbündig
+258 Blocksatz
+259 Standard
+260 Zeilenmaß
+261 Einfach
+262 1,5 Zeilen
+263 Doppelt
+264 Standard
+265 Zeileneinzug
+266 Einzug vergrößern
+267 Einzug verkleinern
+268 Standard
+269 Zeichen
+270 Schriftart wählen...
+271 Standard
+272 &Style-Editor
+273 &Regel erstellen...
+274 Angewendeten Style einblenden...
+275 Stylesheets
+276 Verweis...
+277 Öffnen...
+278 Deaktivieren...
+279 Aktivieren...
+280 Entfernen...
+281 Adresse kopieren
+282 Adresse einfügen
+283 &Verweis zum vorherigen Ziel
+284 Verweis erstellen oder ändern...
+285 &Ziel erstellen
+286 Verweis oder Ziel &löschen
+287 ID hinzufü&gen/entfernen...
+288 Rechtschreibung...
+289 Transfor&mieren...
+290 Quelltext säubern
+291 Tabelle bearbeiten
+292 In Datenzelle ändern
+293 In Überschriftenzelle ändern
+294 Zellen verbinden
+295 Mit rechter Zelle verbinden
+296 Mit unterer Zelle verbinden
+297 Breite verkleinern
+298 Höhe verkleinern
+299 Zeile auswählen
+300 Zeile einfügen
+301 Zeile hinzufügen
+302 Spalte auswählen
+303 Spalte einfügen
+304 Spalte hinzufügen
+305 Einfügen (davor)
+306 Einfügen (danach)
+307 Titel ändern
+308 Dokumenttypdefinition ändern
+309 Dokumenttypdefinition entfernen
+310 Dokumenttypdefinition hinzufügen
+311 XHTML 1.1
+312 XHTML 1.0 Transitional
+313 XHTML 1.0 Strict
+314 XHTML 1.0 Basic
+315 XHTML+RDFa
+316 HTML 4.01 Transitional
+317 HTML 4.01 Strict
+318 Abschnitte nummerieren
+319 Inhaltsverzeichnis hinzufü&gen/aktualisieren
+320 Buch erstellen
+321 Zeitstempel einfügen
+322 Namespace-Deklarationen...
+323 A&nmerkungen
+324 Anmerkung wählen
+325 Dokument kommentieren
+326 Zur Auswahl verschieben
+327 Auswahl als &XPointer speichern
+328 Auf gespeicherten XPointer verschieben
+329 Anmerkung beantworten
+330 An Server veröffentlichen
+331 Löschen
+332 Laden
+333 Benutzerdefinierte Abfrage...
+334 Lokaler Filter...
+335 K&ooperation
+336 Ressource sperren
+337 Sperrinformation kopieren...
+338 Vorlagen
+339 Vorlage aus aktuellem Dokument erstellen
+340 Bibliothek erstellen...
+341 Textbereich erstellen...
+342 Komponente oder Element verwenden...
+343 Komponente erstellen...
+344 Wiederholen...
+345 Erstellen und wiederholen...
+346 Ungebundenes Bearbeitungsfeld erstellen...
+347 Typen-Gemeinschaft erstellen...
+348 Bibliothek importieren...
+349 &JavaScript/DOM
+350 Java-Unterstützung
+351 Befehl ausführen
+352 Externes Skript ausführen
+353 Externes Skript hinzufügen
+354 Skript einfügen
+355 Amaya aktualisieren
+356 &Hilfe
+357 Tipp des Tages...
+358 &Info

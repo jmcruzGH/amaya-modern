@@ -137,6 +137,8 @@ extern void SetOnOffItalic ( Document document,
                              View view );
 extern void SetOnOffBold ( Document document,
                            View view );
+extern void SetOnOffUnderline ( Document document,
+                           View view );
 extern void SetOnOffTeletype ( Document document,
                                View view );
 extern void SetOnOffBig ( Document document,
@@ -290,6 +292,8 @@ extern void SetOnOffDEL ( Document document,
 extern void SetOnOffItalic ( Document document,
                                View view );
 extern void SetOnOffBold ( Document document,
+                             View view );
+extern void SetOnOffUnderline ( Document document,
                              View view );
 extern void SetOnOffTeletype ( Document document,
                                  View view );

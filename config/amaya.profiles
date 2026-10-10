@@ -542,6 +542,7 @@ SetupAndPrint
 [presentation-module]
 +presentation-lite
 &SetOnOffBold
+&SetOnOffUnderline
 &SetOnOffBig
 &SetOnOffItalic
 &SetOnOffSmall
