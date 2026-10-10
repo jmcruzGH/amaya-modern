@@ -65,7 +65,50 @@
 #include <math.h>
 #include "glwindowdisplay.h"
 
-static int    Matrix_counter = 0;
+/* Transformations (SVG transform, coordinate systems) are saved and
+   restored here instead of on OpenGL's matrix stack, which holds as few as
+   32 matrices: deep nestings, or a push left without its pop by some
+   display path, overflowed it ("GL_Err: stack overflow", then a crash on
+   pages such as www.w3.org).  Matrix_counter is the number of saved
+   matrices. */
+static int       Matrix_counter = 0;
+static GLdouble *Matrix_stack = NULL;
+static int       Matrix_stack_size = 0;
+
+/*----------------------------------------------------------------------
+  ----------------------------------------------------------------------*/
+static void SaveMatrix ()
+{
+  if (Matrix_counter >= Matrix_stack_size)
+    {
+      int       size = Matrix_stack_size ? 2 * Matrix_stack_size : 64;
+      GLdouble *stack = (GLdouble *) realloc (Matrix_stack,
+                                               size * 16 * sizeof (GLdouble));
+      if (stack == NULL)
+        return;
+      Matrix_stack = stack;
+      Matrix_stack_size = size;
+    }
+  glGetDoublev (GL_MODELVIEW_MATRIX, &Matrix_stack[16 * Matrix_counter]);
+  Matrix_counter++;
+}
+
+/*----------------------------------------------------------------------
+  ResetMatrixStack: called before displaying a frame, when no matrix
+  should be saved; drop what an unbalanced path may have left.
+  ----------------------------------------------------------------------*/
+static void ResetMatrixStack ()
+{
+  if (Matrix_counter > 0)
+    {
+      if (getenv ("AMAYA_TRACE_GL"))
+        fprintf (stderr, "GL: %d transformation(s) left by the previous display\n",
+                 Matrix_counter);
+      glLoadMatrixd (&Matrix_stack[0]);
+      Matrix_counter = 0;
+    }
+}
+
 /*----------------------------------------------------------------------
   ----------------------------------------------------------------------*/
 static ThotBool IfPushMatrix (PtrAbstractBox pAb)
@@ -73,8 +116,7 @@ static ThotBool IfPushMatrix (PtrAbstractBox pAb)
   if (!pAb->AbPresentationBox &&
       (pAb->AbElement->ElSystemOrigin || pAb->AbElement->ElTransform))
     {
-      Matrix_counter++;
-      glPushMatrix ();
+      SaveMatrix ();
       return TRUE;
     }
   else
@@ -91,7 +133,7 @@ static ThotBool IfPopMatrix (PtrAbstractBox pAb)
       if (Matrix_counter > 0)
         {
           Matrix_counter--;
-          glPopMatrix ();
+          glLoadMatrixd (&Matrix_stack[16 * Matrix_counter]);
         }
 #ifdef _GL_DEBUG
       else
@@ -1623,6 +1665,10 @@ PtrBox DisplayAllBoxes (int frame, PtrFlow pFlow,
   pBox = pAb->AbBox;
   if (pBox == NULL)
     return NULL;
+#ifdef _GL
+  /* no transformation is pending between two displays */
+  ResetMatrixStack ();
+#endif /* _GL */
   /* Display planes in reverse order from biggest to lowest */
   plane = 65536;
   nextplane = plane - 1;
