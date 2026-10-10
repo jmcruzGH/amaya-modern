@@ -509,15 +509,14 @@ every 50 ms.
 
 Amaya was created at **Inria** and **W3C** by Irène Vatton, Vincent Quint,
 Laurent Carcone, José Kahan and many contributors, 1996–2012.
-This port: © 2026 J. Magalhães Cruz `<jmcruz@fe.up.pt>`, FEUP, University
+This port: © 2026 JoseMCruz `<jmcruz@fe.up.pt>`, FEUP, University
 of Porto.
 
 **How this port was made.** Most of the port's code was written by
 [Claude](https://www.anthropic.com/claude), Anthropic's AI model, working
 as the main developer in Claude Code sessions: diagnosing the problems,
 writing the fixes and new features, testing them under a virtual X server
-and with AddressSanitizer, and writing this documentation.  J. Magalhães
-Cruz led the project.  He chose what to fix and in what order, tested every
+and with AddressSanitizer, and writing this documentation.  JoseMCruz led the project.  He chose what to fix and in what order, tested every
 change on his own desktop, reported the bugs he found in daily use, and
 reviewed and published the result.  Commits written by Claude carry a
 `Co-Authored-By: Claude` line.
