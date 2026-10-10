@@ -1,4 +1,4 @@
-# Amaya, resurrected — W3C's WYSIWYG web editor on today's Linux
+# Amaya, resurrected — the WYSIWYG web editor, on today's Linux
 
 **amaya-modern** is a working port of [Amaya](https://www.w3.org/Amaya/)
 11.4.7, the web editor and browser developed by W3C and Inria, to
