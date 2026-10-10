@@ -1899,6 +1899,12 @@ void ResizeWidth (PtrBox pBox, PtrBox pSourceBox, PtrBox pFromBox, int delta,
       addL = l;
       addR = r;
     }
+  if (delta && pAb->AbLeafType == LtPicture)
+    /* a picture (e.g. an image arriving after the page was displayed) may
+       now stick out of the document: let CheckScrollingWidthHeight
+       recompute the scrolled width, which otherwise is only done when the
+       root box width changes */
+    AnyWidthUpdate = TRUE;
   if (delta || diff ||
       pAb->AbLeftMarginUnit == UnAuto || pAb->AbRightMarginUnit == UnAuto)
     {
