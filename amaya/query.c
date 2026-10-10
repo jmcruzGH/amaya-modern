@@ -15,7 +15,7 @@
  * Schemes: http and https (TLS through libcurl, checked against the
  * system's authorities plus ~/.amaya/trusted-certs.pem).
  *
- * (c) 2026  J. Magalhães Cruz <jmcruz@fe.up.pt> -- FEUP
+ * (c) 2026  JoseMCruz <jmcruz@fe.up.pt> -- FEUP
  * Derived from original Amaya query.c (c) INRIA/W3C 1996-2013.
  * Released under the same W3C licence.
  */
