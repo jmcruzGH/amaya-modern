@@ -118,6 +118,15 @@ Ctrl <Key>h , Ctrl <Key>t:         ChangeTitle()
 Ctrl <Key>h , Ctrl <Key>v:         CreateDivision() 
 Ctrl <Key>h , Ctrl <Key>w:         CreateParameter() 
 
+#Common one-key shortcuts for italic, bold and underline.  These keys also
+#start sequences (Ctrl-i , Ctrl-e etc.): the one-key action is done when the
+#next key does not continue a sequence, or after SHORTCUT_DELAY ms (1000 by
+#default; to change it, add e.g. SHORTCUT_DELAY=500 to the [amaya] section
+#of ~/.amaya/thot.rc while Amaya is closed; 0 = wait for the next key)
+Ctrl <Key>i:                       SetOnOffItalic()
+Ctrl <Key>b:                       SetOnOffBold()
+Ctrl <Key>u:                       SetOnOffUnderline()
+
 #Style menu and Information types
 Ctrl <Key>i , Ctrl <Key>a:         ApplyClass() 
 Ctrl <Key>i , Ctrl <Key>b:         ChangeBackgroundImage() 

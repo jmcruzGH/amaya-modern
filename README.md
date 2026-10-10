@@ -191,6 +191,23 @@ To get the cookies of one site from Firefox, see
 [`contrib/firefox-cookies.py`](contrib/firefox-cookies.py) and its security
 warning.
 
+## Keyboard shortcuts
+
+Besides Amaya's two-key sequences (e.g. **Ctrl+i Ctrl+e** for emphasis,
+**Ctrl+u Ctrl+s** for the structure view), the common one-key shortcuts
+work: **Ctrl+i** italic (`<i>`), **Ctrl+b** bold (`<b>`), **Ctrl+u**
+underline (`<u>`, also new in **Insert > Character element**).  As these
+keys also start sequences, their own action is done when the next key does
+not continue a sequence (Ctrl+i then typing writes in italic) or after one
+second without a key; **Escape** cancels it.  The delay can be changed with
+`SHORTCUT_DELAY=` *milliseconds* in the `[amaya]` section of
+`~/.amaya/thot.rc` (edit it with Amaya closed); `0` waits for the next key.
+
+In `amaya.keyboard`, a key may now have its own action and start sequences
+at the same time.  A personal `~/.amaya/amaya.keyboard` replaces the
+installed one: copy the three `Ctrl <Key>i:` / `b:` / `u:` lines into it to
+get these shortcuts.
+
 ---
 
 ## Open decisions
