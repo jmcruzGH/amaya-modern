@@ -107,8 +107,7 @@
  *     New: wxGLCanvas(parent, id, attribs, pos, size, style, name)
  *          + separate wxGLContext object owned by the application.
  *
- *     AmayaCanvas.cpp is patched directly (see patches/AmayaCanvas.cpp.patch)
- *     because the constructor signature change cannot be shimmed.
+ *     AmayaCanvas.cpp was changed directly because the constructor signature change cannot be shimmed.
  * --------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------

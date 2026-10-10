@@ -31,7 +31,7 @@ void HTProtocolPreemptiveInit(void)       {}
 void HTIconInit              (const char *url_prefix) { (void)url_prefix; }
 void HTMIMEInit              (void)       {}
 
-/* AHTSSLInit -- Phase 3 is HTTP-only; HTTPS added later */
+/* AHTSSLInit -- not needed: libcurl handles TLS (see query.c) */
 void AHTSSLInit(void) {}
 void AHTSSLClose(void) {}
 

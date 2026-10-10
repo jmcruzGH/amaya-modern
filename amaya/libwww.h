@@ -7,7 +7,7 @@
  *
  * This stub provides the minimal type definitions that amaya/ source files
  * expect when they include "libwww.h".  The full AHTReqContext is defined
- * in AHTReqContext_curl.h (installed by patches/generate-curl-sources.sh).
+ * in AHTReqContext_curl.h.
  */
 #ifndef AMAYA_LIBWWW_H
 #define AMAYA_LIBWWW_H

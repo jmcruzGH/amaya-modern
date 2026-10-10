@@ -60,8 +60,8 @@ set(WXDIALOG_SRCS
 # ── HTTP layer (Phase 3: libcurl replacements) ────────────────────────────────
 # AHTURLTools.c: pure URL string helpers -- unchanged from original.
 # query.c, answer.c, AHTBridge.c, AHTInit.c, AHTMemConv.c, AHTFWrite.c,
-# AHTEvntrg.c: replaced by libcurl versions in patches/curl/.
-# apply-patches.sh copies them into amaya/ before the build.
+# AHTEvntrg.c: libcurl versions (query.c) and stubs (the others) that
+# replace the libwww ones; the originals are kept as *.libwww.
 set(HTTP_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/AHTURLTools.c
   ${CMAKE_CURRENT_SOURCE_DIR}/query.c       # Phase 3: libcurl

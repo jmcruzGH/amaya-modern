@@ -12,8 +12,8 @@
  *   - PutObjectWWW() handles HTTP PUT (save to server).
  *   - StopRequest() / StopAllRequests() cancel in-flight requests.
  *
- * HTTP-only for Phase 3 (no HTTPS). HTTPS (via libcurl + system TLS)
- * is a one-line change: remove CURLOPT_PROTOCOLS restriction below.
+ * Schemes: http and https (TLS through libcurl, checked against the
+ * system's authorities plus ~/.amaya/trusted-certs.pem).
  *
  * (c) 2026  J. Magalhães Cruz <jmcruz@fe.up.pt> -- FEUP
  * Derived from original Amaya query.c (c) INRIA/W3C 1996-2013.
