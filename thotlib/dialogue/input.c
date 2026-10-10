@@ -146,6 +146,10 @@ static KEY         *Automata_SHIFT   = NULL;
 static KEY         *Automata_CTRL    = NULL;
 static KEY         *Automata_ALT     = NULL;
 static KEY         *Automata_current = NULL;
+/* first key of the current sequence when that key has also its own action
+   (e.g. Ctrl-i: italic, and Ctrl-i , Ctrl-e: emphasis) */
+static KEY         *Automata_pending = NULL;
+static int          Pending_frame = 0;
 /* Access key table for loaded documents */
 static Proc2        AccessKeyFunction = NULL;
 static KEY         *DocAccessKey[MAX_DOCUMENTS];
@@ -474,6 +478,16 @@ static ThotBool MemoKey (int mod1, int key1, ThotBool spec1, int mod2,
             }
         }
     }
+  else if (!isNew && key2 == 0 && oldptr &&
+           oldptr->K_Next && oldptr->K_Command == 0 && oldptr->K_Value == 0)
+    {
+      /* The key already starts sequences (e.g. Ctrl-i , Ctrl-e) and gets
+         now its own action (e.g. Ctrl-i alone): it is done when the next
+         key does not continue a sequence, or after SHORTCUT_DELAY ms */
+      oldptr->K_Command = command;
+      oldptr->K_Value = key;
+      isNew = TRUE;
+    }
   else if (isNew)
     {
       /* Create a first level entry */
@@ -519,6 +533,77 @@ static ThotBool APPKey (int msg, PtrElement pEl, Document doc, ThotBool pre)
       pParentEl = pParentEl->ElParent;
     }
   return result;
+}
+
+
+/*----------------------------------------------------------------------
+  Pending single-key actions.
+  A key such as Ctrl-i can both start sequences (Ctrl-i , Ctrl-e) and
+  have its own action (Ctrl-i: italic).  Its own action is done:
+  - when the next key does not continue a sequence (that key is then
+    handled normally: Ctrl-i then "abc" types "abc" in italic);
+  - or when no key follows within SHORTCUT_DELAY ms (default 1000;
+    0 waits for the next key without any delay).
+  ----------------------------------------------------------------------*/
+static void ClearPendingShortcut ();
+int ThotInput (int frame, unsigned int value, int command, int modifiers,
+               int key, ThotBool isKey);
+static int  RunPendingShortcut ();
+
+class PendingShortcutTimer : public wxTimer
+{
+public:
+  virtual void Notify () { RunPendingShortcut (); }
+};
+static PendingShortcutTimer *PendingTimer = NULL;
+
+static void ClearPendingShortcut ()
+{
+  Automata_pending = NULL;
+  if (PendingTimer)
+    PendingTimer->Stop ();
+}
+
+static void StartPendingShortcut (KEY *ptr, int frame)
+{
+  int delay = 1000, val;
+
+  Automata_pending = ptr;
+  Pending_frame = frame;
+  if (TtaGetEnvInt ("SHORTCUT_DELAY", &val))
+    {
+      if (val <= 0)
+        /* no delay: wait for the next key */
+        return;
+      delay = val < 100 ? 100 : val;
+    }
+  if (PendingTimer == NULL)
+    PendingTimer = new PendingShortcutTimer ();
+  PendingTimer->StartOnce (delay);
+}
+
+/* Do the pending action, if any; returns ThotInput's result */
+static int RunPendingShortcut ()
+{
+  KEY      *ptr = Automata_pending;
+  Document  document;
+  View      view;
+
+  ClearPendingShortcut ();
+  if (ptr == NULL)
+    return 0;
+  /* the sequence is over */
+  Automata_current = NULL;
+  if (Pending_frame <= 0 || Pending_frame > MAX_FRAME)
+    return 0;
+  FrameToView (Pending_frame, &document, &view);
+  if (document == 0 || LoadedDocument[document - 1] == NULL)
+    return 0;
+  if (ptr->K_Command > 0)
+    return ThotInput (Pending_frame, ptr->K_Value, ptr->K_Command, 0, 0, FALSE);
+  else
+    /* insert a character */
+    return ThotInput (Pending_frame, ptr->K_Value, 0, 0, 0, FALSE);
 }
 
 
@@ -607,6 +692,20 @@ int ThotInput (int frame, unsigned int value, int command, int modifiers,
             {
               value = ptr->K_Value;
               command = ptr->K_Command;
+              ClearPendingShortcut ();
+            }
+          else if (Automata_pending && key == THOT_KEY_Escape)
+            {
+              /* Escape cancels the first key */
+              ClearPendingShortcut ();
+              return 0;
+            }
+          else if (Automata_pending)
+            {
+              /* not a sequence: do the action of the first key, then
+                 handle this key normally */
+              RunPendingShortcut ();
+              return ThotInput (frame, value, 0, modifiers, key, isKey);
             }
         }
       else
@@ -676,6 +775,9 @@ int ThotInput (int frame, unsigned int value, int command, int modifiers,
                             value = ptr->K_Value;
                             command = ptr->K_Command;
                           }
+                        else if (ptr->K_Command > 0 || ptr->K_Value != 0)
+                          /* the key has also its own action */
+                          StartPendingShortcut (ptr, frame);
                       }
                     else
                       ptr = ptr->K_Other;
@@ -970,6 +1072,8 @@ void FreeTranslations ()
   /* free all document access keys */
   for (i = 1; i <= MAX_DOCUMENTS; i++)
     TtaRemoveDocAccessKeys (i);
+  Automata_current = NULL;
+  ClearPendingShortcut ();
   FreeOneTranslationsTable (Automata_normal);
   Automata_normal = NULL;
   FreeOneTranslationsTable (Automata_ctrl);
@@ -1112,6 +1216,8 @@ void TtaCloseShortcutSequence ()
 {
   if (Automata_current)
     Automata_current = NULL;
+  /* the single-key action of the first key is given up too */
+  ClearPendingShortcut ();
 }
 
 /*----------------------------------------------------------------------
