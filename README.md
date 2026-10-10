@@ -1,305 +1,520 @@
-# amaya-modern
+# Amaya, resurrected — W3C's WYSIWYG web editor on today's Linux
 
-A modernised build of [Amaya 11.4.7](https://www.w3.org/Amaya/), the W3C's
-WYSIWYG XHTML/MathML/SVG editor, ported to **Linux amd64 / Kubuntu 24.04**
-with a CMake build system.
+**amaya-modern** is a working port of [Amaya](https://www.w3.org/Amaya/)
+11.4.7, the web editor and browser developed by W3C and Inria, to
+current Linux (Ubuntu / Kubuntu 24.04, amd64): wxWidgets 3.2 on GTK 3,
+GCC 13+, CMake, and libcurl in place of the long-gone libwww.
 
-Original code © INRIA/W3C 1996–2013 by Irène Vatton, Vincent Quint, Laurent
-Carcone and contributors.  
-Port © 2026 J. Magalhães Cruz `<jmcruz@fe.up.pt>` — FEUP.
+Amaya edits web pages *as they look*: you type, select and restyle text on
+the formatted page, and Amaya keeps a clean, valid document structure
+underneath (XHTML, CSS, MathML, SVG).  It is a good tool for writing simple,
+structured pages, in contrast with the heavy pages most tools produce today.
+Development stopped in 2012 (version 11.4.7), and the
+[original repository](https://github.com/w3c/Amaya-Editor) was archived in
+2018; this port makes it build and run well again.
 
----
+> This is an independent, unofficial port.  It is not a W3C or Inria
+> release and is not endorsed by them.
 
-## What this repo contains
-
-| Directory | Contents |
-|---|---|
-| `amaya/` | Application source (XHTML editor, CSS, HTTP) |
-| `amaya/generated/` | Pre-generated `*APP.c` / `*.h` schema files (committed so you don't need to run the schema compilers) |
-| `amaya/*.STR, *.PRS, *.TRA` | Pre-compiled binary schemas (`HTML.STR` etc.) |
-| `thotlib/` | Thot rendering engine (document model, OpenGL display, wx UI) |
-| `batch/` | Schema compiler source (`str`, `app`) and CMake rules |
-| `compat/` | Compatibility shim headers (`wx3compat.h`) |
-| `patches/` | Historical record of the original port (already applied) |
-| `cmake/` | CMake helper files (`config.h.in`) |
+![Amaya editing a page: formatted view and structure view side by side](docs/screenshot.png)
 
 ---
 
-## Prerequisites (Kubuntu 24.04 / Ubuntu 24.04)
+## Contents
+
+- [Status](#status)
+- [Building](#building)
+- [Running](#running)
+- [Using Amaya](#using-amaya)
+- [Known limitations](#known-limitations)
+- [What changed from Amaya 11.4.7](#what-changed-from-amaya-1147)
+- [Repository layout](#repository-layout)
+- [Developer notes](#developer-notes)
+- [Credits and licence](#credits-and-licence)
+
+---
+
+## Status
+
+In regular use on a Kubuntu 24.04 desktop.
+
+**Editing local files works well:**
+- Formatted, structure, source, links and table-of-contents views, kept in step.
+- XHTML 1.0 / 1.1 and HTML 4 documents, with CSS style sheets (Style panel,
+  classes, style editor), MathML formulas, SVG drawings and tables.
+- Keyboard input with accents and AltGr, copy/paste with other programs,
+  undo/redo, spell checker, printing, preferences, multiple tabs and windows.
+
+**Browsing and editing on the web works, within what a 2012 browser can do:**
+- http and https pages, images and style sheets; forms (GET and POST); cookies.
+- HTTPS certificate errors are explained, and you can trust a certificate yourself.
+- Publishing to a web server with HTTP PUT is implemented, but little tested.
+- There is no JavaScript, and modern CSS and HTML5 are understood only partly.
+  **File > Preview in browser** (F12) shows the page in Firefox, for comparison.
+
+**New in this port:**
+- **File > Preview in browser** (F12).
+- **File > Load cookies…**, to use in Amaya a login made in Firefox.
+- **Ctrl+I**, **Ctrl+B** and **Ctrl+U** for italic, bold and underline,
+  alongside Amaya's own two-key shortcuts.
+
+See [Known limitations](#known-limitations) for what does not work.
+
+---
+
+## Building
+
+### Prerequisites (Ubuntu / Kubuntu 24.04)
 
 ```bash
-sudo apt install \
-  build-essential cmake git \
-  libwxgtk3.2-dev wx-common \
-  libgl-dev libglu1-mesa-dev \
-  libfreetype-dev libfontconfig1-dev \
-  libcurl4-openssl-dev libssl-dev libexpat1-dev \
-  zlib1g-dev libjpeg-dev libpng-dev \
-  libraptor2-dev \
-  flex bison
+sudo apt install build-essential cmake git pkg-config \
+  libwxgtk3.2-dev libgl-dev libglu1-mesa-dev \
+  libfreetype-dev libfontconfig-dev libexpat1-dev \
+  libcurl4-openssl-dev libssl-dev \
+  zlib1g-dev libpng-dev libjpeg-dev
 ```
 
-(`libwxgtk3.2-dev` already includes wxGLCanvas support; there is no separate
-`-gl-dev` package on 24.04. The build uses GTK 3, not GTK 2.)
+`libwxgtk3.2-dev` already includes the OpenGL canvas and pulls in GTK 3.
+Other recent distributions with wxWidgets 3.2 should work, but have not been
+tried.
 
----
-
-## Build
-
-The tree is already patched: no upstream checkout, `rsync` or patch step is needed.
-The build directory must be a direct subdirectory of the repository (as
-`build/` below): Amaya finds `config/` and `resources/` two directories above
-its binary, and shows a "No alphabet file" box and stops otherwise.
+### Compile
 
 ```bash
 git clone https://github.com/jmcruzGH/amaya-modern.git
 cd amaya-modern
 mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
-make -j$(nproc) 2>&1 | tee build.log
-./amaya/amaya            # or: ./amaya/amaya /path/to/file.html
-                         # (the build also produces ./amaya/print, used by File > Print)
+cmake ..                 # RelWithDebInfo by default
+make -j$(nproc)
 ```
 
-The `patches/` directory is kept only as a historical record of how the port
-was first produced; its changes are already part of the committed sources.
+This builds `build/amaya/amaya` and `build/amaya/print`, the helper that
+**File > Print** runs.
 
-### Smoke test
+**Keep the build directory directly inside the repository**, as `build/`
+above, or `build-debug/`.  Amaya finds its data (`config/`, `resources/`,
+`fonts/`, `doc/`, `dicopar/`, and the schemas in `amaya/`) two directories
+above its binary.  Otherwise it stops at start-up with a
+"No alphabet file" message.
 
-`tools/smoke-test.sh` runs the freshly built binary under a virtual X server,
-performs a short editing session on a local file, and checks the saved result.
-See the comments at the top of the script.  For testing on a real desktop
-session, see [`docs/TESTING.md`](docs/TESTING.md).
-
----
-
-## Phased porting plan
-
-### Phase 1 — wxWidgets 2.8 → 3.2 ✅
-- `compat/wx3compat.h` force-included into every TU via CMake
-- Renames all `wxEVT_COMMAND_*` → `wxEVT_*`, `DEFINE_EVENT_TYPE` → `wxDEFINE_EVENT`
-- Fixes to `wxGLCanvas` construction, `SetCurrent()`,
-  `GetContext()→GetGLContext()`, `ListBoxBook` event types
-- Runtime fixes under wx 3.2 / GTK 3: glyph position overflow, GL context
-  sharing, keyboard input (character corruption, arrows, AltGr), glyph baseline
-- wx 3 defines `__WXDEBUG__` by default; Amaya's own debug code now uses
-  `AMAYA_WXDEBUG`, set only for `CMAKE_BUILD_TYPE=Debug` (otherwise a
-  developer trace window opened beside every Amaya window)
-- Note: the shim hides deprecated wx 2.8 API usage rather than migrating it
-
-### Phase 2 — GCC 13 warnings ✅ (error-class and memory-safety categories)
-The build uses `-Wall` with **no** `-Wno-*` suppressions and **no**
-`-fpermissive`.  All `.c` files are compiled as C++ (see "Open decisions").
-
-| Category | Before | Now | Notes |
-|---|---|---|---|
-| errors hidden by `-fpermissive` | 5 | 0 | pointer/`'\0'` comparisons, `char`→`char*` |
-| `-Wformat-overflow` | 37 | 0 | `sprintf` → `snprintf(buf, sizeof buf, …)` |
-| `-Wformat-security` | 22 | 0 | `fprintf(f, s)` → `fprintf(f, "%s", s)` |
-| `-Wstringop-truncation` | 91 | 39 | remaining sites verified safe (GCC false positives) or dead code |
-| `-Wmaybe-uninitialized` | 27 | 0 | neutral initial values |
-| `-Wint-to-pointer-cast` | 170 | 0 | explicit `(intptr_t)` (int-in-`void*` idiom, verified) |
-| `-Wreturn-type`, `-Wnonnull`, `-Wmemset-elt-size`, `-Wsizeof-pointer-div`, `-Wuninitialized`, `-Wrestrict`, `-Waddress` | 19 | 0 | several were real bugs |
-| `-Wmisleading-indentation` | 5 | 0 | indentation only |
-| `-Wparentheses` / `-Wdangling-else` | 12 / 8 | 9 / 7 | 3 NULL dereferences + 1 dangling else fixed; rest correct |
-
-Totals (clean build, unique warnings): **868 → 564**, 0 errors.
-Remaining warnings are mostly `-Wswitch-outside-range` (noise),
-`-Wunused-but-set-variable`, `-Wunused-result`, and the `-Wformat-truncation`
-notes that mark the `snprintf` conversions ("may truncate", formerly "may
-overflow").  See `git log` for the individual bugs fixed.
-
-### Phase 3 — libwww → libcurl ⚠ partial (remote loading not working yet)
-- `patches/curl/query.c`: full libcurl multi-handle replacement for `GetObjectWWW`,
-  `PutObjectWWW`, `StopRequest`, `QueryInit/Close`
-- All other libwww files (`AHTBridge.c`, `AHTInit.c`, `AHTMemConv.c`,
-  `AHTFWrite.c`, `AHTEvntrg.c`, `answer.c`) replaced by linker stubs
-- HTTP-only in this phase; HTTPS requires removing the protocol filter in `query.c`
-- libcurl poll wired into wx event loop via `wxAmayaSocketEventLoop::SetCurlPoll()`
-- **Known issues** (remote documents never load; local files are unaffected):
-  `GetObjectWWW` does not fill in the caller's `outputfile` buffer (the libwww
-  version generated a temp-file name there) and returns without calling the
-  terminate callback when `fopen("")` fails; the poll timer is only started when
-  a socket is registered, which libcurl never does; `AMAYA_SYNC` is ignored;
-  no 401/authentication handling.
-
-### Phase 4 — HTTPS, authentication (planned)
-Remove the `strncmp(urlName, "http://", 7)` guard in `patches/curl/query.c`.
-libcurl handles TLS natively; no other change needed.
-
-### Phase 5 — Qt migration (future, optional)
-Port `thotlib/dialogue/` from wxWidgets to Qt6, replacing `wxGLCanvas` with
-`QOpenGLWidget`. The Thot rendering engine (`thotlib/view/`, `thotlib/document/`,
-`thotlib/tree/`, `thotlib/editing/`) is unchanged — only the ~82 dialogue files
-need porting.
+To update later: `git pull`, then `make -j$(nproc)` in `build/`.
 
 ---
 
-## Web browsing: files and settings
+## Running
 
-All in `~/.amaya/` (Amaya's per-user directory):
+```bash
+build/amaya/amaya                    # opens the welcome page
+build/amaya/amaya ~/www/index.html   # opens a file (or an http/https address)
+```
 
-| File / setting | Purpose |
+There is no installation step.  `make install` exists, but it installs
+only the binaries and part of the data (the schemas, in `share/amaya`), so
+the installed binary cannot start.  Run Amaya
+from the build tree.
+
+To start it from a menu or a terminal, use the binary's full path.
+A symbolic link to it does not work, because Amaya looks for its data
+next to the path it was started with.
+
+- A script `~/bin/amaya`:
+
+  ```sh
+  #!/bin/sh
+  exec "$HOME/amaya-modern/build/amaya/amaya" "$@"
+  ```
+
+- A desktop entry `~/.local/share/applications/amaya.desktop`.
+  Replace `/home/me` with your home directory:
+
+  ```ini
+  [Desktop Entry]
+  Type=Application
+  Name=Amaya
+  Comment=WYSIWYG web editor
+  Exec=/home/me/amaya-modern/build/amaya/amaya %f
+  Icon=/home/me/amaya-modern/resources/icons/misc/logo.png
+  MimeType=text/html;application/xhtml+xml;
+  Categories=Development;WebDevelopment;
+  ```
+
+---
+
+## Using Amaya
+
+**Help > Amaya Help…** (F1) opens Amaya's own user manual (from `doc/WX/`).  It is
+still accurate for almost everything.  This section covers what is new or
+different in this port.
+
+### Your settings: `~/.amaya/`
+
+Amaya keeps its per-user files in `~/.amaya/`, or in `$AMAYA_USER_HOME` if
+that variable names an existing directory.
+
+| File | Purpose |
 |---|---|
+| `thot.rc` | Preferences, written by **Edit > Preferences** and at exit. Settings without a dialog (below) go in its `[amaya]` section. Edit it while Amaya is closed. |
+| `amaya.keyboard` | Optional personal keyboard shortcuts. It **replaces** `config/amaya.keyboard`, so start from a copy of that file. |
 | `cookies.txt` | Persistent cookies (Netscape format, mode 0600), loaded at start-up and saved at exit. Session cookies are never written. |
-| `ENABLE_COOKIES=no` in `thot.rc` | Disable cookies altogether. |
-| `trusted-certs.pem` | Certificates trusted **in addition to** the system's authorities (`/etc/ssl/certs`). A site's own certificate is enough. When a certificate is rejected, the error page shows why, the certificate's details and SHA-256 fingerprint, and (when trusting would help) the PEM text to append here. |
-| `GL_PARTIAL_REDRAW=yes` in `thot.rc` | Restore partial screen redraws (not recommended with current drivers). |
+| `trusted-certs.pem` | Certificates you trust in addition to the system's authorities (see [HTTPS certificates](#https-certificates)). |
 
-To trust an authority for **all** programs instead (Firefox excepted), add
-it to the system: `sudo cp ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`.
+Settings for `thot.rc`:
+
+| Setting | Default | Purpose |
+|---|---|---|
+| `PREVIEW_BROWSER=` | `firefox` | Command for **Preview in browser**. It may have arguments, and `%u` marks where the file or address goes (otherwise it is appended), e.g. `firefox --new-window %u`. |
+| `PREVIEW_DIR=` | see below | Folder for preview copies of remote pages (and of local files in folders Amaya cannot write to). |
+| `SHORTCUT_DELAY=` | `1000` | Milliseconds (at least 100) before Ctrl+I/B/U act on their own; `0` waits for the next key. |
+| `ENABLE_COOKIES=` | `yes` | `no` disables cookies. |
+| `GL_PARTIAL_REDRAW=` | `no` | `yes` restores partial screen redraws. Not recommended: current drivers then leave stale pictures. |
+
+### Keyboard shortcuts
+
+The menus show each command's shortcut.  Amaya's own shortcuts are often
+two-key sequences, with Ctrl held for both keys.  For example,
+**Ctrl+I Ctrl+E** is emphasis (`<em>`), **Ctrl+I Ctrl+S** is strong
+(`<strong>`), **Ctrl+U Ctrl+S** shows the structure view and
+**Ctrl+U Ctrl+O** shows the source view.
+
+The common one-key shortcuts work too:
+
+| Keys | Element |
+|---|---|
+| **Ctrl+I** | italic `<i>` |
+| **Ctrl+B** | bold `<b>` |
+| **Ctrl+U** | underline `<u>` (new in **Insert > Character element**) |
+
+These keys also start sequences, so their own action happens in one of two
+ways:
+- the next key does not continue a sequence (Ctrl+I, then typing, writes in
+  italic);
+- no key follows for one second (`SHORTCUT_DELAY`).
+
+**Escape** cancels a pending shortcut.  Pressing the same keys again removes
+the style.
+
+In `amaya.keyboard`, a key may now both have its own action and start
+sequences.  If you have a personal `~/.amaya/amaya.keyboard`, copy the
+three `Ctrl <Key>i:` / `b:` / `u:` lines from `config/amaya.keyboard` into it.
 
 ### Preview in browser
 
 **File > Preview in browser** (F12) shows the current document in an
-external browser (Firefox by default), which runs JavaScript and modern CSS:
+external browser (Firefox by default), which runs JavaScript and modern CSS.
+- A document without unsaved changes is shown as is, from its file or its
+  http/https address.
+- A document with unsaved changes, in the formatted or the source view, is
+  first written to a preview copy.  The browser then shows what you are
+  editing, without saving it.
+  - For a local file, the copy is a hidden file next to it,
+    `.<name>.amaya-preview.<ext>`, so relative links, images and style
+    sheets work.  If that folder is not writable, the copy goes to the
+    preview folder, with a `<base href>` pointing back to the file.
+  - For a remote page, the copy goes to a preview folder and gets a
+    `<base href>` that points back to the page's address.
+- A local XHTML document that contains SVG or MathML is shown as a copy
+  named `.xhtml`, unless its name already ends in `.xhtml`, `.xht` or `.xml`.  Amaya writes such documents with namespace prefixes
+  (`<svg:svg>`), which only the browser's XML parser understands.  Browsers
+  use that parser for local files only when the name ends in `.xhtml`.
 
-- a document without unsaved changes is given as is (its file, or its
-  http/https address);
-- a document with unsaved changes (in the formatted or the source view) is
-  first written to a preview copy, so the browser shows what is being
-  edited without saving it.  For a local file, the copy is a hidden file
-  next to it, `.<name>.amaya-preview.<ext>`, so relative links, images and
-  style sheets work; for a remote page it goes to a preview folder and gets
-  a `<base href>` pointing back to the page's address.  Copies are removed
-  when Amaya exits.
-- a local XHTML document containing SVG or MathML is always given as a
-  copy named `.xhtml` (identical when there are no unsaved changes):
-  written with namespace prefixes (`<svg:svg>`, as Amaya does), it is only
-  understood by the browser's XML parser, which browsers use for local
-  files only when the name ends in `.xhtml`.
+Copies are removed when Amaya exits.  The default preview folder for remote
+pages is `~/snap/<browser>/common/amaya-preview` when the browser is a snap,
+as on Ubuntu, and `preview` in Amaya's temporary folder (normally
+`~/.amaya/preview`) otherwise.  A snap browser cannot read
+hidden folders such as `~/.amaya`, nor `/tmp`.
 
-| Setting in `thot.rc` | Purpose |
+### HTTPS certificates
+
+Amaya checks certificates against the system's authorities
+(`/etc/ssl/certs`).  When it rejects one, the error page shows:
+- why the certificate was rejected;
+- the certificate's details and its SHA-256 fingerprint;
+- when trusting it would help, the PEM text to append to
+  `~/.amaya/trusted-certs.pem`.
+
+The site's own certificate is enough.  To trust an authority in all programs
+instead (Firefox excepted):
+`sudo cp ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`.
+
+### Logging in to sites (cookies)
+
+Amaya cannot ask for a password when a server requests one (HTTP 401), and
+it runs no JavaScript, which many login pages need.  It does handle cookies,
+so you can log in with Firefox and use that session in Amaya:
+
+1. Log in to the site with Firefox.
+2. Run `contrib/firefox-cookies.py site.example.org -o ~/site-cookies.txt`.
+   It copies, from Firefox's default profile, the cookies that Firefox
+   would send to that site (including those of its parent domain, e.g.
+   `up.pt` for `sigarra.up.pt`).  The snap, classic and flatpak locations
+   are searched; `--list-profiles` lists the profiles, and `--profile`
+   picks another one.  Without `-o`, the cookies go to standard output.
+3. In Amaya, choose **File > Load cookies…** and pick the file.  The status bar
+   says how many cookies were loaded, and for which sites.  Amaya then offers
+   to delete the file.
+
+> **Security.** A cookie file holds your login: whoever has it can act as
+> you on that site until the session ends.  The script makes it readable by
+> you only, copies one site at a time, and sends nothing anywhere.  Delete
+> the file after use.  Use this only on a computer you control.  Some sites
+> tie a session to the browser it was made in, and refuse it elsewhere.
+
+**Load cookies** accepts any Netscape-format file, such as those written by
+curl and wget.
+
+---
+
+## Known limitations
+
+- **Web content.** Amaya is a 2012 browser: HTML 4 / XHTML 1.x, CSS 2, no
+  JavaScript.  Modern sites show partly, or ask for JavaScript.
+- **Network:**
+  - no HTTP authentication dialog; a 401 answer is shown as an error page;
+  - the proxy settings in Preferences are ignored, but libcurl's `http_proxy`
+    and `https_proxy` environment variables apply;
+  - no ftp;
+  - no HTTP cache;
+  - no lost-update check when publishing.
+- **Not compiled:** Annotations, WebDAV and bookmarks.  Templates, the spell
+  checker, MathML, SVG and printing are compiled in.
+- **Installation:** run from the build tree; `make install` is incomplete
+  (see [Running](#running)).
+- **Platforms:** Linux only.  The Windows and macOS build files are the
+  original ones and are not maintained.
+- **Harmless console messages:**
+  - `GL_Err: invalid operation`, mostly while scrolling;
+  - `GLib-CRITICAL … g_signal_handler_disconnect` when a tab closes, which
+    comes from the fcitx5 input method;
+  - libpng warnings about some images.
+
+---
+
+## What changed from Amaya 11.4.7
+
+The W3C licence asks derived works to state their changes and when they were
+made.  The port was made between September and October 2026, starting from
+the final W3C sources (the root commit of `main`).  The full detail, one
+change per commit, is in `git log`.  In summary:
+
+**Toolkit and compiler (September 2026)**
+- wxWidgets 2.8 → 3.2 on GTK 3.  Event names and constructors were updated;
+  `compat/wx3compat.h`, included in every file, maps the remaining old names.
+- Fixed at run time under wx 3.2: OpenGL context sharing, glyph positions
+  and baselines, and keyboard input (corrupted characters, arrow keys, AltGr).
+- New CMake build that replaces autoconf.
+
+**Code health (October 2026)**
+- Amaya is built with `-Wall`, with no suppressed warnings and no
+  `-fpermissive` (the schema compilers in `batch/` are still built leniently).
+- Hundreds of warnings fixed, among them real bugs: buffer overflows, format
+  strings, NULL dereferences from operator precedence, uninitialised
+  variables, and integers stored in pointers.
+- Crashes fixed, most found with AddressSanitizer:
+  - long attribute values;
+  - long or malformed CSS selectors;
+  - the class list on some sites;
+  - the OpenGL matrix stack overflowing on pages with complex SVG;
+  - heap corruption at exit (introduced by the network port).
+- Text editing no longer corrupts text (overlapping string copies).
+
+**Display**
+- Always redraw the whole frame, with no stale or misplaced pictures after
+  edits, scrolling, pasting or clicks.
+- Smooth, high-resolution and horizontal mouse wheels.
+- Scrollbars stay in place, disabled when not needed.
+- The page width is updated for images that arrive late.
+
+**Network (September–October 2026)**
+- libwww, no longer maintained or packaged, replaced by libcurl
+  (`amaya/query.c`, September), then completed (October):
+  - asynchronous loading and stop;
+  - redirects, form GET/POST and HTTP PUT;
+  - https;
+  - cookies;
+  - error pages, and pages that explain rejected certificates.
+- HTML5 `<meta charset>` is recognised; site icons may be SVG.
+
+**Interface**
+- Restored: the Style panel, Enter in text fields, closing the last tab,
+  and Tab / Shift+Tab between form fields.
+- The `print` helper is built again.
+- Saving and the source view of XHTML 1.1 documents work: the missing
+  `HTMLT11.TRA` was generated.
+- New: Preview in browser; Load cookies; Ctrl+I/B/U and Insert > Character
+  element > Underline.
+- No developer trace window in normal builds.
+
+---
+
+## Repository layout
+
+| Path | Contents |
 |---|---|
-| `PREVIEW_BROWSER=firefox` | Browser command; may have arguments, and `%u` where the file or address goes (otherwise it is appended), e.g. `firefox --new-window %u`. |
-| `PREVIEW_DIR=...` | Folder for the copies of remote pages.  Default: `~/snap/<browser>/common/amaya-preview` when the browser is a snap (a snap cannot read hidden folders such as `~/.amaya`, nor `/tmp`), otherwise `~/.amaya/preview`. |
+| `amaya/` | The application: HTML/XML parsers, CSS, editing commands, network layer (`query.c`), dialogs (`wxdialog/`).  Also the structure, presentation and translation schemas (`*.S`, `*.P`, `*.T` sources; compiled `*.STR`, `*.PRS`, `*.TRA`) |
+| `amaya/generated/` | Code generated from the application schemas (`*.A`), committed |
+| `thotlib/` | The Thot document engine: document model, layout, OpenGL display, wx windows |
+| `batch/` | Schema compilers (built on demand, see below) |
+| `config/` | Run-time configuration: `unix-thot.rc`, keyboard files, menu texts in 17 languages (`*-amayadialogue`), profiles |
+| `resources/` | Icons, wx dialog layouts (`xrc/`), SVG resources |
+| `fonts/`, `dicopar/`, `doc/WX/` | Fonts, spell-checking dictionaries, user manual, all read at run time |
+| `compat/` | `wx3compat.h`, the wx 2.8 → 3.2 compatibility header |
+| `cmake/` | `config.h.in` for CMake |
+| `contrib/` | `firefox-cookies.py` |
+| `tools/` | Tests and maintenance scripts (see [Developer notes](#developer-notes)) |
+| `docs/` | `TESTING.md` (desktop test checklist), the screenshot and its document (`demo.html`) |
+| `annotlib/`, `davlib/` | Annotations and WebDAV: original code, not compiled |
+| `LICENSE` | The W3C licence (same text as `amaya/COPYRIGHT`) |
 
-A snap browser cannot open documents kept in hidden folders (e.g.
-`~/.something/page.html`) or under `/tmp`.
+The following are kept as they were in W3C's tree but are **not used** by
+this build:
+- the autoconf build: `configure*`, the `Makefile.in` files, `Options.in`,
+  `config.*`, `install-sh`, `stamp-h.in`, `tools/cextract-1.7`,
+  `tools/mkdep`;
+- packaging: `*.nsi`, `amaya_wx.spec`, `amaya.info`, `amaya.pkg`,
+  `WindowsWX/`, `cpp/`, the install scripts in `batch/`;
+- `CVSROOT/`, `README.amaya`, `README.wx`, `README.cvs`,
+  `AmayaWX_Compilation.html`, `Icons/`, `tools/xmldialogues/`, and the rest
+  of `doc/`.
 
-### Load cookies
-
-**File > Load cookies…** adds the cookies of a Netscape-format cookie file
-(the format of `cookies.txt`, curl and wget) to Amaya's own, e.g. to use in
-Amaya a login made in another browser.  The status bar tells how many
-cookies were loaded and for which sites.  As with any cookie Amaya receives,
-session cookies stay in memory only and cookies with an expiry date are
-saved in `cookies.txt` at exit.  Such a file holds login credentials, so
-Amaya then offers to delete it.
-
-To get the cookies of one site from Firefox, see
-[`contrib/firefox-cookies.py`](contrib/firefox-cookies.py) and its security
-warning.
-
-## Keyboard shortcuts
-
-Besides Amaya's two-key sequences (e.g. **Ctrl+i Ctrl+e** for emphasis,
-**Ctrl+u Ctrl+s** for the structure view), the common one-key shortcuts
-work: **Ctrl+i** italic (`<i>`), **Ctrl+b** bold (`<b>`), **Ctrl+u**
-underline (`<u>`, also new in **Insert > Character element**).  As these
-keys also start sequences, their own action is done when the next key does
-not continue a sequence (Ctrl+i then typing writes in italic) or after one
-second without a key; **Escape** cancels it.  The delay can be changed with
-`SHORTCUT_DELAY=` *milliseconds* in the `[amaya]` section of
-`~/.amaya/thot.rc` (edit it with Amaya closed); `0` waits for the next key.
-
-In `amaya.keyboard`, a key may now have its own action and start sequences
-at the same time.  A personal `~/.amaya/amaya.keyboard` replaces the
-installed one: copy the three `Ctrl <Key>i:` / `b:` / `u:` lines into it to
-get these shortcuts.
+`amaya/*.libwww` are the original libwww-based network files, kept for
+reference.  The `testcase` file is used only by the Debug build's trace
+window.
 
 ---
 
-## Open decisions
+## Developer notes
 
-- **C compiled as C++.**  Every `.c` file in `amaya/` and `thotlib/` is
-  compiled as C++ because `thot_gui_wx.h` declares C++ classes without
-  `#ifdef __cplusplus` guards.  Since `-fpermissive` is gone, this is now a
-  stable, strict configuration, and returning to C would require guarding
-  those headers and re-checking every C/C++ boundary.  Recommendation: keep it.
-- **`thotlib/editing/structcreation.c` (~line 3835)** compares two arrays
-  (`pEl->ElAbstractBox == pLeaf->ElAbstractBox`).  This has always been false,
-  also in Amaya 11.4.7, so the "inclusion" branch never selects the new
-  element.  The intent was probably to compare the first view's box; changing
-  it alters editing behaviour, so it is left as is.
-- **libcurl layer** (Phase 3): see the known issues above; local files are
-  not affected.
-
----
-
-## Regenerating schema files
-
-The `amaya/generated/*APP.c` and `amaya/*.STR` (and `*.PRS`, `*.TRA`) files are committed and
-normally do not need regeneration. If you change a `.S` or `.A` schema file:
+### Debug and AddressSanitizer builds
 
 ```bash
-cd build
-cmake --build . --target amaya_schemas
+mkdir build-debug && cd build-debug
+cmake .. -DCMAKE_BUILD_TYPE=Debug && make -j$(nproc)
 ```
-
-This builds the `amaya_str_compiler` and `amaya_app_compiler` host tools and
-reruns them against the changed schema sources.
-
-The translation schemas (`amaya/*.TRA`, used to save documents and to
-generate the source view) are made by `amaya_tra_compiler`, which builds:
 
 ```bash
-cd build && make amaya_tra_compiler
-cd ../amaya   # HTMLT.T includes greek.sgml from here
-../build/batch_tools/amaya_tra_compiler HTMLT                          # HTMLT.TRA
-../build/batch_tools/amaya_tra_compiler -DXML HTMLT HTMLTX             # XHTML 1.0
-../build/batch_tools/amaya_tra_compiler -DXML -DXHTML11 HTMLT HTMLT11  # XHTML 1.1
+mkdir build-asan && cd build-asan
+cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer" \
+  -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer" \
+  -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address"
+make -j$(nproc)
+ASAN_OPTIONS=detect_leaks=0:halt_on_error=1:log_path=/tmp/amaya-asan ./amaya/amaya
 ```
 
-(it also writes an `HTMLT.SCH` work file, which can be deleted).
+A Debug build also opens a developer trace window beside each Amaya window.
+In normal builds, Amaya's crash handler saves the open documents and then
+lets the crash through, so core dumps work; ASan builds do not install it,
+so AddressSanitizer reports the crash itself.  `AMAYA_TRACE_GL=1` traces
+the OpenGL matrix stack.
 
-*The structure and application compilers do not build yet* (they include the wx headers), so a
-change to a `.A` file must also be made by hand in `amaya/generated/`.  For a
-new menu entry in `EDITOR.A`, `tools/add-editor-menu-item.py` does all of it:
+### Tests
 
-```bash
-tools/add-editor-menu-item.py BPrint BMyEntry MyAction 'My &entry...' 'pt=A minha &entrada...'
+- `tools/smoke-test.sh [build-dir]`, run from the repository root.  It runs a
+  short editing session under a virtual X server and checks the saved file.
+  It needs `xvfb xdotool x11-apps imagemagick`.
+- `tools/edit-stress-test.py [build-dir] [seed]`.  It makes random
+  keyboard edits and compares the result with the expected text; set `NOPS`
+  for the number of edits.  It needs `xvfb xdotool openbox`.  It kills any
+  running Xvfb, openbox and amaya.
+- [`docs/TESTING.md`](docs/TESTING.md) is a checklist for a real desktop.
+
+### Schemas and generated files
+
+The compiled schemas (`amaya/*.STR`, `*.PRS`, `*.TRA`) and
+`amaya/generated/` are committed, so a normal build does not need the
+schema compilers.
+
+- **Translation schemas** (`*.T`, used to save documents and for the source
+  view): `amaya_tra_compiler` builds and works:
+
+  ```bash
+  cd build && make amaya_tra_compiler
+  cd ../amaya   # HTMLT.T includes greek.sgml from here
+  ../build/batch_tools/amaya_tra_compiler HTMLT                          # HTMLT.TRA
+  ../build/batch_tools/amaya_tra_compiler -DXML HTMLT HTMLTX             # XHTML 1.0
+  ../build/batch_tools/amaya_tra_compiler -DXML -DXHTML11 HTMLT HTMLT11  # XHTML 1.1
+  ```
+
+  It also writes an `HTMLT.SCH` work file, which can be deleted.  (The
+  `amaya_schemas` target is left over from an earlier attempt: do not use it.)
+- **Structure and application schemas** (`*.S`; `*.A`, menus and their
+  actions): their compilers (`amaya_str_compiler`, `amaya_app_compiler`) do
+  not build yet, because they include the wx headers as C.  There is no
+  target for the presentation compiler (`*.P`).  A change to an `.A` file
+  must therefore also be made by hand in `amaya/generated/` and in the menu
+  texts.  For a new entry in `EDITOR.A`,
+  `tools/add-editor-menu-item.py` does all of it:
+
+  ```bash
+  tools/add-editor-menu-item.py BPrint BMyEntry MyAction 'My &entry...' 'pt=A minha &entrada...'
+  ```
+
+  It adds the entry after an existing button or toggle (here `BPrint`).  It
+  updates:
+  - `EDITOR.A`;
+  - the generated `EDITOR.h` and `EDITORAPP.c`: labels are numbered in menu
+    order, so later ones shift by one, and the item and action counts grow;
+  - the label in every `config/*-amayadialogue` file, in English unless a
+    translation is given;
+  - `config/amaya.profiles`, without which the entry stays hidden.
+
+  You then write `void MyAction (Document, View)` in a source file.
+
+### Architecture
+
 ```
-
-It adds the entry after an existing one (here `BPrint`) in `EDITOR.A`, the
-generated `EDITOR.h` and `EDITORAPP.c` (labels are numbered in menu order, so
-the following ones shift by one; item and action counts grow), the label in
-every `config/*-amayadialogue` file (same renumbering; English unless a
-translation is given), and the action in `config/amaya.profiles`, without
-which the entry stays hidden.  `MyAction (Document, View)` must then be
-written in a source file.
-
----
-
-## Architecture notes
-
-```
-amaya/          Application layer (HTML parser, CSS, editor actions, HTTP)
-  └── wxdialog/ wx dialog subclasses (28 files: Open, Save, Find, Prefs…)
+amaya/            application: parsers, CSS, editing commands, network (query.c)
+  wxdialog/       wx dialogs (Open, Save, Find, Preferences…)
 thotlib/
-  ├── document/ Document model, schema reader/writer, pivot format
-  ├── tree/     Element tree, attributes, references
-  ├── editing/  Undo, selection, structural commands
-  ├── content/  Text buffers, search
-  ├── view/     Box layout engine, OpenGL rendering (1 857 lines of GL)
-  ├── presentation/ CSS/presentation schema matching
-  ├── dialogue/ wx windows, frames, panels, canvas (AmayaCanvas = wxGLCanvas)
-  ├── base/     Memory, registry, platform, message, app instance
-  ├── image/    JPEG, PNG, GIF, XPM decoders
-  └── unicode/  UTF-8/UTF-16 string helpers
-batch/          Schema compilers (NODISPLAY, no wx/GL dep)
-  ├── str.c     .S source → .STR binary structure schema
-  └── app.c     .A application schema → *APP.c callback registration code
+  document/       document model, schemas, pivot format
+  tree/           element tree, attributes, references
+  editing/        selection, undo, structural commands, scrolling
+  content/        text buffers, search
+  view/           box layout and OpenGL display
+  presentation/   presentation rules and CSS application
+  dialogue/       wx windows, frames, panels, canvas, keyboard input
+  base/           memory, settings registry, messages
+  image/          PNG, JPEG, GIF, XPM pictures
+batch/            schema compilers (.S → .STR, .P → .PRS, .T → .TRA, .A → C)
 ```
 
-The rendering pipeline: `thotlib/view/buildboxes.c` (layout) →
-`glwindowdisplay.c` (GL draw calls) → `AmayaCanvas` (wxGLCanvas wrapper) →
-the wx event loop. The seam between the layout engine and the UI is the
-`FrameTable[]` integer-indexed array of `ThotFrame` (= `AmayaFrame*`) entries.
+Display goes from layout (`thotlib/view/buildboxes.c`) to OpenGL drawing
+(`thotlib/view/glwindowdisplay.c`, `frame.c`) on an `AmayaCanvas`
+(a `wxGLCanvas`) in the wx event loop.  Each view is a frame number
+indexing `FrameTable[]`.  The network layer polls libcurl from a wx timer
+every 50 ms.
+
+### Open points
+
+- **C compiled as C++.** Every `.c` file is compiled as C++, because the wx
+  headers it includes declare C++ classes.  This is stable; going back to C
+  would mean guarding those headers.
+- **Warnings.** A clean build has about 580 distinct warnings, mostly
+  `-Wunused-but-set-variable` and `-Wswitch-outside-range` (noise).  A few
+  format warnings remain in the print helper.  There are no errors.
+- **`thotlib/editing/structcreation.c` (around line 3838)** compares two
+  arrays, which is always false, also in 11.4.7.  It is left as is, because
+  changing it would change editing behaviour.
+- **Possible future work:**
+  - an HTTP authentication dialog;
+  - proxy settings;
+  - an install target;
+  - better HTML5 support;
+  - a Qt port of `thotlib/dialogue/`.
 
 ---
 
-## Licence
+## Credits and licence
 
-Original Amaya code: [W3C Software License](https://www.w3.org/Consortium/Legal/copyright-software)  
-Port modifications: same licence.
+Amaya was created at **Inria** and **W3C** by Irène Vatton, Vincent Quint,
+Laurent Carcone, José Kahan and many contributors, 1996–2012.
+This port: © 2026 J. Magalhães Cruz `<jmcruz@fe.up.pt>`, FEUP, University
+of Porto.
+
+Amaya is distributed under the
+[W3C Software Notice and License](https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231)
+(full text in [`LICENSE`](LICENSE)), and so are the changes made in this port.
+The fonts in `fonts/` are those distributed with Amaya 11.4.7 (DejaVu, GNU
+FreeFont, ESSTIX, Bitstream Cyberbit, and Amaya's own symbol fonts), each
+under its own licence; the licence texts are not included.  Bitstream
+Cyberbit's terms are restrictive: check them before redistributing it.

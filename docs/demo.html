@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"
+    "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Amaya demo</title>
+  <style type="text/css">
+    body { font-family: sans-serif; margin: 1em 2em; }
+    h1 { color: #1a3a7a; border-bottom: 2px solid #1a3a7a; }
+    table { border-collapse: collapse; }
+    td, th { border: 1px solid #888; padding: 0.2em 0.6em; }
+    th { background: #e4e9f4; }
+  </style>
+</head>
+<body>
+<h1>Structured documents, edited as they look</h1>
+<p>Amaya edits <em>XHTML</em>, <strong>CSS</strong>, <i>MathML</i> and <b>SVG</b>
+directly on the formatted page, while keeping the document structure
+simple and valid.</p>
+<h2>A formula</h2>
+<p>The roots of <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>a</mi><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><mi>b</mi><mi>x</mi><mo>+</mo><mi>c</mi><mo>=</mo><mn>0</mn></mrow></math> are
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>x</mi><mo>=</mo><mfrac><mrow><mo>-</mo><mi>b</mi><mo>&#xB1;</mo><msqrt><mrow><msup><mi>b</mi><mn>2</mn></msup><mo>-</mo><mn>4</mn><mi>a</mi><mi>c</mi></mrow></msqrt></mrow><mrow><mn>2</mn><mi>a</mi></mrow></mfrac></mrow></math>.</p>
+<h2>A drawing and a table</h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="90">
+  <rect x="5" y="5" width="90" height="70" rx="10" fill="#e4e9f4" stroke="#1a3a7a" stroke-width="2"/>
+  <circle cx="150" cy="40" r="32" fill="#f5d76e" stroke="#a07800" stroke-width="2"/>
+  <text x="22" y="45" font-size="16" fill="#1a3a7a">SVG</text>
+</svg>
+<table>
+  <tr><th>View</th><th>Shortcut</th></tr>
+  <tr><td>Structure</td><td>Ctrl+u Ctrl+s</td></tr>
+  <tr><td>Source</td><td>Ctrl+u Ctrl+o</td></tr>
+  <tr><td>Preview in browser</td><td>F12</td></tr>
+</table>
+</body>
+</html>
