@@ -560,7 +560,7 @@ every 50 ms.
 - **Possible future work:**
   - an HTTP authentication dialog;
   - proxy settings;
-  - an install target;
+  - packages for other distributions;
   - better HTML5 support;
   - a Qt port of `thotlib/dialogue/`.
 
