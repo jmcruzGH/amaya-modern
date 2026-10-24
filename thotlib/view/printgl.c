@@ -699,7 +699,7 @@ int GLText (const char *str, const int fg, const void *font,
     {
       GL_SetPrintForeground (fg); 
       GetPostscriptNameFromFont ((ThotFont) font, fontname);
-      fprintf (FILE_STREAM, fontname);
+      fprintf (FILE_STREAM, "%s", fontname);
       fprintf (FILE_STREAM, "(");
       for (i = 0; i < length; i++)
 	{
@@ -781,7 +781,7 @@ int GLString (unsigned char *buff, int lg, int frame, int x, int y,
 	  GL_SetPrintForeground (fg); 
 	  /* Do we need to change the current font ? */
 	  GetPostscriptNameFromFont (font, fontname);
-	  fprintf (fout, fontname);
+	  fprintf (fout, "%s", fontname);
 	  fprintf (fout, "(");
 	}
     }
