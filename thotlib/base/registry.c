@@ -1462,21 +1462,23 @@ void TtaInitializeAppRegistry (char *appArgv0)
         } 
 
       if (ok)
-        {
-          *dir_end = EOS;
-          if (IsThotDir (execname))
-            AddRegisterEntry ("System", "THOTDIR", execname,
-                              REGISTRY_INSTALL, TRUE);
-        }
+        *dir_end = EOS;
 #ifdef COMPILED_IN_THOTDIR
-      /* Check a compiled-in value */
+      strcpy (UCOMPILED_IN_THOTDIR, COMPILED_IN_THOTDIR);
+#endif /* COMPILED_IN_THOTDIR */
+      /* THOTDIR is two levels above the binary (a build directory inside
+         the source tree), or else the compiled-in data directory (an
+         installed Amaya, e.g. /usr/share/amaya) */
+      if (ok && IsThotDir (execname))
+        AddRegisterEntry ("System", "THOTDIR", execname,
+                          REGISTRY_INSTALL, TRUE);
+#ifdef COMPILED_IN_THOTDIR
       else if (IsThotDir (UCOMPILED_IN_THOTDIR))
         {
-          strcpy (UCOMPILED_IN_THOTDIR, COMPILED_IN_THOTDIR);
           strcpy (execname, UCOMPILED_IN_THOTDIR);
           AddRegisterEntry ("System", "THOTDIR", UCOMPILED_IN_THOTDIR,
                             REGISTRY_INSTALL, TRUE);
-        } 
+        }
 #endif /* COMPILED_IN_THOTDIR */
       else
         {
