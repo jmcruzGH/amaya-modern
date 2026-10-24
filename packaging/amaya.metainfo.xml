@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.jmcruzgh.amaya</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>W3C</project_license>
+  <name>Amaya</name>
+  <summary>WYSIWYG editor for structured web pages</summary>
+  <description>
+    <p>
+      Amaya edits web pages as they look: you type, select and restyle text
+      on the formatted page, and Amaya keeps a clean, valid document
+      structure underneath (XHTML, CSS, MathML, SVG).  It is also a simple
+      web browser.
+    </p>
+    <p>
+      This is an unofficial port of Amaya 11.4.7, the editor developed by
+      W3C and Inria until 2012, to current Linux systems.
+    </p>
+  </description>
+  <launchable type="desktop-id">amaya.desktop</launchable>
+  <url type="homepage">https://github.com/jmcruzGH/amaya-modern</url>
+  <url type="bugtracker">https://github.com/jmcruzGH/amaya-modern/issues</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Formatted view and structure view of a page</caption>
+      <image>https://raw.githubusercontent.com/jmcruzGH/amaya-modern/main/docs/screenshot.png</image>
+    </screenshot>
+  </screenshots>
+  <developer id="io.github.jmcruzgh">
+    <name>JoseMCruz</name>
+  </developer>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="11.4.7+modern1" date="2026-10-24"/>
+  </releases>
+</component>

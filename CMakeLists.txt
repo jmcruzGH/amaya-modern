@@ -115,7 +115,19 @@ check_function_exists("strncasecmp" HAVE_STRNCASECMP)
 
 configure_file(cmake/config.h.in config.h @ONLY)
 
+# ── Installation directories ──────────────────────────────────────────────────
+# An installed Amaya keeps its data (the tree it reads at run time: config/,
+# resources/, fonts/, ...) in AMAYA_DATADIR, compiled into the binary as the
+# fallback THOTDIR, and its programs (amaya, print) in AMAYA_LIBEXECDIR;
+# bin/amaya is a small script that starts the real program.
+include(GNUInstallDirs)
+set(AMAYA_DATADIR "${CMAKE_INSTALL_FULL_DATADIR}/amaya" CACHE PATH
+    "Directory of Amaya's run-time data once installed")
+set(AMAYA_LIBEXECDIR "${CMAKE_INSTALL_FULL_LIBEXECDIR}/amaya" CACHE PATH
+    "Directory of Amaya's programs once installed")
+
 # ── Subdirectories ────────────────────────────────────────────────────────────
 add_subdirectory(batch)    # host-only schema compilers (EXCLUDE_FROM_ALL)
 add_subdirectory(thotlib)
 add_subdirectory(amaya)
+include(cmake/install.cmake)

@@ -193,20 +193,7 @@ target_link_libraries(amaya PRIVATE
   m
 )
 
-install(TARGETS amaya DESTINATION bin)
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/amaya/
-  DESTINATION share/amaya
-  FILES_MATCHING
-    PATTERN "*.css"
-    PATTERN "*.html"
-    PATTERN "*.png"
-    PATTERN "*.gif"
-    PATTERN "*.STR"
-    PATTERN "*.PRS"
-    PATTERN "*.TRA"
-    PATTERN "*.A"
-    PATTERN "config"
-)
+# Installation: see cmake/install.cmake
 
 # ── Compile amaya/ C files as C++ (thot_gui_wx.h has unguarded class decls) ─
 get_target_property(AMAYA_SOURCES amaya SOURCES)

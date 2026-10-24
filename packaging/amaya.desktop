@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=Amaya
+GenericName=Web Editor
+GenericName[pt]=Editor Web
+GenericName[fr]=Éditeur Web
+Comment=Edit web pages as they look: XHTML, CSS, MathML and SVG
+Comment[pt]=Editar páginas web tal como aparecem: XHTML, CSS, MathML e SVG
+Comment[fr]=Éditer des pages web telles qu'elles s'affichent : XHTML, CSS, MathML et SVG
+Exec=amaya %u
+Icon=amaya
+Terminal=false
+MimeType=text/html;application/xhtml+xml;image/svg+xml;application/mathml+xml;
+Categories=Development;WebDevelopment;
+Keywords=HTML;XHTML;WYSIWYG;editor;MathML;SVG;
+StartupWMClass=amaya

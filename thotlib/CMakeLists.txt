@@ -233,7 +233,7 @@ add_library(ThotEditor STATIC
 set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/base/registry.c
   PROPERTIES COMPILE_DEFINITIONS
-    "COMPILED_IN_THOTDIR=\"${CMAKE_SOURCE_DIR}\";COMPILED_IN_THOTDIR2=\"/usr/share/amaya\""
+    "COMPILED_IN_THOTDIR=\"${AMAYA_DATADIR}\""
 )
 
 target_include_directories(ThotEditor PUBLIC
@@ -420,4 +420,3 @@ target_link_libraries(print PRIVATE
   m
 )
 set_target_properties(print PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/amaya)
-install(TARGETS print DESTINATION bin)

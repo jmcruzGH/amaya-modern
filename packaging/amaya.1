@@ -1,0 +1,46 @@
+.TH AMAYA 1 "October 2026" "Amaya 11.4.7+modern1" "User Commands"
+.SH NAME
+amaya \- WYSIWYG editor and browser for structured web pages
+.SH SYNOPSIS
+.B amaya
+.RI [ file | URL ]
+.SH DESCRIPTION
+.B Amaya
+edits web pages as they look: text is typed, selected and restyled on the
+formatted page, while Amaya keeps a clean, valid document structure
+underneath (XHTML, HTML\ 4, CSS, MathML, SVG).  Structure, source, links
+and table-of-contents views are kept in step with the formatted view.
+Amaya is also a simple web browser (http and https, forms, cookies), without
+JavaScript.
+.PP
+Without an argument, Amaya opens its welcome page.  With a file name or an
+http/https address, it opens that document.
+.PP
+The user manual is in the program: \fBHelp > Amaya Help\fR (F1).
+.SH FILES
+.TP
+.I ~/.amaya/
+Per-user files: \fIthot.rc\fR (preferences), \fIamaya.keyboard\fR (personal
+shortcuts, replacing the installed ones), \fIcookies.txt\fR,
+\fItrusted-certs.pem\fR (certificates trusted in addition to the system's).
+.TP
+.I /usr/share/amaya/
+Installed data: configuration, keyboard shortcuts, menu texts, schemas,
+icons, fonts, dictionaries and the user manual.
+.TP
+.I /usr/share/amaya/contrib/firefox-cookies.py
+Copies the cookies of one site from Firefox, for \fBFile > Load cookies\fR.
+The resulting file holds login credentials: delete it after use.
+.SH ENVIRONMENT
+.TP
+.B AMAYA_USER_HOME
+Directory used instead of \fI~/.amaya\fR, if it exists.
+.TP
+.BR http_proxy ", " https_proxy
+Proxy for web access (the proxy preference is not used).
+.SH SEE ALSO
+https://github.com/jmcruzGH/amaya-modern
+.SH AUTHORS
+Amaya was developed at Inria and W3C by Ir\['e]ne Vatton, Vincent Quint,
+Laurent Carcone, Jos\['e] Kahan and others.  The port to current Linux
+systems is by JoseMCruz, with Claude (Anthropic).

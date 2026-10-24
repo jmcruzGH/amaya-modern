@@ -1,0 +1,4 @@
+#!/bin/sh
+# Start Amaya.  The real program lives in @AMAYA_LIBEXECDIR@, next to its
+# `print` helper; it finds its data in @AMAYA_DATADIR@.
+exec "@AMAYA_LIBEXECDIR@/amaya" "$@"
