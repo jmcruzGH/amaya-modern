@@ -427,6 +427,9 @@ bool AmayaMathMLPanel::Create(wxWindow* parent, wxWindowID id, const wxPoint& po
 void AmayaMathMLPanel::Initialize()
 {
   wxSizer* sz = new wxBoxSizer(wxVERTICAL);
+  // the book is already in the sizer of the XRC panel: detach it first
+  if (m_pBook->GetContainingSizer())
+    m_pBook->GetContainingSizer()->Detach(m_pBook);
   sz->Add(m_pBook, 1, wxEXPAND);
   SetSizer(sz);
   m_pBook->SetImageList(&m_imagelist);

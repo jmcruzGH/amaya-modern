@@ -724,7 +724,16 @@ void AmayaSplittablePage::OnSplitButton( wxCommandEvent& event )
   -----------------------------------------------------------------------*/
 void AmayaSplittablePage::SetSplitMode( int mode )
 {
-  m_pSplitterWindow->SetSplitMode(mode);
+  if (mode == 0)
+    {
+      // 0 means "no split chosen yet" for Amaya; wx accepts only vertical
+      // or horizontal, and asserts otherwise (in builds without NDEBUG)
+      wxAssertHandler_t old = wxSetAssertHandler (NULL);
+      m_pSplitterWindow->SetSplitMode(mode);
+      wxSetAssertHandler (old);
+    }
+  else
+    m_pSplitterWindow->SetSplitMode(mode);
 }
 
 /*----------------------------------------------------------------------
@@ -907,8 +916,7 @@ void AmayaSplittablePage::AdjustSplitterPos( int height, int width )
     case 2:
       new_slash_pos = m_SlashRatio * new_width;
       break;
-    default:
-      wxASSERT(FALSE);
+    default:    // not split yet
       break;
     }  
   if ( new_slash_pos > 0 && (GetFrame(1) && GetFrame(2)) )
