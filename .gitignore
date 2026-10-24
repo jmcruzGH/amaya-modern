@@ -18,3 +18,12 @@ testcase_result
 *.orig
 *.rej
 build-*/
+
+# Debian package build
+obj-*/
+debian/amaya/
+debian/.debhelper/
+debian/files
+debian/*.substvars
+debian/debhelper-build-stamp
+debian/*.debhelper.log

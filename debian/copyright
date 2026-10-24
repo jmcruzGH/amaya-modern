@@ -1,0 +1,132 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: amaya-modern
+Upstream-Contact: https://github.com/jmcruzGH/amaya-modern/issues
+Source: https://github.com/jmcruzGH/amaya-modern
+Comment: Port of Amaya 11.4.7 (W3C/Inria, https://github.com/w3c/Amaya-Editor)
+ to current Linux systems.  The changes made by the port are listed in
+ README.md ("What changed from Amaya 11.4.7") and, in detail, in the git
+ history.
+
+Files: *
+Copyright: 1994-2012 INRIA and W3C (MIT, ERCIM, Keio)
+           2026 JoseMCruz (changes made by the port, written with Claude, Anthropic's AI model)
+License: W3C
+
+Files: thotlib/include/simx.h
+       thotlib/internals/h/XpmI.h
+       thotlib/internals/h/rgbtab.h
+       thotlib/internals/h/simx.h
+       thotlib/internals/h/xpm.h
+Copyright: 1989-1995 GROUPE BULL
+License: Xpm
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ GROUPE BULL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ .
+ Except as contained in this notice, the name of GROUPE BULL shall not be
+ used in advertising or otherwise to promote the sale, use or other dealings
+ in this Software without prior written authorization from GROUPE BULL.
+
+Files: tools/cextract-1.7/*
+Copyright: 1990-1992 Adam Bryant
+License: cextract
+ Development tool of the original autoconf build; not used by this build and
+ not part of the binary package.  See tools/cextract-1.7/README.
+
+Files: fonts/DejaVu*.ttf
+Copyright: 2003 Bitstream, Inc.; DejaVu changes are in the public domain
+License: Bitstream-Vera
+ Not installed by the binary package, which uses the fonts-dejavu-extra and
+ fonts-dejavu-mono packages instead (see /usr/share/doc/fonts-dejavu-core/
+ copyright for the licence text).
+
+Files: fonts/Free*.ttf
+Copyright: 2002-2012 GNU FreeFont contributors
+License: GPL-3+ with font exception
+ Not installed by the binary package, which uses the fonts-freefont-ttf
+ package instead (see /usr/share/doc/fonts-freefont-ttf/copyright).
+
+Files: fonts/Cyberbit.ttf
+Copyright: Bitstream, Inc.
+License: Bitstream-Cyberbit
+ Distributed with Amaya 11.4.7 by W3C, without its licence text.  Bitstream
+ made Cyberbit available free of charge, reportedly for non-commercial use
+ only: check its terms before redistributing this package commercially.
+
+Files: fonts/ESSTIX*.TTF
+Copyright: Elsevier Science
+License: ESSTIX
+ Distributed freely with Amaya 11.4.7 by W3C, for mathematics display,
+ without a licence text.
+
+Files: debian/* packaging/* cmake/install.cmake
+Copyright: 2026 JoseMCruz (written with Claude, Anthropic's AI model)
+License: W3C
+
+License: W3C
+ .
+ W3C IPR SOFTWARE NOTICE
+ .
+ Copyright © 1995-2009 INRIA and W3C (MIT, ERCIM, Keio), All Rights
+ Reserved.
+ http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
+ .
+ This W3C work (and included software, documentation such as READMEs,
+ or other related items) is being provided by the copyright holders under
+ the following license. By obtaining, using and/or copying this work, you
+ (the licensee) agree that you have read, understood, and will comply with
+ the following terms and conditions:
+ .
+ Permission to copy, modify, and distribute
+ this software and its documentation, with or without modification,  for
+ any purpose and without fee or royalty is hereby granted, provided that you
+ include the following on ALL copies of the software and documentation or
+ portions thereof, including modifications, that you make:
+ .
+ 1. The full text of this NOTICE in a location viewable to users of the
+ redistributed or derivative work.
+ 2. Any pre-existing intellectual property disclaimers, notices, or
+ terms and conditions. If none exist, a short notice of the following
+ form (hypertext is preferred, text is permitted) should be used
+ within the body of any redistributed or derivative code: "Copyright
+ (c) World Wide Web Consortium, (Massachusetts Institute of
+ Technology, Institut National de Recherche en Informatique et en
+ Automatique, Keio University). All Rights Reserved.
+ http://www.w3.org/Consortium/Legal/"
+ 3. Notice of any changes or modifications to the W3C files, including
+ the date changes were made. (We recommend you provide URIs to the
+ location from which the code is derived).
+ .
+ In addition, creators of derivitive works must include the full text of
+ this NOTICE in a location viewable to users of the derivitive work.
+ .
+ THIS SOFTWARE AND DOCUMENTATION IS PROVIDED "AS IS," AND COPYRIGHT HOLDERS
+ MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT
+ NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY
+ PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE OR DOCUMENTATION WILL
+ NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER
+ RIGHTS.
+ .
+ COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL OR
+ CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE SOFTWARE OR
+ DOCUMENTATION.
+ .
+ The name and trademarks of copyright holders may NOT be used in
+ advertising or publicity pertaining to the software without specific,
+ written prior permission. Title to copyright in this software and any
+ associated documentation will at all times remain with copyright holders.
+ .
+ ----------------------------------------------------------------------------

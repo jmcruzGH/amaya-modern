@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all optimize=-lto
+
+FONTS := debian/amaya/usr/share/amaya/fonts
+
+%:
+	dh $@ --buildsystem=cmake
+
+# The tree still holds W3C's old autotools files (configure.in etc.), which
+# this CMake build does not use: do not let debhelper regenerate them
+override_dh_autoreconf:
+override_dh_autoreconf_clean:
+override_dh_update_autotools_config:
+
+# Keep the original *.orig files of the source tree
+override_dh_clean:
+	dh_clean -X.orig
+
+# Build as the developers do (RelWithDebInfo): it defines NDEBUG, which
+# turns off the wxWidgets assertion dialogs that Amaya's code relies on
+# being off (it still contains wxASSERT(FALSE) for expected cases)
+override_dh_auto_configure:
+	dh_auto_configure -- -DCMAKE_BUILD_TYPE=RelWithDebInfo
+
+# The DejaVu and GNU FreeFont fonts that Amaya ships are taken from their
+# Debian packages instead (same file names; see debian/amaya.links)
+execute_after_dh_auto_install:
+	rm -f $(FONTS)/DejaVu*.ttf $(FONTS)/Free*.ttf

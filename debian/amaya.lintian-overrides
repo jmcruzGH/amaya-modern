@@ -1,0 +1,18 @@
+# Amaya's user manual is read by Amaya itself (Help > Amaya Help), from its
+# data directory; the pages are ISO-8859-1, as declared in them.
+amaya: package-contains-documentation-outside-usr-share-doc [usr/share/amaya/doc/*]
+amaya: national-encoding [usr/share/amaya/doc/WX/*]
+# Fonts read by Amaya's own renderer (mathematics, symbols); the DejaVu and
+# FreeFont ones are symbolic links to the Debian font packages.
+amaya: font-in-non-font-package [usr/share/amaya/fonts/*]
+amaya: font-outside-font-dir [usr/share/amaya/fonts/*]
+amaya: truetype-font-prohibits-installable-embedding (never embed, preview/print only, edit only) [usr/share/amaya/fonts/Cyberbit.ttf]
+# THOTDIR layout expected by Amaya: <datadir>/amaya/amaya holds the schemas
+amaya: repeated-path-segment amaya [usr/share/amaya/amaya/]
+# Amaya's own data files (menu texts, welcome pages, spelling dictionaries)
+# are in the legacy encodings Amaya reads them in.
+amaya: national-encoding [usr/share/amaya/amaya/*]
+amaya: national-encoding [usr/share/amaya/config/*]
+amaya: national-encoding [usr/share/amaya/dicopar/*]
+amaya: package-contains-documentation-outside-usr-share-doc [usr/share/amaya/amaya/*]
+amaya: package-contains-documentation-outside-usr-share-doc [usr/share/amaya/dicopar/*]

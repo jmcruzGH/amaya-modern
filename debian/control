@@ -1,0 +1,46 @@
+Source: amaya
+Section: web
+Priority: optional
+Maintainer: JoseMCruz <jmcruz2k21@gmail.com>
+Build-Depends: debhelper-compat (= 13),
+               cmake,
+               pkg-config,
+               libwxgtk3.2-dev,
+               libgl-dev,
+               libglu1-mesa-dev,
+               libfreetype-dev,
+               libfontconfig-dev,
+               libexpat1-dev,
+               libcurl4-openssl-dev,
+               libssl-dev,
+               zlib1g-dev,
+               libpng-dev,
+               libjpeg-dev
+Standards-Version: 4.6.2
+Homepage: https://github.com/jmcruzGH/amaya-modern
+Vcs-Git: https://github.com/jmcruzGH/amaya-modern.git
+Vcs-Browser: https://github.com/jmcruzGH/amaya-modern
+Rules-Requires-Root: no
+
+Package: amaya
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         fonts-dejavu-extra,
+         fonts-dejavu-mono,
+         fonts-freefont-ttf
+Suggests: firefox, python3
+Description: WYSIWYG editor and browser for structured web pages
+ Amaya edits web pages as they look: text is typed, selected and restyled
+ on the formatted page, while Amaya keeps a clean, valid document structure
+ underneath (XHTML, HTML 4, CSS, MathML, SVG).  Structure, source, links and
+ table-of-contents views are kept in step with the formatted view.  It also
+ has a spell checker, printing, templates, and a simple web browser (http
+ and https, forms, cookies; no JavaScript).
+ .
+ This is an unofficial port of Amaya 11.4.7, developed by W3C and Inria
+ until 2012, to current Linux systems (wxWidgets 3.2, GTK 3, libcurl).
+ .
+ File > Preview in browser shows the page being edited in Firefox (or
+ another browser, see the documentation); a helper script copies a site's
+ login cookies from Firefox for File > Load cookies.
