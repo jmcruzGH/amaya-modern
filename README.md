@@ -24,6 +24,7 @@ Development stopped in 2012 (version 11.4.7), and the
 ## Contents
 
 - [Status](#status)
+- [Installing the Ubuntu package](#installing-the-ubuntu-package)
 - [Building](#building)
 - [Running](#running)
 - [Using Amaya](#using-amaya)
@@ -60,6 +61,48 @@ In regular use on a Kubuntu 24.04 desktop.
   alongside Amaya's own two-key shortcuts.
 
 See [Known limitations](#known-limitations) for what does not work.
+
+---
+
+## Installing the Ubuntu package
+
+For Ubuntu / Kubuntu 24.04 (amd64), download `amaya_<version>_amd64.deb`
+from the [Releases](https://github.com/jmcruzGH/amaya-modern/releases) page,
+then:
+
+```bash
+sudo apt install ./amaya_11.4.7+modern1_amd64.deb
+```
+
+`apt` also installs the libraries and fonts Amaya needs.  Start Amaya from
+the applications menu (Development), or with `amaya [file or address]`;
+`man amaya` summarises it.  To remove it: `sudo apt remove amaya` (your
+settings in `~/.amaya/` are kept).
+
+The package installs:
+- `/usr/bin/amaya`, a script that starts `/usr/libexec/amaya/amaya`
+  (next to its `print` helper);
+- `/usr/share/amaya/`, Amaya's data: configuration, keyboard shortcuts,
+  menu texts, schemas, icons, fonts, dictionaries, user manual, and
+  `contrib/firefox-cookies.py`;
+- a desktop entry, an icon, AppStream metadata and a manual page.
+
+The DejaVu and GNU FreeFont fonts come from Ubuntu's font packages instead
+of being copied.
+
+### Building the package yourself
+
+```bash
+sudo apt install build-essential devscripts
+cd amaya-modern
+sudo apt build-dep ./          # the build dependencies, from debian/control
+dpkg-buildpackage -us -uc -b   # makes ../amaya_<version>_amd64.deb
+```
+
+The packaging is in `debian/`.  It builds with CMake like a normal build,
+and installs with `make install` (see [Installing from source](#installing-from-source)).
+For a new release, add an entry to `debian/changelog`, e.g.
+`dch -v 11.4.7+modern2 "What changed"`, and build again.
 
 ---
 
@@ -109,14 +152,10 @@ build/amaya/amaya                    # opens the welcome page
 build/amaya/amaya ~/www/index.html   # opens a file (or an http/https address)
 ```
 
-There is no installation step.  `make install` exists, but it installs
-only the binaries and part of the data (the schemas, in `share/amaya`), so
-the installed binary cannot start.  Run Amaya
-from the build tree.
-
-To start it from a menu or a terminal, use the binary's full path.
-A symbolic link to it does not work, because Amaya looks for its data
-next to the path it was started with.
+A program started from a build directory inside the repository uses the
+data of that repository.  To start it from a menu or a terminal, use the
+binary's full path.  A symbolic link to it does not work, because Amaya
+looks for its data relative to the path it was started with.
 
 - A script `~/bin/amaya`:
 
@@ -138,6 +177,23 @@ next to the path it was started with.
   MimeType=text/html;application/xhtml+xml;
   Categories=Development;WebDevelopment;
   ```
+
+### Installing from source
+
+`make install` installs Amaya as the package does, under the install
+prefix (`/usr/local` by default):
+
+```bash
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+make -j$(nproc) && sudo make install
+```
+
+That gives `bin/amaya`, `libexec/amaya/` and `share/amaya/`, plus the desktop
+entry, icon and manual page.  The data directory is compiled into the
+program (`AMAYA_DATADIR`, default `<prefix>/share/amaya`): an installed
+Amaya looks for its data there when it does not run from a build directory
+inside the repository.
 
 ---
 
@@ -278,9 +334,8 @@ curl and wget.
   - no lost-update check when publishing.
 - **Not compiled:** Annotations, WebDAV and bookmarks.  Templates, the spell
   checker, MathML, SVG and printing are compiled in.
-- **Installation:** run from the build tree; `make install` is incomplete
-  (see [Running](#running)).
-- **Platforms:** Linux only.  The Windows and macOS build files are the
+- **Platforms:** Linux only; a package for Ubuntu 24.04 amd64.  Other Linux
+  systems build from source.  The Windows and macOS build files are the
   original ones and are not maintained.
 - **Harmless console messages:**
   - `GL_Err: invalid operation`, mostly while scrolling;
@@ -345,6 +400,10 @@ change per commit, is in `git log`.  In summary:
   element > Underline.
 - No developer trace window in normal builds.
 
+**Packaging (October 2026)**
+- An Ubuntu/Debian package (`debian/`), and a complete `make install`: an
+  installed Amaya finds its data in its compiled-in data directory.
+
 ---
 
 ## Repository layout
@@ -359,7 +418,9 @@ change per commit, is in `git log`.  In summary:
 | `resources/` | Icons, wx dialog layouts (`xrc/`), SVG resources |
 | `fonts/`, `dicopar/`, `doc/WX/` | Fonts, spell-checking dictionaries, user manual, all read at run time |
 | `compat/` | `wx3compat.h`, the wx 2.8 → 3.2 compatibility header |
-| `cmake/` | `config.h.in` for CMake |
+| `cmake/` | `config.h.in` and the installation rules (`install.cmake`) for CMake |
+| `debian/` | Ubuntu/Debian packaging |
+| `packaging/` | Start-up script, desktop entry, AppStream metadata and manual page, installed by `make install` |
 | `contrib/` | `firefox-cookies.py` |
 | `tools/` | Tests and maintenance scripts (see [Developer notes](#developer-notes)) |
 | `docs/` | `TESTING.md` (desktop test checklist), the screenshot and its document (`demo.html`) |
