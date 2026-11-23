@@ -3495,7 +3495,14 @@ ThotBool ChangeSelection (int frame, PtrAbstractBox pAb, int rank,
     {
       // do we have to move the selection to an emclosing SVG group
       pGroup = GetParentGroup (pAb->AbBox);
-      if (pGroup)
+      if (pGroup &&
+          /* not when the selection is already inside the group (the user
+             has entered it by a double click): the selection is being
+             moved by text editing (typing, deleting, arrow keys), and must
+             stay in the text, or typing in a group is lost */
+          !(FirstSelectedElement && pGroup->AbElement &&
+            FirstSelectedElement != pGroup->AbElement &&
+            ElemIsWithinSubtree (FirstSelectedElement, pGroup->AbElement)))
         pAb = pGroup;
     }
 
