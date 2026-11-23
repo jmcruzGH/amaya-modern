@@ -1,3 +1,13 @@
+amaya (11.4.7+modern2) noble; urgency=medium
+
+  * SVG drawings (e.g. exported by LibreOffice Draw):
+    - line widths follow the scaling of the drawing;
+    - text in tspans nested in tspans is placed at its x and y;
+    - text reduced by a scaling keeps all its strokes;
+    - zooming no longer scales drawings with a viewBox twice.
+
+ -- JoseMCruz <jmcruz2k21@gmail.com>  Mon, 23 Nov 2026 15:00:00 +0000
+
 amaya (11.4.7+modern1) noble; urgency=medium
 
   * First package of the port of Amaya 11.4.7 to current Linux systems
