@@ -71,7 +71,7 @@ from the [Releases](https://github.com/jmcruzGH/amaya-modern/releases) page,
 then:
 
 ```bash
-sudo apt install ./amaya_11.4.7+modern1_amd64.deb
+sudo apt install ./amaya_11.4.7+modern2_amd64.deb
 ```
 
 `apt` also installs the libraries and fonts Amaya needs.  Start Amaya from
@@ -332,6 +332,9 @@ curl and wget.
   - no ftp;
   - no HTTP cache;
   - no lost-update check when publishing.
+- **SVG:** a subset of SVG 1.1 from 2012: shapes, paths, fills, strokes,
+  text, transformations, gradients and images are drawn; filters, masks,
+  patterns, SVG fonts and later SVG features are not.
 - **Not compiled:** Annotations, WebDAV and bookmarks.  Templates, the spell
   checker, MathML, SVG and printing are compiled in.
 - **Platforms:** Linux only; a package for Ubuntu 24.04 amd64.  Other Linux
@@ -403,6 +406,16 @@ change per commit, is in `git log`.  In summary:
 **Packaging (October 2026)**
 - An Ubuntu/Debian package (`debian/`), and a complete `make install`: an
   installed Amaya finds its data in its compiled-in data directory.
+
+**SVG drawings (November 2026)**, tested with drawings exported by
+LibreOffice Draw, whose coordinates are in 1/100 mm:
+- line widths follow the scaling of the drawing (they were drawn in screen
+  pixels: 28 pixels for a 0.28 mm line);
+- text in a `tspan` nested in another `tspan` (every line of text written by
+  LibreOffice) is placed at its `x` and `y` instead of the top of the
+  drawing;
+- text reduced by a scaling keeps all its strokes (mipmapped glyph images);
+- zooming in or out no longer scales drawings with a `viewBox` twice.
 
 ---
 
