@@ -348,7 +348,8 @@ RULES
 	create attributes;
 	create '>';
 	create SCT after;
-	create 'tspan>\12' after;
+	{ no line break after the end tag: it would add a space to the text }
+	create 'tspan>' after;
 	END;
 
    tref:
@@ -360,15 +361,15 @@ RULES
 	indent +6;
 	create attributes;
 	if empty
-		create CloseEmptyTagNL;
+		create '/>';
 	indent -6;
 	if not empty
 		BEGIN
-		create CloseTagNL;
+		create '>';
 		indent +2;
 		indent -2 after;
 		create SCT after;
-		create 'tref>\12' after;
+		create 'tref>' after;
 		END;
 	END;
 
@@ -381,15 +382,15 @@ RULES
 	indent +10;
 	create attributes;
 	if empty
-		create CloseEmptyTagNL;
+		create '/>';
         indent -10;
 	if not empty
 		BEGIN
-		create CloseTagNL;
+		create '>';
 		indent +2;
 		indent -2 after;
 		create SCT after;
-		create 'textPath>\12' after;
+		create 'textPath>' after;
 		END;
 	END;
 
@@ -402,15 +403,15 @@ RULES
 	indent +10;
 	create attributes;
 	if empty
-		create CloseEmptyTagNL;
+		create '/>';
         indent -10;
 	if not empty
 		BEGIN
-		create CloseTagNL;
+		create '>';
 		indent +2;
 		indent -2 after;
 		create SCT after;
-		create 'altGlyph>\12' after;
+		create 'altGlyph>' after;
 		END;
 	END;
 
