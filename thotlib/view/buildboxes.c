@@ -231,6 +231,35 @@ PtrAbstractBox GetParentDraw (PtrBox pBox)
 }
 
 /*----------------------------------------------------------------------
+  IsInSVGDrawing returns TRUE if the box displays an element inside an SVG
+  svg element (not the svg element itself).
+  ----------------------------------------------------------------------*/
+static ThotBool IsInSVGDrawing (PtrBox pBox)
+{
+  PtrElement   pEl;
+
+  if (pBox == NULL || pBox->BxAbstractBox == NULL)
+    return FALSE;
+  pEl = pBox->BxAbstractBox->AbElement;
+  if (pEl == NULL || pEl->ElParent == NULL)
+    return FALSE;
+  if (pBox->BxAbstractBox->AbPresentationBox)
+    /* a presentation box belongs to the content of its element */
+    return (pEl->ElStructSchema &&
+            !strcmp (pEl->ElStructSchema->SsName, "SVG"));
+  pEl = pEl->ElParent;
+  while (pEl)
+    {
+      if (pEl->ElStructSchema &&
+          !strcmp (pEl->ElStructSchema->SsName, "SVG") &&
+          !strcmp (pEl->ElStructSchema->SsRule->SrElem[pEl->ElTypeNumber - 1]->SrName, "SVG"))
+        return TRUE;
+      pEl = pEl->ElParent;
+    }
+  return FALSE;
+}
+
+/*----------------------------------------------------------------------
   GetParentGroup returns the enclosing Group or NULL.                
   ----------------------------------------------------------------------*/
 PtrAbstractBox GetParentGroup (PtrBox pBox)
@@ -5841,7 +5870,11 @@ void CheckScrollingWidthHeight (int frame)
                   if (pBox->BxAbstractBox->AbFloat == 'R' && pBox->BxRMargin < 0)
                     newmax += pBox->BxRMargin;
                   if (newmax > xmax &&
-                      (pBox->BxType != BoPiece || pBox->BxNChars > 0))
+                      (pBox->BxType != BoPiece || pBox->BxNChars > 0) &&
+                      /* the contents of an SVG drawing are clipped by the
+                         svg element, whose own box counts; their positions
+                         are in user units, before the viewBox scaling */
+                      !IsInSVGDrawing (pBox))
                     {
                       /* ignoge boxes with absolute or fixed positions */
                       pAb = GetEnclosingViewport (pBox->BxAbstractBox);

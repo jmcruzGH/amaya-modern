@@ -769,7 +769,7 @@ void ShowSelectedBox (int frame, ThotBool active)
 {
   ViewFrame          *pFrame;
   PtrBox              pBox;
-  PtrAbstractBox      pAb = NULL, pDraw;
+  PtrAbstractBox      pAb = NULL, pDraw = NULL;
   int                 xmin, xmax;
   int                 ymin, ymax;
   int                 x, y, dx, dy, w, h;
@@ -848,7 +848,12 @@ void ShowSelectedBox (int frame, ThotBool active)
           ymin = pFrame->FrYOrg;
           ymax = ymin + h;
           /* center in the window */
-          dx = pFrame->FrSelectionBegin.VsXPos;
+          if (pDraw)
+            /* the position of the selection within an SVG drawing is in
+               user units, before the viewBox scaling: show the drawing */
+            dx = 0;
+          else
+            dx = pFrame->FrSelectionBegin.VsXPos;
           dy = 13;
           w /= 2;
           h /= 2;
