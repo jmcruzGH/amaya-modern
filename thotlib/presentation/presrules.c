@@ -1632,6 +1632,32 @@ static void VerifyAbsBoxDescent (ThotBool *found, PtrPSchema pSP,
   Au result, la fonction rend NULL si aucun pave ne	
   correspond.						
   ----------------------------------------------------------------------*/
+/*----------------------------------------------------------------------
+  IsNestedSVGTextChunk returns TRUE if pAb is the box of an SVG tspan or
+  tref element that is inside another tspan (as LibreOffice writes every
+  line of text), not directly in a text element.
+  ----------------------------------------------------------------------*/
+static ThotBool IsNestedSVGTextChunk (PtrAbstractBox pAb)
+{
+  PtrElement   pEl, pParent;
+  const char  *name, *pname;
+
+  if (pAb == NULL || pAb->AbPresentationBox || pAb->AbElement == NULL)
+    return FALSE;
+  pEl = pAb->AbElement;
+  if (pEl->ElStructSchema == NULL ||
+      strcmp (pEl->ElStructSchema->SsName, "SVG"))
+    return FALSE;
+  name = pEl->ElStructSchema->SsRule->SrElem[pEl->ElTypeNumber - 1]->SrName;
+  if (strcmp (name, "tspan") && strcmp (name, "tref"))
+    return FALSE;
+  pParent = pEl->ElParent;
+  if (pParent == NULL || pParent->ElStructSchema != pEl->ElStructSchema)
+    return FALSE;
+  pname = pParent->ElStructSchema->SsRule->SrElem[pParent->ElTypeNumber - 1]->SrName;
+  return (!strcmp (pname, "tspan"));
+}
+
 static PtrAbstractBox SearchAbsBoxRef (ThotBool notType, int numAbType,
                                        PtrPSchema pSP, Level level,
                                        RefKind refKind, PtrAbstractBox pAbb,
@@ -1649,6 +1675,30 @@ static PtrAbstractBox SearchAbsBoxRef (ThotBool notType, int numAbType,
       switch (level)
         {
         case RlEnclosing:
+          if (notType && refKind == RkElType && numAbType != 0 &&
+              IsNestedSVGTextChunk (pAbb))
+            /* "Enclosing not text_" for the x or y of a tspan in another
+               tspan: the user coordinate system is that of the element that
+               encloses the text element, not that of the enclosing tspan.
+               Skip the enclosing tspans up to the text element. */
+            {
+              notType = FALSE;
+              do
+                {
+                  pAb = pAb->AbEnclosing;
+                  if (pAb)
+                    VerifyAbsBox (&found, pSP, refKind, numAbType, FALSE, pAb);
+                }
+              while (pAb != NULL && !found);
+              if (pAb == NULL)
+                /* no text element: search as usual */
+                {
+                  pAb = pAbb;
+                  notType = TRUE;
+                }
+              found = FALSE;
+              notType = TRUE;
+            }
           do
             {
               pAb = pAb->AbEnclosing;
