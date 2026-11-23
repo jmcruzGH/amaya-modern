@@ -164,7 +164,8 @@
 /*Current Thickness*/
 static GLubyte  FillOpacity = 255;
 static GLubyte  StrokeOpacity = 255;
-static GLfloat  S_thick = 0.;
+static GLfloat  S_thick = 0.;    /* line thickness, in user units */
+static GLfloat  S_pixthick = 0.; /* the same, in screen pixels */
 static int      X_Clip = 0;
 static int      Y_Clip = 0;
 static int      Width_Clip = 0;
@@ -354,16 +355,37 @@ void GL_SetPicForeground ()
 
 
 /*----------------------------------------------------------------------
+  GL_CurrentScale returns the scale factor of the current modelview
+  matrix (1 without a scaling transformation): the square root of the
+  area ratio, which is the average of the x and y scales.
+  ----------------------------------------------------------------------*/
+double GL_CurrentScale ()
+{
+  GLdouble m[16];
+  double   det;
+
+  glGetDoublev (GL_MODELVIEW_MATRIX, m);
+  det = fabs (m[0] * m[5] - m[1] * m[4]);
+  if (det < 1e-12)
+    return 1.;
+  return sqrt (det);
+}
+
+/*----------------------------------------------------------------------
   InitDrawing update the Graphic Context accordingly to parameters.
   The parameter fg indicates the drawing color
   ----------------------------------------------------------------------*/
 void InitDrawing (int style, int thick, int fg)
 {
   S_thick = (double)thick;
+  /* glLineWidth and glPointSize are in screen pixels: they ignore the
+     current transformation (SVG viewBox, transform attributes), which
+     the thickness must follow, as the drawn shapes do */
+  S_pixthick = S_thick * GL_CurrentScale ();
   if (thick)
     {
-      glLineWidth (S_thick); 
-      glPointSize (S_thick / 2.); 
+      glLineWidth (S_pixthick);
+      glPointSize (S_pixthick / 2.);
     }
   else
     {
@@ -458,7 +480,7 @@ void GL_DrawSegments (ThotSegment *point, int npoints)
 {
   int i;
 
-  if (S_thick > 1.)
+  if (S_pixthick > 1.)
     {
       glBegin (GL_POINTS); 
       for (i = 0; i < npoints; i++)
@@ -590,7 +612,7 @@ void GL_DrawLines (ThotPoint *points, int npoints)
 {
   int i;
 
-  if (S_thick > 1.)
+  if (S_pixthick > 1.)
     {
       /* Joinning if a certain thickness ?*/
       glBegin (GL_POINTS); 
@@ -610,7 +632,7 @@ void GL_DrawLines (ThotPoint *points, int npoints)
   ----------------------------------------------------------------------*/
 void GL_DrawLine (int x1, int y1, int x2, int y2, ThotBool round)
 {
-  if (S_thick > 1. && round)
+  if (S_pixthick > 1. && round)
     {
       /* round line join*/
       glBegin (GL_POINTS);

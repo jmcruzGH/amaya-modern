@@ -37,6 +37,7 @@ void GL_Point (int fg, float width, float x, float y);
 
 void GL_DrawLine (int x1, int y1, int x2, int y2, ThotBool round);
 void GL_DrawLines (ThotPoint *points, int npoints);
+double GL_CurrentScale ();
 
 void GL_DrawEmptyRectangle (int fg, 
 			    float x, float y, 
