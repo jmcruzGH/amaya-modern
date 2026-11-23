@@ -33,6 +33,9 @@
 #include "font_f.h"
 #include "glwindowdisplay.h"
 #include "openglfont.h"
+#ifdef _GL
+#include <GL/glu.h>
+#endif /* _GL */
 #include "openglfonts.h"
 #include "registry_f.h"
 #include "logdebug.h"
@@ -1148,9 +1151,21 @@ void StopTextureScale ( int texture_id )
   ----------------------------------------------------------------------*/
 static void GL_TextureInit (unsigned char *image,  int width, int height)
 {
-  /* We give te texture to opengl Pipeline system */
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0,
-                GL_ALPHA, GL_UNSIGNED_BYTE,(GLvoid *) image);
+  if (GL_CurrentScale () < 0.9)
+    {
+      /* The text is drawn smaller than its glyphs were rendered (SVG with
+         a viewBox, e.g. LibreOffice drawings, which use 1/100 mm units):
+         sampling the glyph image with GL_NEAREST drops whole strokes.
+         Build mipmaps, so that a reduced image of the right size is used */
+      gluBuild2DMipmaps (GL_TEXTURE_2D, GL_ALPHA, width, height,
+                         GL_ALPHA, GL_UNSIGNED_BYTE, (GLvoid *) image);
+      glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                       GL_LINEAR_MIPMAP_LINEAR);
+    }
+  else
+    /* We give te texture to opengl Pipeline system */
+    glTexImage2D (GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0,
+                  GL_ALPHA, GL_UNSIGNED_BYTE,(GLvoid *) image);
 }
 
 /*----------------------------------------------------------------------
