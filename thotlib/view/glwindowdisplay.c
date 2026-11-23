@@ -887,9 +887,11 @@ void DisplayBoxTransformation (void *v_trans, int x, int y)
 /*----------------------------------------------------------------------
   DisplayViewBoxTransformation
   ----------------------------------------------------------------------*/
-static void DisplayViewBoxTransformation (PtrTransform Trans, int Width, int Height)
+static float ZoomedValue (float val, int zoom);
+static void DisplayViewBoxTransformation (int frame, PtrTransform Trans,
+                                          int Width, int Height)
 {
-  float     x_trans, y_trans;
+  float     x_trans, y_trans, zoom;
   double    x_scale, y_scale; 
   ThotBool  is_translated, is_scaled;
 
@@ -902,6 +904,15 @@ static void DisplayViewBoxTransformation (PtrTransform Trans, int Width, int Hei
                             &is_translated, &is_scaled);
   if (is_translated)
     glTranslatef (x_trans, y_trans, (float) 0);
+  /* Width and Height are zoomed, and so are the coordinates of the
+     content: the zoom must not be applied twice */
+  zoom = ZoomedValue (1., ViewFrameTable[frame - 1].FrMagnification);
+  if (zoom > 0 && zoom != 1.)
+    {
+      x_scale /= zoom;
+      y_scale /= zoom;
+      is_scaled = TRUE;
+    }
   if (is_scaled)
     glScaled (x_scale, y_scale, (double) 1);
 }
@@ -946,7 +957,7 @@ void DisplayTransformation (int frame, PtrTransform Trans, int Width, int Height
     
   if (IsTransformed (Trans))
     {
-      DisplayViewBoxTransformation (Trans, Width, Height);
+      DisplayViewBoxTransformation (frame, Trans, Width, Height);
       while (Trans)
         {
           switch (Trans->TransType)
