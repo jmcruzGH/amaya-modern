@@ -71,7 +71,7 @@ from the [Releases](https://github.com/jmcruzGH/amaya-modern/releases) page,
 then:
 
 ```bash
-sudo apt install ./amaya_11.4.7+modern3_amd64.deb
+sudo apt install ./amaya_11.4.7+modern4_amd64.deb
 ```
 
 `apt` also installs the libraries and fonts Amaya needs.  Start Amaya from
@@ -102,7 +102,7 @@ dpkg-buildpackage -us -uc -b   # makes ../amaya_<version>_amd64.deb
 The packaging is in `debian/`.  It builds with CMake like a normal build,
 and installs with `make install` (see [Installing from source](#installing-from-source)).
 For a new release, add an entry to `debian/changelog`, e.g.
-`dch -v 11.4.7+modern4 "What changed"`, and build again.
+`dch -v 11.4.7+modern5 "What changed"`, and build again.
 
 ---
 
@@ -254,6 +254,17 @@ In `amaya.keyboard`, a key may now both have its own action and start
 sequences.  If you have a personal `~/.amaya/amaya.keyboard`, copy the
 three `Ctrl <Key>i:` / `b:` / `u:` lines from `config/amaya.keyboard` into it.
 
+### Editing SVG drawings
+
+A click in a drawing selects the group (`g`) under the mouse, which can
+then be moved or styled.  To edit a text of that group (a LibreOffice Draw
+label, for instance), click it again: the caret goes where the mouse is.
+
+The source view (**Ctrl+U Ctrl+O**) can be edited too.  Its changes are
+applied to the drawing when you click back in the formatted view, or with
+**File > Synchronize** (**Ctrl+B Ctrl+Y**); if the source is not
+well-formed, Amaya says so and shows the errors.
+
 ### Preview in browser
 
 **File > Preview in browser** (F12) shows the current document in an
@@ -347,6 +358,8 @@ curl and wget.
   - `GLib-CRITICAL … g_signal_handler_disconnect` when a tab closes, which
     comes from the fcitx5 input method;
   - libpng warnings about some images.
+  - `Gtk-CRITICAL … gtk_box_gadget_distribute … GtkSpinButton` when the
+    SVG Style panel is shown in a narrow side panel.
 
 ---
 
@@ -434,6 +447,22 @@ LibreOffice Draw, whose coordinates are in 1/100 mm:
   document is printed within page margins, reduced to fit the page.
 - Printing also no longer truncates a page holding an image with a long
   file name, and the print helper no longer crashes when it exits.
+
+**SVG text, source view and MathML printing (November 2026)**
+- A second click on a text of a selected SVG group puts the caret in it,
+  and the caret is visible in drawings reduced by their `viewBox` (it was
+  a fraction of a pixel wide).  A click places the caret at the character
+  under the mouse (it went to the start of the line).
+- The SVG, XML and Template parts of the editor are connected again: they
+  are compiled in, but their callbacks were never registered.  In SVG
+  documents, the source view is now synchronized when you click back in
+  the formatted view, it follows the selection, and the Elements and Style
+  panels show the SVG tools.
+- **MathML is printed.**  The PostScript output used an undefined font for
+  MathML symbols, so Ghostscript or a printer rejected the whole job.
+  Characters that the printer fonts lack (MathML symbols, Greek, Cyrillic,
+  arrows...) are now printed as the outlines of their glyphs, and stretchy
+  symbols (integrals, sums, brackets) are no longer printed as black boxes.
 
 ---
 

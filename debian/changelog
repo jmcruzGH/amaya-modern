@@ -1,3 +1,15 @@
+amaya (11.4.7+modern4) noble; urgency=medium
+
+  * SVG text: a second click on a text of a selected group puts the caret
+    in it; the caret is visible in drawings scaled by a viewBox; a click
+    places it at the character under the mouse.
+  * Connect the SVG, XML and Template callbacks: in SVG documents the
+    source view is synchronized when going back to the formatted view.
+  * Printing: MathML symbols and other characters that the printer fonts
+    lack are printed as glyph outlines (the job was rejected before).
+
+ -- JoseMCruz <jmcruz2k21@gmail.com>  Tue, 24 Nov 2026 12:00:00 +0000
+
 amaya (11.4.7+modern3) noble; urgency=medium
 
   * SVG editing: typing in a text inside a group (e.g. a LibreOffice Draw
