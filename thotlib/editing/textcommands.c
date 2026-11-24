@@ -334,6 +334,50 @@ void  TtaSetMoveBackwardCallback (Func callbackFunc)
 }
 
 /*----------------------------------------------------------------------
+  SVGTextOf returns the SVG text element that contains pEl, or NULL.
+  ----------------------------------------------------------------------*/
+static PtrElement SVGTextOf (PtrElement pEl)
+{
+  while (pEl)
+    {
+      if (pEl->ElStructSchema == NULL ||
+          strcmp (pEl->ElStructSchema->SsName, "SVG"))
+        return NULL;
+      if (!strcmp (pEl->ElStructSchema->SsRule->SrElem[pEl->ElTypeNumber - 1]->SrName,
+                   "text"))
+        return pEl;
+      pEl = pEl->ElParent;
+    }
+  return NULL;
+}
+
+/*----------------------------------------------------------------------
+  SVGTextNeighbour returns the text box before (forward FALSE) or after
+  pBox that belongs to the same SVG text element, or NULL.
+  ----------------------------------------------------------------------*/
+static PtrBox SVGTextNeighbour (PtrBox pBox, ThotBool forward)
+{
+  PtrElement   text;
+  PtrBox       ibox;
+
+  if (pBox == NULL || pBox->BxAbstractBox == NULL)
+    return NULL;
+  text = SVGTextOf (pBox->BxAbstractBox->AbElement);
+  if (text == NULL)
+    return NULL;
+  ibox = forward ? pBox->BxNext : pBox->BxPrevious;
+  while (ibox && ibox->BxAbstractBox &&
+         (ibox->BxAbstractBox->AbPresentationBox ||
+          ibox->BxAbstractBox->AbLeafType != LtText ||
+          (ibox->BxType == BoPiece && ibox->BxNChars == 0)))
+    ibox = forward ? ibox->BxNext : ibox->BxPrevious;
+  if (ibox && ibox->BxAbstractBox &&
+      SVGTextOf (ibox->BxAbstractBox->AbElement) == text)
+    return ibox;
+  return NULL;
+}
+
+/*----------------------------------------------------------------------
   Commandes de deplacement                                           
   ----------------------------------------------------------------------*/
 static void MovingCommands (int code, Document doc, View view,
@@ -353,6 +397,9 @@ static void MovingCommands (int code, Document doc, View view,
   int                 first, last;
   int                 firstC, lastC;
   ThotBool            done, top = TRUE, isPict;
+  PtrElement          svgText = NULL, origEl = NULL, origLast = NULL;
+  int                 origC = 0, origLastC = 0;
+  ThotBool            origPos = FALSE;
 
   indpos = 0;
   xpos = 0;
@@ -510,6 +557,34 @@ static void MovingCommands (int code, Document doc, View view,
           RightExtended = FALSE;
           LeftExtended = FALSE;
         }
+      /* in an SVG drawing, moving the caret must not leave the text
+         element: other elements are hidden (defs...) or elsewhere */
+      if (pDraw && !DocSelectedAttr && FirstSelectedElement)
+        {
+          svgText = SVGTextOf (FirstSelectedElement);
+          origEl = FirstSelectedElement;
+          origLast = LastSelectedElement;
+          origC = FirstSelectedChar;
+          origLastC = LastSelectedChar;
+          origPos = SelPosition;
+        }
+      if (svgText && pBox && !extendSel && (code == 7 || code == 8))
+        {
+          /* next or previous line of the same SVG text: its text box
+             after or before, at the same character index if possible */
+          ibox = SVGTextNeighbour (pBox, code == 7);
+          if (ibox)
+            {
+              x = FirstSelectedChar;
+              if (x < 1)
+                x = 1;
+              if (x > ibox->BxAbstractBox->AbBox->BxNChars + 1)
+                x = ibox->BxAbstractBox->AbBox->BxNChars + 1;
+              ChangeSelection (frame, ibox->BxAbstractBox, x,
+                               FALSE, TRUE, FALSE, FALSE);
+            }
+          code = -1;
+        }
       /* doesn't change the current Shrink value in other cases */
       switch (code)
         {
@@ -576,14 +651,27 @@ static void MovingCommands (int code, Document doc, View view,
                         /* the x is equal to first */
                         ChangeSelection (frame, pBox->BxAbstractBox, x - 1,
                                          FALSE, TRUE, FALSE, FALSE);
-                      /* show the beginning of the selection */
-                      if (pBoxBegin->BxXOrg + pViewSel->VsXPos + 4 < pFrame->FrXOrg)
+                      /* show the beginning of the selection (positions in
+                         a drawing are not in window coordinates) */
+                      if (pDraw)
+                        ;
+                      else if (pBoxBegin->BxXOrg + pViewSel->VsXPos + 4 < pFrame->FrXOrg)
                         {
                           if (pFrame->FrXOrg > 0)
                             TtcScrollLeft (doc, view);
                         }
                       else if (pBoxBegin->BxXOrg + pViewSel->VsXPos > pFrame->FrXOrg + w)
                         HorizontalScroll (frame, pBoxBegin->BxXOrg + pViewSel->VsXPos - pFrame->FrXOrg - w, 0);
+                    }
+                  else if (pDraw)
+                    {
+                      /* in a drawing: the previous text box of the same
+                         text element, if any */
+                      ibox = SVGTextNeighbour (pBox, FALSE);
+                      if (ibox && !extendSel)
+                        ChangeSelection (frame, ibox->BxAbstractBox,
+                                         ibox->BxAbstractBox->AbBox->BxNChars + 1,
+                                         FALSE, TRUE, FALSE, FALSE);
                     }
                   else if (pBox->BxPrevious)
                     {
@@ -763,14 +851,26 @@ static void MovingCommands (int code, Document doc, View view,
                       else
                         ChangeSelection (frame, pBox->BxAbstractBox, x + 1,
                                          FALSE, TRUE, FALSE, FALSE);
-                      /* show the end of the selection */
-                      if (pBoxEnd->BxXOrg + pViewSelEnd->VsXPos > pFrame->FrXOrg + w)
+                      /* show the end of the selection (positions in a
+                         drawing are not in window coordinates) */
+                      if (pDraw)
+                        ;
+                      else if (pBoxEnd->BxXOrg + pViewSelEnd->VsXPos > pFrame->FrXOrg + w)
                         {
                           if (FrameTable[frame].FrScrollOrg + FrameTable[frame].FrScrollWidth > pFrame->FrXOrg + w)
                             TtcScrollRight (doc, view);
                         }
                       else if (pBoxEnd->BxXOrg + pViewSelEnd->VsXPos - 4 < pFrame->FrXOrg)
                         HorizontalScroll (frame, pBoxEnd->BxXOrg + pViewSelEnd->VsXPos - 4 - pFrame->FrXOrg, 0);
+                    }
+                  else if (pDraw)
+                    {
+                      /* in a drawing: the next text box of the same text
+                         element, if any */
+                      ibox = SVGTextNeighbour (pBox, TRUE);
+                      if (ibox && !extendSel)
+                        ChangeSelection (frame, ibox->BxAbstractBox, 1,
+                                         FALSE, TRUE, FALSE, FALSE);
                     }
                   else if (pBox->BxNext)
                     {
@@ -1243,6 +1343,18 @@ static void MovingCommands (int code, Document doc, View view,
               LeftExtended = FALSE;
             }
           break;
+        }
+      if (svgText && origEl &&
+          (SVGTextOf (FirstSelectedElement) != svgText ||
+           SVGTextOf (LastSelectedElement) != svgText))
+        {
+          /* the caret left the text element: put it back */
+          if (origPos)
+            SelectString (LoadedDocument[doc - 1], origEl, origC, origC - 1);
+          else if (origEl == origLast)
+            SelectString (LoadedDocument[doc - 1], origEl, origC, origLastC);
+          else
+            SelectString (LoadedDocument[doc - 1], origEl, origC, origC - 1);
         }
       Moving = FALSE;
 #if !defined(_WINDOWS) && !defined(_MACOS)
