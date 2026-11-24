@@ -482,6 +482,11 @@ ThotBool LocateSelectionInView (int frame, int x, int y, int button,
               // keep in memory the current selected document
               selecteddoc = SelectedDocument;
               ChangeSelection (frame, pAb, nChars, FALSE, TRUE, FALSE, FALSE);
+              if (selecteddoc && selecteddoc != SelectedDocument)
+                /* the selection comes from another document (the source
+                   view): synchronizing it may have rebuilt this document,
+                   and pAb and el may be freed */
+                el = NULL;
 
               if(FrameTable[frame].FrView == 1 &&
                  nChars > 0 && drag != NULL && el &&

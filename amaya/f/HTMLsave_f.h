@@ -77,6 +77,7 @@ extern void DoSynchronize ( Document doc,
 extern ThotBool SaveBefore ( Document doc );
 extern void Synchronize ( Document doc,
                           View view );
+extern void SynchronizeBeforeClick ( void *docPtr );
 extern void RedisplayDoc ( Document doc );
 extern void SaveAll ( Document doc,
                       View view );

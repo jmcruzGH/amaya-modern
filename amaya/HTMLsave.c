@@ -3056,6 +3056,32 @@ void Synchronize (Document doc, View view)
 }
 
 /*----------------------------------------------------------------------
+  SynchronizeBeforeClick
+  Called when the user clicks in document doc while the selection is in
+  another document. If that other document is a view (source or
+  formatted) of the same document, with changes not yet applied to doc,
+  synchronize now: doing it later, while the click is being processed,
+  rebuilds doc under the click and crashes.
+  ----------------------------------------------------------------------*/
+void SynchronizeBeforeClick (void *docPtr)
+{
+  Document    doc = (Document)(intptr_t) docPtr;
+  Document    other = SelectionDoc;
+
+  if (other == 0 || other == doc || DocumentURLs[other] == NULL ||
+      DocumentTypes[other] == docLog || Synchronizing)
+    return;
+  if (DocumentSource[other] != doc &&
+      !(DocumentTypes[other] == docSource && GetDocFromSource (other) == doc))
+    /* not two views of the same document */
+    return;
+  if ((DocumentTypes[other] == docSource ||
+       (DocumentSource[other] && IsXMLDocType (other))) &&
+      TtaIsDocumentUpdated (other))
+    Synchronize (other, 1);
+}
+
+/*----------------------------------------------------------------------
   RedisplayDoc
   Synchronize the document or just redisplay the formatted view.      
   ----------------------------------------------------------------------*/

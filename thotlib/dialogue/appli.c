@@ -757,6 +757,21 @@ void TtaSetStatusSelectedElement(Document document, View view, Element elem)
 
 
 
+static Proc1 DocumentSwitchCallback = NULL;
+
+/*----------------------------------------------------------------------
+  TtaSetDocumentSwitchCallback connects a function called with the
+  document as parameter when the user clicks in a document that is not
+  the document of the current selection, before the click is processed.
+  The application can then update that document (synchronize a source
+  view, for instance): doing it while the click is processed would free
+  the boxes and elements that the click is working on.
+  ----------------------------------------------------------------------*/
+void TtaSetDocumentSwitchCallback (Proc1 callbackFunc)
+{
+  DocumentSwitchCallback = callbackFunc;
+}
+
 /*----------------------------------------------------------------------
  * FrameButtonDownCallback (generic callback)
  * is called when a mouse button is pressed
@@ -790,6 +805,14 @@ ThotBool FrameButtonDownCallback (int frame, int thot_button_id,
       ClickY = y;
       return TRUE;
     }
+
+  /* a click in another document than the selected one: let the
+     application update it before the click is processed */
+  if (DocumentSwitchCallback && frame > 0 && frame <= MAX_FRAME &&
+      FrameTable[frame].FrDoc > 0 &&
+      (SelectedDocument == NULL ||
+       FrameTable[frame].FrDoc != IdentDocument (SelectedDocument)))
+    (*DocumentSwitchCallback) ((void *)(intptr_t) FrameTable[frame].FrDoc);
 
   switch( thot_button_id )
     {

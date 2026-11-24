@@ -277,6 +277,13 @@ extern void TtaGiveLastSelectedElement (Document document,
 extern void TtaSetMoveForwardCallback (Func callbackFunc);
 
 /*----------------------------------------------------------------------
+   TtaSetDocumentSwitchCallback connects a function called with the
+   document as parameter when the user clicks in a document that is not
+   the document of the current selection, before the click is processed.
+  ----------------------------------------------------------------------*/
+extern void TtaSetDocumentSwitchCallback (Proc1 callbackFunc);
+
+/*----------------------------------------------------------------------
    TtaSetMoveBackwardCallback permet de connecter une fonction de
    l'application a la touche de deplacement du curseur vers l'arriere
   ----------------------------------------------------------------------*/

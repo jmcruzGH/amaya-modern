@@ -7102,6 +7102,9 @@ void InitAmaya (NotifyEvent * event)
   sprintf (LostPicturePath, "%s\\amaya\\lost.gif", TtaGetEnvString ("THOTDIR"));
 #endif /* _WINDOWS */
   InitMathML ();
+  /* apply pending changes of a source or formatted view before a click
+     in the other view */
+  TtaSetDocumentSwitchCallback ((Proc1) SynchronizeBeforeClick);
 #ifdef _SVG
   InitSVG ();
   InitSVGAnim ();
