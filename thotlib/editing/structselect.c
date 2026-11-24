@@ -3502,7 +3502,11 @@ ThotBool ChangeSelection (int frame, PtrAbstractBox pAb, int rank,
              stay in the text, or typing in a group is lost */
           !(FirstSelectedElement && pGroup->AbElement &&
             FirstSelectedElement != pGroup->AbElement &&
-            ElemIsWithinSubtree (FirstSelectedElement, pGroup->AbElement)))
+            ElemIsWithinSubtree (FirstSelectedElement, pGroup->AbElement)) &&
+          /* not when the group is already selected and a text in it is
+             clicked: a second click puts the caret in the text */
+          !(FirstSelectedElement && FirstSelectedElement == pGroup->AbElement &&
+            pAb->AbLeafType == LtText))
         pAb = pGroup;
     }
 
