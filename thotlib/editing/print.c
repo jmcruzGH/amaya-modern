@@ -21,6 +21,11 @@
 #include "wx/wx.h"
 #endif
 
+#ifndef _WINDOWS
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif /* _WINDOWS */
 #include "thot_gui.h"
 #include "thot_sys.h"
 #include "constmedia.h"
@@ -1456,6 +1461,63 @@ static void ClipOnPage (int frame, int org, int width, int height)
                       &y, &framexmax, &h, 1);
     }
 }
+
+#ifndef _WINDOWS
+/*----------------------------------------------------------------------
+  IsPDFName returns TRUE if the file name ends with ".pdf".
+  ----------------------------------------------------------------------*/
+static ThotBool IsPDFName (const char *fileName)
+{
+  size_t   l;
+
+  if (fileName == NULL)
+    return FALSE;
+  l = strlen (fileName);
+  return (l > 4 && !strcasecmp (&fileName[l - 4], ".pdf"));
+}
+
+/*----------------------------------------------------------------------
+  ConvertPSToPDF converts the PostScript file psName into the PDF file
+  pdfName with Ghostscript. Returns TRUE if it succeeded.
+  ----------------------------------------------------------------------*/
+static ThotBool ConvertPSToPDF (const char *psName, const char *pdfName)
+{
+  char     output[MAX_PATH * 2 + 20], paper[30];
+  int      i, j, status;
+  pid_t    pid;
+
+  /* Ghostscript interprets '%' in output file names: double them */
+  strcpy (output, "-sOutputFile=");
+  j = strlen (output);
+  for (i = 0; pdfName[i] != EOS && j < (int) sizeof (output) - 3; i++)
+    {
+      if (pdfName[i] == '%')
+        output[j++] = '%';
+      output[j++] = pdfName[i];
+    }
+  output[j] = EOS;
+  if (!strcmp (PageSize, "US"))
+    strcpy (paper, "-sPAPERSIZE=letter");
+  else if (!strcmp (PageSize, "A3"))
+    strcpy (paper, "-sPAPERSIZE=a3");
+  else
+    strcpy (paper, "-sPAPERSIZE=a4");
+  pid = fork ();
+  if (pid < 0)
+    return FALSE;
+  if (pid == 0)
+    {
+      execlp ("gs", "gs", "-q", "-dSAFER", "-dBATCH", "-dNOPAUSE",
+              "-sDEVICE=pdfwrite", paper, "-dFIXEDMEDIA", output,
+              "-f", psName, (char *) NULL);
+      _exit (127);
+    }
+  if (waitpid (pid, &status, 0) < 0)
+    return FALSE;
+  return (WIFEXITED (status) && WEXITSTATUS (status) == 0 &&
+          TtaFileExist (pdfName));
+}
+#endif /* _WINDOWS */
 
 /*----------------------------------------------------------------------
   GetPrintPageSize returns the size of the paper, in points.
@@ -2900,7 +2962,23 @@ void PrintDoc (HWND hWnd, int argc, char **argv, HDC PrinterDC,
 #ifdef _WINDOWS
               CopyFile (cmd, printer, FALSE);
 #else  /* _WINDOWS */
-	      TtaFileCopy (cmd, printer);
+              if (IsPDFName (printer))
+                {
+                  /* the user asked for a PDF file */
+                  if (!ConvertPSToPDF (cmd, printer))
+                    {
+                      /* keep the PostScript output, next to the PDF name */
+                      char *psName = (char *) TtaGetMemory (strlen (printer) + 4);
+                      strcpy (psName, printer);
+                      strcpy (&psName[strlen (psName) - 4], ".ps");
+                      TtaFileCopy (cmd, psName);
+                      fprintf (stderr, "Amaya: could not make %s (is Ghostscript installed?); PostScript written to %s\n",
+                               printer, psName);
+                      TtaFreeMemory (psName);
+                    }
+                }
+              else
+                TtaFileCopy (cmd, printer);
 	      TtaFileUnlink (cmd);
 #endif  /* _WINDOWS */         
             }

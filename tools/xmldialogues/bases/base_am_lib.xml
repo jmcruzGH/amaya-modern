@@ -1353,13 +1353,13 @@ dele?</message>
 	<message xml:lang="uk">Вихідний потік даних</message>
 </label>
 <label define="TMSG_PS_FILE">
-	<message xml:lang="en">PostScript file</message>
-	<message xml:lang="fr">Fichier PostScript</message>
-	<message xml:lang="de">PostScript-Datei</message>
-	<message xml:lang="it">File PostScript</message>
+	<message xml:lang="en">PDF or PostScript file</message>
+	<message xml:lang="fr">Fichier PDF ou PostScript</message>
+	<message xml:lang="de">PDF- oder PostScript-Datei</message>
+	<message xml:lang="it">File PDF o PostScript</message>
 	<message xml:lang="tr">PostScript dosya</message>
-	<message xml:lang="es">Archivo PostScript</message>
-	<message xml:lang="pt">Arquivo PostScript</message>
+	<message xml:lang="es">Archivo PDF o PostScript</message>
+	<message xml:lang="pt">Arquivo PDF ou PostScript</message>
 	<message xml:lang="fi">PostScript tiedosto</message>
 	<message xml:lang="ru">PostScript файл</message>
 	<message xml:lang="hu">PostScript fájl</message>

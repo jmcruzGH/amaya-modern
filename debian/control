@@ -31,6 +31,7 @@ Depends: ${shlibs:Depends},
          fonts-dejavu-extra,
          fonts-dejavu-mono,
          fonts-freefont-ttf
+Recommends: ghostscript
 Suggests: firefox, python3
 Description: WYSIWYG editor and browser for structured web pages
  Amaya edits web pages as they look: text is typed, selected and restyled

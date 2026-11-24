@@ -399,7 +399,7 @@ static void CheckPrintingDocument (Document document)
         PSfile[--lg] = EOS;
       strcpy (docName, TtaGetDocumentName (document));
       TtaExtractSuffix (docName, suffix);
-      sprintf (&PSfile[lg], "%c%s.ps", DIR_SEP, docName);
+      sprintf (&PSfile[lg], "%c%s.pdf", DIR_SEP, docName);
       TtaSetPsFile (PSfile);
     }
 }

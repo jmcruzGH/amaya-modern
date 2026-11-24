@@ -697,7 +697,7 @@ void InitPrintParameters (Document document)
        if (pDoc != NULL)
 	 {
 	   if (pDoc->DocDirectory[0] == DIR_SEP)
-	     snprintf (PSdir, sizeof (PSdir), "%s/%s.ps", pDoc->DocDirectory, pDoc->DocDName);
+	     snprintf (PSdir, sizeof (PSdir), "%s/%s.pdf", pDoc->DocDirectory, pDoc->DocDName);
 	   else
 	     {
 	       ptr = NULL;
@@ -714,7 +714,7 @@ void InitPrintParameters (Document document)
 		   lg = 0;
 		   PSdir[0] = EOS;
 		 }
-	       sprintf (&PSdir[lg], "/%s.ps", pDoc->DocDName);
+	       sprintf (&PSdir[lg], "/%s.pdf", pDoc->DocDName);
 	     }
 	 }
      }
