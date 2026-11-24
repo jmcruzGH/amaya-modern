@@ -377,6 +377,14 @@ ThotBool LocateSelectionInView (int frame, int x, int y, int button,
               (!pAb->AbPresentationBox || pAb->AbCanBeModified))
             {
               pos = x - xOrg;
+#ifdef _GL
+              /* the clipping box is in window coordinates: for a text
+                 drawn with a transformation (SVG with a viewBox, scale...),
+                 convert the position into the coordinates of the box */
+              if (width > 0 && pBox->BxW > 0 &&
+                  (pBox->BxW > width + 1 || pBox->BxW < width - 1))
+                pos = (int) ((double) pos * pBox->BxW / width + 0.5);
+#endif /* _GL */
               LocateClickedChar (pBox, frame, extend, &pBuffer, &pos,
                                  &index, &nChars, &nSpaces);
               nChars = pBox->BxFirstChar + nChars;
