@@ -59,7 +59,6 @@ include(${wxWidgets_USE_FILE})
 
 # OpenGL (compatibility profile -- Amaya uses fixed-function GL)
 find_package(OpenGL REQUIRED)
-find_package(GLUT)   # optional, for Mesa fallback
 
 # FreeType for font rendering
 pkg_check_modules(FREETYPE REQUIRED freetype2)
