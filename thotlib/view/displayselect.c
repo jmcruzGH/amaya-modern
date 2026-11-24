@@ -918,6 +918,9 @@ void DisplayStringSelection (int frame, int leftX, int rightX, int t,
   PtrAbstractBox      pAb;
   int                 width, height;
   int                 topY, h, col, l;
+#ifdef _GL
+  double              scale;
+#endif /* _GL */
 
   pFrame = &ViewFrameTable[frame - 1];
   if (leftX > rightX)
@@ -977,6 +980,20 @@ void DisplayStringSelection (int frame, int leftX, int rightX, int t,
           else
             width = rightX - leftX;
         }
+#ifdef _GL
+      if (pFrame->FrSelectOnePosition && width > 0 && width <= 2)
+        {
+          /* the caret: 2 pixels wide on screen, also in a text drawn with a
+             transformation (SVG with a viewBox, scale...) */
+          scale = GL_CurrentScale ();
+          if (scale > 0. && (scale < 0.9 || scale > 1.1))
+            {
+              width = (int) (2. / scale + 0.5);
+              if (width < 1)
+                width = 1;
+            }
+        }
+#endif /* _GL */
       col = BgSelColor;
       DrawRectangle (frame, 0, 0, leftX, topY, width, h, 0, col, 2);
     }
