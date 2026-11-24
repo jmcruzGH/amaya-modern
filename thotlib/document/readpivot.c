@@ -2383,8 +2383,8 @@ PtrElement ReadTreePiv (BinFile pivFile, PtrSSchema pSSchema, PtrDocument pDoc,
                                 {
                                   if (n == THOT_MAX_CHAR - 1)
                                     {
-                                      if (leafType == tt_Picture)
-                                        PivotError (pivFile, "PivotError: Picture 2");
+                                      /* a long picture name continues
+                                         in the next buffer */
                                       pEl->ElTextLength += n;
                                       pBuf->BuLength = n;
                                       pBuf->BuContent[n] = EOS;
@@ -2408,9 +2408,11 @@ PtrElement ReadTreePiv (BinFile pivFile, PtrSSchema pSSchema, PtrDocument pDoc,
                                   image = (ThotPictInfo *)pEl->ElPictInfo;
                                   if (image != NULL)
                                     {
-                                      l = ustrlen (pBuf->BuContent) * 2;
+                                      /* the name may be stored in
+                                         several buffers */
+                                      l = pEl->ElTextLength * 4;
                                       image->PicFileName = (char*)TtaGetMemory (l + 1);
-                                      CopyBuffer2MBs (pBuf, 0, (unsigned char*)image->PicFileName, l);
+                                      CopyBuffer2MBs (pEl->ElText, 0, (unsigned char*)image->PicFileName, l);
                                     }
                                 }
                             }
