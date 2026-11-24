@@ -2935,7 +2935,10 @@ void PrintDoc (HWND hWnd, int argc, char **argv, HDC PrinterDC,
     }
   TtaFreeMemory (realName);
 #ifdef _WX
-  wxExit();
+  /* wxExit only leaves the main loop: the idle handler would then run
+     again with freed data. The print program has finished its job. */
+  fflush (NULL);
+  exit (0);
 #endif /* _WX */
 #ifdef _WINDOWS
   return;
