@@ -39,6 +39,16 @@ void EDITORApplicationInitialise ()
 /*########## Init Appplication action-list #################*/
 extern void HTMLLoadResources ();
 extern void TextFileLoadResources ();
+#ifdef XML_GENERIC
+extern void XMLLoadResources ();
+#endif /* XML_GENERIC */
+#ifdef _SVG
+extern void SVGLoadResources ();
+extern void TimelineLoadResources ();
+#endif /* _SVG */
+#ifdef TEMPLATES
+extern void TemplateLoadResources ();
+#endif /* TEMPLATES */
 extern void MathMLLoadResources ();
 extern void InitAmaya (NotifyEvent *event);
 extern ThotBool ClosingTemplateDocument (NotifyDialog *event);
@@ -63,6 +73,19 @@ void TteLoadApplications ()
   EDITORApplicationInitialise ();
   HTMLLoadResources ();
   TextFileLoadResources ();
+  /* the applications that EDITOR.A uses under #ifdef: they were left out
+     when this file was generated without these flags, so the SVG, XML
+     and Template callbacks (EDITOR.A, SVG.A...) were never called */
+#ifdef XML_GENERIC
+  XMLLoadResources ();
+#endif /* XML_GENERIC */
+#ifdef _SVG
+  SVGLoadResources ();
+  TimelineLoadResources ();
+#endif /* _SVG */
+#ifdef TEMPLATES
+  TemplateLoadResources ();
+#endif /* TEMPLATES */
   MathMLLoadResources ();
   PivotLoadResources ();
   NoStructSelectLoadResources ();
