@@ -2500,6 +2500,39 @@ ThotBool  IsLeadingSpaceUseless (Element lastEl, Document doc,
 }
 
 /*----------------------------------------------------------------------
+  IsSVGSpaceIgnored
+  Return TRUE if white space in element el can be ignored: el is an SVG
+  element that is not a text content element. xml:space concerns only
+  the text of text content elements; spaces between other elements are
+  just indentation. Keeping them with xml:space="preserve" (written by
+  LibreOffice Draw) made the indentation grow each time the source view
+  was synchronized, as the document is saved with its own indentation.
+  ----------------------------------------------------------------------*/
+static ThotBool IsSVGSpaceIgnored (Element el)
+{
+  ElementType   elType;
+  char         *name, *schema;
+  static const char *textElements[] = {"text", "tspan", "tref", "textPath",
+                                       "altGlyph", "title", "desc", "style",
+                                       "script", "metadata", NULL};
+  int           i;
+
+  if (el == NULL)
+    return FALSE;
+  elType = TtaGetElementType (el);
+  schema = TtaGetSSchemaName (elType.ElSSchema);
+  if (schema == NULL || strcmp (schema, "SVG"))
+    return FALSE;
+  name = TtaGetElementTypeName (elType);
+  if (name == NULL || elType.ElTypeNum <= 4 /* basic types */)
+    return FALSE;
+  for (i = 0; textElements[i]; i++)
+    if (!strcmp (name, textElements[i]))
+      return FALSE;
+  return TRUE;
+}
+
+/*----------------------------------------------------------------------
   PutInXmlElement
   ----------------------------------------------------------------------*/
 void PutInXmlElement (char *data, int length)
@@ -2513,6 +2546,22 @@ void PutInXmlElement (char *data, int length)
   ThotBool     uselessSpace = FALSE;
   ThotBool     insSibling, ok, removeEOL = RemoveLineBreak;
 
+  if (!RemoveLeadingSpace && XMLcontext.lastElement)
+    {
+      /* white space only, between SVG elements: ignore it */
+      for (i = 0; i < length && data[i] != EOS &&
+             (data[i] == EOL || data[i] == __CR__ || data[i] == TAB ||
+              data[i] == SPACE); i++);
+      if (i == length || data[i] == EOS)
+        {
+          if (XMLcontext.lastElementClosed)
+            parent = TtaGetParent (XMLcontext.lastElement);
+          else
+            parent = XMLcontext.lastElement;
+          if (IsSVGSpaceIgnored (parent))
+            return;
+        }
+    }
   i = 0;
   /* Immediately after a start tag, treatment of the leading spaces */
   /* If RemoveLeadingSpace = TRUE, we suppress all leading white-space */
