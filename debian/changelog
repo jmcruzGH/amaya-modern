@@ -1,3 +1,13 @@
+amaya (11.4.7+modern5) noble; urgency=medium
+
+  * Print to a PDF file (with Ghostscript); the print dialog asks before
+    overwriting an existing file.
+  * Print SVG drawings written with a namespace prefix (<svg:svg>).
+  * SVG text: the caret no longer disappears when the text grows or after
+    a zoom; arrow keys keep the caret in the text being edited.
+
+ -- JoseMCruz <jmcruz2k21@gmail.com>  Tue, 24 Nov 2026 16:00:00 +0000
+
 amaya (11.4.7+modern4) noble; urgency=medium
 
   * SVG text: a second click on a text of a selected group puts the caret

@@ -71,7 +71,7 @@ from the [Releases](https://github.com/jmcruzGH/amaya-modern/releases) page,
 then:
 
 ```bash
-sudo apt install ./amaya_11.4.7+modern4_amd64.deb
+sudo apt install ./amaya_11.4.7+modern5_amd64.deb
 ```
 
 `apt` also installs the libraries and fonts Amaya needs.  Start Amaya from
@@ -102,7 +102,7 @@ dpkg-buildpackage -us -uc -b   # makes ../amaya_<version>_amd64.deb
 The packaging is in `debian/`.  It builds with CMake like a normal build,
 and installs with `make install` (see [Installing from source](#installing-from-source)).
 For a new release, add an entry to `debian/changelog`, e.g.
-`dch -v 11.4.7+modern5 "What changed"`, and build again.
+`dch -v 11.4.7+modern6 "What changed"`, and build again.
 
 ---
 
@@ -265,6 +265,16 @@ applied to the drawing when you click back in the formatted view, or with
 **File > Synchronize** (**Ctrl+B Ctrl+Y**); if the source is not
 well-formed, Amaya says so and shows the errors.
 
+While you edit a text, the arrow keys move the caret within that text
+element only (Up and Down go from line to line).
+
+### Printing to a file
+
+In **File > Print**, choose **PDF or PostScript file**.  A file name ending
+in `.pdf` (the default) gives a PDF, made with Ghostscript (`gs`, package
+`ghostscript`); another name gives PostScript.  Amaya asks before
+overwriting an existing file.
+
 ### Preview in browser
 
 **File > Preview in browser** (F12) shows the current document in an
@@ -346,8 +356,9 @@ curl and wget.
 - **SVG:** a subset of SVG 1.1 from 2012: shapes, paths, fills, strokes,
   text, transformations, gradients and images are drawn; filters, masks,
   patterns, SVG fonts and later SVG features are not.  Printed SVG is drawn by librsvg, so it may differ in details from the
-  screen.  Images referenced by a relative link inside an SVG drawing are
-  missing from the printout.
+  screen.  Images referenced by a relative link inside an SVG drawing, and
+  the content of `foreignObject` (MathML or XHTML inside SVG), are missing
+  from the printout.
 - **Not compiled:** Annotations, WebDAV and bookmarks.  Templates, the spell
   checker, MathML, SVG and printing are compiled in.
 - **Platforms:** Linux only; a package for Ubuntu 24.04 amd64.  Other Linux
@@ -463,6 +474,15 @@ LibreOffice Draw, whose coordinates are in 1/100 mm:
   Characters that the printer fonts lack (MathML symbols, Greek, Cyrillic,
   arrows...) are now printed as the outlines of their glyphs, and stretchy
   symbols (integrals, sums, brackets) are no longer printed as black boxes.
+
+**Printing to PDF, SVG caret (November 2026)**
+- **File > Print** can write a PDF file, and asks before overwriting.
+- SVG drawings written with a prefix (`<svg:svg>`, as in Amaya's start
+  page) are printed.
+- In SVG text, the caret no longer disappears when the text grows or after
+  a zoom, and the arrow keys no longer move it out of the text (it went to
+  hidden elements, scrolled the view to the far right, and the next
+  keystrokes were lost).
 
 ---
 

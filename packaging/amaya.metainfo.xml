@@ -31,6 +31,7 @@
   </developer>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="11.4.7+modern5" date="2026-11-24"/>
     <release version="11.4.7+modern4" date="2026-11-24"/>
     <release version="11.4.7+modern3" date="2026-11-24"/>
     <release version="11.4.7+modern2" date="2026-11-23"/>
