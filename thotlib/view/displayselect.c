@@ -27,6 +27,7 @@
 
 #include "boxrelations_f.h"
 #include "boxpositions_f.h"
+#include "buildboxes_f.h"
 #include "displayselect_f.h"
 #include "exceptions_f.h"
 #include "font_f.h"
@@ -970,7 +971,12 @@ void DisplayStringSelection (int frame, int leftX, int rightX, int t,
       if (!pBox->BxAbstractBox->AbPresentationBox)
         l += pBox->BxLMargin + pBox->BxLBorder + pBox->BxLPadding;
       leftX = leftX + l - pFrame->FrXOrg;
-      if (leftX > pBox->BxXOrg + width)
+      if (GetParentDraw (pBox))
+        /* in an SVG drawing, positions are in the coordinates of the
+           drawing, not in window coordinates: the scrolling zone doesn't
+           apply (it hid the caret when a text was extended) */
+        width = rightX + l - pFrame->FrXOrg - leftX;
+      else if (leftX > pBox->BxXOrg + width)
         width = 0;
       else
         {
