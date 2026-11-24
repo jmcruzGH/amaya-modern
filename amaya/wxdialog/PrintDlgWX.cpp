@@ -127,6 +127,24 @@ PrintDlgWX::~PrintDlgWX()
   ----------------------------------------------------------------------*/
 void PrintDlgWX::OnPrintButton( wxCommandEvent& event )
 {
+#ifndef _WINDOWS
+  if (m_print == 1)
+    {
+      // printing to a file: don't overwrite an existing file silently
+      wxString file_name = XRCCTRL(*this, "wxID_FILE_TXT_CTRL", wxTextCtrl)->GetValue();
+      if (!file_name.IsEmpty() && wxFileExists (file_name))
+        {
+          char msg[MAX_LENGTH + 200];
+          snprintf (msg, sizeof (msg), TtaGetMessage (LIB, TMSG_FILE_EXIST),
+                    (const char*)file_name.mb_str(wxConvUTF8));
+          wxMessageDialog confirm (this, TtaConvMessageToWX (msg),
+                                   TtaConvMessageToWX (TtaGetMessage (LIB, TMSG_LIB_PRINT)),
+                                   wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION);
+          if (confirm.ShowModal () != wxID_YES)
+            return;
+        }
+    }
+#endif /* _WINDOWS */
   // print callback
   ThotCallback (BasePrint + FormPrint, INTEGER_DATA, (char*) 1);
   TtaRedirectFocus();
