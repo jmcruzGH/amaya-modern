@@ -413,6 +413,21 @@ return 0;
 
 /*----------------------------------------------------------------------
   ----------------------------------------------------------------------*/
+int GLWString (wchar_t *buff, int lg, int frame, int x, int y,
+               ThotFont font, int boxWidth, int bl, int hyphen,
+               int startABlock, int fg)
+{
+return 0;
+}
+
+/*----------------------------------------------------------------------
+  ----------------------------------------------------------------------*/
+void GLPrintChar (CHAR_T c, int frame, int x, int y, ThotFont font, int fg)
+{
+}
+
+/*----------------------------------------------------------------------
+  ----------------------------------------------------------------------*/
 int GLString (unsigned char *buff, int lg, int frame, int x, int y,
 		ThotFont font, int boxWidth, int bl, int hyphen,
 	      int startABlock, int fg)

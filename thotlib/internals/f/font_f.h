@@ -43,6 +43,7 @@ extern void GetFontIdentifier ( char script,
                                 char r_name[10] );
 extern char *GetPostscriptNameFromFont ( void * font,
                                          char *fontname );
+extern ThotBool IsPostscriptPrinterFont ( void *font );
 extern ThotFont LoadNearestFont ( char script,
                                   int family,
                                   int highlight,
@@ -122,6 +123,7 @@ extern void GetFontIdentifier ( char script,
                                   char r_name[10] );
 extern char *GetPostscriptNameFromFont ( void * font,
                                            char *fontname );
+extern ThotBool IsPostscriptPrinterFont ( void *font );
 extern ThotFont LoadNearestFont ( char script,
                                     int family,
                                     int highlight,

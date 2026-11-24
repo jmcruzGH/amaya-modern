@@ -750,6 +750,32 @@ static void Transcode (FILE *fout, int encoding, unsigned char car)
 
 static  int         SameBox = 0;
 static  int         NbWhiteSp = 0;
+static  int         StrWidth = 0;  /* width of the open string */
+static  int         OutlineY = -1; /* line with characters as outlines */
+
+/*----------------------------------------------------------------------
+  CloseOpenString ends the PostScript string that GLString has started
+  for the current box, before something else is written (outlines of
+  characters in another font).
+  ----------------------------------------------------------------------*/
+static void CloseOpenString (FILE *fout)
+{
+  if (SameBox == 1)
+    {
+      if (NbWhiteSp == 0)
+        fprintf (fout, ") %d %d %d s\n", StrWidth, X, -Y);
+      else
+        fprintf (fout, ") %d %d %d %d j\n", NbWhiteSp, StrWidth, X, -Y);
+      SameBox = 0;
+      NbWhiteSp = 0;
+      StrWidth = 0;
+    }
+}
+static ThotBool IsPrinterFont (const char *fontname);
+static int PrintOutlinedString (FILE *fout, unsigned char *buff, int lg,
+                                int x, int y, ThotFont font,
+                                const char *fontname, int bl, int fg);
+
 /*----------------------------------------------------------------------
   ----------------------------------------------------------------------*/
 int GLString (unsigned char *buff, int lg, int frame, int x, int y,
@@ -768,6 +794,12 @@ int GLString (unsigned char *buff, int lg, int frame, int x, int y,
   if (y < 0)
     return 0;
 
+  GetPostscriptNameFromFont (font, fontname);
+  if (!IsPrinterFont (fontname))
+    /* a font that the PostScript prologue doesn't define (Esstix fonts
+       for MathML...): write the outlines of the characters */
+    return PrintOutlinedString (fout, buff, lg, x, y, font, fontname, bl, fg);
+
   /* Is this a new box ? */
   if (SameBox == 0)
     {
@@ -776,6 +808,7 @@ int GLString (unsigned char *buff, int lg, int frame, int x, int y,
       X = x;
       Y = y;
       NbWhiteSp = 0;
+      StrWidth = 0;
       if (fg >= 0)
 	{
 	  /* Do we need to change the current color ? */
@@ -833,6 +866,7 @@ int GLString (unsigned char *buff, int lg, int frame, int x, int y,
 	}
     }
    
+  StrWidth += width + bl * CharacterWidth (SPACE, font);
   /* Is an hyphen needed ? */
   if (hyphen && fg >= 0)
     fprintf (fout, "%c", '\255');
@@ -840,7 +874,11 @@ int GLString (unsigned char *buff, int lg, int frame, int x, int y,
   if (boxWidth != 0 && SameBox == 1 )
     {
       /* now let Postscript justify the text with the right width */
-      if (boxWidth < 0)
+      if (OutlineY == Y)
+        /* characters of this line were written as outlines, between
+           pieces of this string: no justification */
+        boxWidth = StrWidth;
+      else if (boxWidth < 0)
 	boxWidth = - boxWidth + width;
       else if (boxWidth < width)
 	/* not enough space to display the last piece of text */
@@ -855,8 +893,139 @@ int GLString (unsigned char *buff, int lg, int frame, int x, int y,
 	}
       SameBox = 0; 
       NbWhiteSp = 0;
+      StrWidth = 0;
     }
   return (width);
+}
+
+/* defined in openglfont.c */
+extern void GL_PrintGlyphOutlines (FILE *out, wchar_t *text, int lg,
+                                   void *gl_font, int psSize, int x, int y,
+                                   int *widths);
+
+/*----------------------------------------------------------------------
+  PrintOutlines writes the lg characters of text as filled outlines
+  of their glyphs in font, at (x, y) on the baseline.
+  Returns the width of the string.
+  ----------------------------------------------------------------------*/
+static int PrintOutlines (FILE *fout, wchar_t *text, int lg, int x, int y,
+                          ThotFont font, int bl, int fg)
+{
+  int     widths[256], *w = widths;
+  int     j, width = 0, size = 0;
+  char    fontname[35];
+
+  if (lg <= 0)
+    return 0;
+  if (lg > 256)
+    w = (int *) TtaGetMemory (lg * sizeof (int));
+  /* the PostScript size follows the 3-letter name: "llr 12 sf" */
+  GetPostscriptNameFromFont (font, fontname);
+  sscanf (fontname + 3, "%d", &size);
+  for (j = 0; j < lg; j++)
+    {
+      w[j] = CharacterWidth (text[j], font);
+      width += w[j];
+    }
+  if (fg >= 0 && size > 0)
+    {
+      CloseOpenString (fout);
+      OutlineY = y;
+      GL_SetPrintForeground (fg);
+      if (bl > 0)
+        x += bl * CharacterWidth (SPACE, font);
+      GL_PrintGlyphOutlines (fout, text, lg, font, size, x, y, w);
+    }
+  if (w != widths)
+    TtaFreeMemory (w);
+  return width;
+}
+
+/*----------------------------------------------------------------------
+  IsPrinterFont returns TRUE if fontname (as written by
+  GetPostscriptNameFromFont) is a font defined in the PostScript prologue:
+  Helvetica, Times, Courier (l[htc]?), and Symbol (g??).
+  ----------------------------------------------------------------------*/
+static ThotBool IsPrinterFont (const char *fontname)
+{
+  if (fontname[0] == 'g')
+    return TRUE;
+  return (fontname[0] == 'l' &&
+          (fontname[1] == 'h' || fontname[1] == 't' || fontname[1] == 'c'));
+}
+
+/*----------------------------------------------------------------------
+  PrintOutlinedString writes the 8-bit characters of buff as outlines.
+  ----------------------------------------------------------------------*/
+static int PrintOutlinedString (FILE *fout, unsigned char *buff, int lg,
+                                int x, int y, ThotFont font,
+                                const char *fontname, int bl, int fg)
+{
+  wchar_t  text[256], *t = text;
+  int      j, width;
+
+  if (lg <= 0)
+    return 0;
+  if (lg > 256)
+    t = (wchar_t *) TtaGetMemory (lg * sizeof (wchar_t));
+  for (j = 0; j < lg; j++)
+    t[j] = buff[j];
+  width = PrintOutlines (fout, t, lg, x, y, font, bl, fg);
+  if (t != text)
+    TtaFreeMemory (t);
+  return width;
+}
+
+/*----------------------------------------------------------------------
+  GLWString prints a string of wide characters, with the same codes as
+  on screen. Text that the PostScript fonts of the printer can show is
+  written as PostScript text (GLString); other characters (MathML
+  symbols, Greek, Cyrillic, etc.) as the outlines of their glyphs.
+  ----------------------------------------------------------------------*/
+int GLWString (wchar_t *buff, int lg, int frame, int x, int y,
+               ThotFont font, int boxWidth, int bl, int hyphen,
+               int startABlock, int fg)
+{
+  unsigned char  bytes[256], *b = bytes;
+  int            j, width;
+  ThotBool       latin;
+  FILE          *fout;
+
+  fout = (FILE *) FILE_STREAM;
+  if (!fout || y < 0 || lg < 0)
+    return 0;
+  latin = IsPostscriptPrinterFont (font);
+  for (j = 0; j < lg && latin; j++)
+    if (buff[j] > 0xFF)
+      latin = FALSE;
+  if (!latin)
+    return PrintOutlines (fout, buff, lg, x, y, font, bl, fg);
+  if (lg >= 256)
+    b = (unsigned char *) TtaGetMemory (lg + 1);
+  for (j = 0; j < lg; j++)
+    b[j] = (unsigned char) buff[j];
+  b[lg] = EOS;
+  width = GLString (b, lg, frame, x, y, font, boxWidth, bl, hyphen,
+                    startABlock, fg);
+  if (b != bytes)
+    TtaFreeMemory (b);
+  return width;
+}
+
+/*----------------------------------------------------------------------
+  GLPrintChar prints one character (a MathML symbol, a part of a large
+  bracket...) at (x, y) on the baseline.
+  ----------------------------------------------------------------------*/
+void GLPrintChar (CHAR_T c, int frame, int x, int y, ThotFont font, int fg)
+{
+  wchar_t   text[1];
+  int       w;
+
+  text[0] = (wchar_t) c;
+  w = CharacterWidth (c, font);
+  if (w <= 0)
+    w = 1;
+  GLWString (text, 1, frame, x, y, font, w, 0, 0, 1, fg);
 }
 
 /* defined in print.c */

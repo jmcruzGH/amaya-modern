@@ -169,7 +169,10 @@ void DrawChar (CHAR_T car, int frame, int x, int y, ThotFont font, int fg)
     return;
    
   y = y + FrameTable[frame].FrTopMargin;
-  GL_DrawUnicodeChar (car, (float) x, (float) y, font, fg);
+  if (Printing)
+    GLPrintChar (car, frame, x, y, font, fg);
+  else
+    GL_DrawUnicodeChar (car, (float) x, (float) y, font, fg);
 }
 
 /*----------------------------------------------------------------------
@@ -234,6 +237,9 @@ int WDrawString (wchar_t *buff, int lg, int frame, int x, int y,
     return 0;
   
   y += FrameTable[frame].FrTopMargin;
+  if (Printing)
+    return GLWString (buff, lg, frame, x, y, font, boxWidth, bl, hyphen,
+                      startABlock, fg);
   return (GL_DrawString (fg, buff, (float) x, (float) y, hyphen,
                          (void *) font, lg));
 }

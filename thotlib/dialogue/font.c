@@ -1096,6 +1096,34 @@ char *GetPostscriptNameFromFont (void * font, char *fontname)
 }
 
 /*----------------------------------------------------------------------
+  IsPostscriptPrinterFont returns TRUE if text drawn with font can be
+  written with the PostScript fonts that every printer has (Helvetica,
+  Times, Courier, Symbol), as long as its character codes are < 256.
+  ----------------------------------------------------------------------*/
+ThotBool IsPostscriptPrinterFont (void *font)
+{
+  int                 i;
+  char                script, family;
+
+  if (font == NULL)
+    return TRUE;
+  i = 0;
+  while (i < MAX_FONT && TtFonts[i] != font)
+    i++;
+  if (i >= MAX_FONT)
+    return FALSE;
+  script = TtPsFontName[i * 8];
+  family = TtPsFontName[i * 8 + 1];
+  if (script == 'g')
+    /* Symbol */
+    return TRUE;
+  if (script == 'e')
+    /* Esstix */
+    return FALSE;
+  return (family == 'h' || family == 't' || family == 'c');
+}
+
+/*----------------------------------------------------------------------
   LoadNearestFont load the nearest possible font given a set of attributes
   like script, family, the size and for a given frame.
   Parameters increase decrease are true when a new test is allowed.

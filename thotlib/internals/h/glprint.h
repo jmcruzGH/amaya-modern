@@ -140,6 +140,11 @@ extern "C" {
   /*Pictures*/
   int GLPrintEPS (char *fileName, int pres, int x, int y, int w, int h);
   int GLPrintEPSPage (char *fileName, int w, int h);
+  int GLWString (wchar_t *buff, int lg, int frame, int x, int y,
+                 ThotFont font, int boxWidth, int bl, int hyphen,
+                 int startABlock, int fg);
+  void GLPrintChar (CHAR_T c, int frame, int x, int y, ThotFont font,
+                    int fg);
   int GLDrawPixelsPoscript(int width, int height,
 			   int xorig, int yorig,
 			   GLenum format, GLenum type, 

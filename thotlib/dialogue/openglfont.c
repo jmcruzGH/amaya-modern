@@ -1351,4 +1351,123 @@ int UnicodeFontRender (void *gl_font, wchar_t *text, float x, float y, int size)
   return (SUPERSAMPLING(pen_x));  
 }
 
+
+#include FT_OUTLINE_H
+
+/* state of the glyph outline being written in PostScript */
+typedef struct _PSOutline
+{
+  FILE      *out;
+  FT_Vector  last;
+  ThotBool   open;
+} PSOutline;
+
+static int PSMoveTo (const FT_Vector *to, void *user)
+{
+  PSOutline *ps = (PSOutline *) user;
+
+  if (ps->open)
+    fprintf (ps->out, "closepath\n");
+  fprintf (ps->out, "%ld %ld moveto\n", to->x, to->y);
+  ps->last = *to;
+  ps->open = TRUE;
+  return 0;
+}
+
+static int PSLineTo (const FT_Vector *to, void *user)
+{
+  PSOutline *ps = (PSOutline *) user;
+
+  fprintf (ps->out, "%ld %ld lineto\n", to->x, to->y);
+  ps->last = *to;
+  return 0;
+}
+
+static int PSConicTo (const FT_Vector *control, const FT_Vector *to,
+                      void *user)
+{
+  PSOutline *ps = (PSOutline *) user;
+  double     x1, y1, x2, y2;
+
+  /* a quadratic Bezier as a cubic one */
+  x1 = ps->last.x + 2. * (control->x - ps->last.x) / 3.;
+  y1 = ps->last.y + 2. * (control->y - ps->last.y) / 3.;
+  x2 = to->x + 2. * (control->x - to->x) / 3.;
+  y2 = to->y + 2. * (control->y - to->y) / 3.;
+  fprintf (ps->out, "%.1f %.1f %.1f %.1f %ld %ld curveto\n",
+           x1, y1, x2, y2, to->x, to->y);
+  ps->last = *to;
+  return 0;
+}
+
+static int PSCubicTo (const FT_Vector *c1, const FT_Vector *c2,
+                      const FT_Vector *to, void *user)
+{
+  PSOutline *ps = (PSOutline *) user;
+
+  fprintf (ps->out, "%ld %ld %ld %ld %ld %ld curveto\n",
+           c1->x, c1->y, c2->x, c2->y, to->x, to->y);
+  ps->last = *to;
+  return 0;
+}
+
+/*----------------------------------------------------------------------
+  GL_PrintGlyphOutlines writes in the PostScript file out the outlines
+  of the lg characters of text, drawn with font at the PostScript size
+  psSize, the first one at (x, y) on the baseline. The character codes are
+  those used to draw on screen (Unicode, or the font's own codes for
+  Esstix fonts). It is used for characters that the PostScript fonts of
+  the printer don't have: MathML symbols, Greek, Cyrillic, etc.
+  widths gives the advance of each character, as laid out by Amaya.
+  ----------------------------------------------------------------------*/
+void GL_PrintGlyphOutlines (FILE *out, wchar_t *text, int lg,
+                            void *gl_font, int psSize, int x, int y,
+                            int *widths)
+{
+  GL_font            *font = (GL_font *) gl_font;
+  FT_Face             face;
+  FT_Outline_Funcs    funcs;
+  PSOutline           ps;
+  unsigned int        index;
+  double              scale;
+  int                 i;
+
+  if (font == NULL || font->face == NULL || out == NULL || psSize <= 0)
+    return;
+  face = font->face;
+  if (face->units_per_EM == 0)
+    return;
+  scale = (double) psSize / (double) face->units_per_EM;
+  funcs.move_to = (FT_Outline_MoveToFunc) PSMoveTo;
+  funcs.line_to = (FT_Outline_LineToFunc) PSLineTo;
+  funcs.conic_to = (FT_Outline_ConicToFunc) PSConicTo;
+  funcs.cubic_to = (FT_Outline_CubicToFunc) PSCubicTo;
+  funcs.shift = 0;
+  funcs.delta = 0;
+  for (i = 0; i < lg; i++)
+    {
+      index = FT_Get_Char_Index (face, (FT_ULong) text[i]);
+      if (index != 0 &&
+          !FT_Load_Glyph (face, index, FT_LOAD_NO_SCALE | FT_LOAD_NO_BITMAP) &&
+          face->glyph->format == FT_GLYPH_FORMAT_OUTLINE &&
+          face->glyph->outline.n_contours > 0)
+        {
+          fprintf (out, "gsave %d %d translate %.6f %.6f scale newpath\n",
+                   x, -y, scale, scale);
+          ps.out = out;
+          ps.open = FALSE;
+          ps.last.x = ps.last.y = 0;
+          FT_Outline_Decompose (&face->glyph->outline, &funcs, &ps);
+          if (ps.open)
+            fprintf (out, "closepath\n");
+          if (face->glyph->outline.flags & FT_OUTLINE_EVEN_ODD_FILL)
+            fprintf (out, "eofill grestore\n");
+          else
+            fprintf (out, "fill grestore\n");
+        }
+      if (widths)
+        x += widths[i];
+    }
+}
+
 #endif /* _GL */

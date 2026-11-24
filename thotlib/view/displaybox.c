@@ -1921,8 +1921,7 @@ static void DisplayJustifiedText (PtrBox pBox, PtrBox mbox, int frame,
 
       /* allocate a buffer to store converted characters */
 #ifdef _GL
-      if (script == 'Z' || script == 'A' ||
-          !Printing || GL_TransText ())
+      if (TRUE /* wide chars, also when printing */)
 #else /*_GL*/
         if (script == 'Z' || script == 'A')
 #endif /*_GL*/
@@ -1985,8 +1984,7 @@ static void DisplayJustifiedText (PtrBox pBox, PtrBox mbox, int frame,
                     {
                       /* enter or leave a selected region */
 #ifdef _GL
-                      if (script == 'Z' || script == 'A' ||
-                          !Printing || GL_TransText ())
+                      if (TRUE /* wide chars, also when printing */)
 #else /*_GL*/
                         if (script == 'Z' || script == 'A')
 #endif /*_GL*/
@@ -2022,8 +2020,7 @@ static void DisplayJustifiedText (PtrBox pBox, PtrBox mbox, int frame,
                         /* there is a previous string */
                         psW = -psW;
 #ifdef _GL
-                      if (script == 'Z' || script == 'A' ||
-                          !Printing || GL_TransText ())
+                      if (TRUE /* wide chars, also when printing */)
 #else /*_GL*/
                         if (script == 'Z' || script == 'A')
 #endif /*_GL*/
@@ -2070,8 +2067,7 @@ static void DisplayJustifiedText (PtrBox pBox, PtrBox mbox, int frame,
 #endif /* WINDOWS */
                           {
 #ifdef _GL
-                            if (script == 'Z' || script == 'A' ||
-                                !Printing || GL_TransText ())
+                            if (TRUE /* wide chars, also when printing */)
 #else /*_GL*/
                               if (script == 'Z' || script == 'A')
 #endif /*_GL*/
@@ -2135,8 +2131,7 @@ static void DisplayJustifiedText (PtrBox pBox, PtrBox mbox, int frame,
                                 /* there is a previous string */
                                 psW = -psW;
 #ifdef _GL
-                              if (script == 'Z' || script == 'A' ||
-                                  !Printing || GL_TransText ())
+                              if (TRUE /* wide chars, also when printing */)
 #else /*_GL*/
                                 if (script == 'Z' || script == 'A')
 #endif /*_GL*/
@@ -2161,8 +2156,7 @@ static void DisplayJustifiedText (PtrBox pBox, PtrBox mbox, int frame,
                           xpos = x;
                         }
 #ifdef _GL
-                      if (script == 'Z' || script == 'A' ||
-                          !Printing || GL_TransText ())
+                      if (TRUE /* wide chars, also when printing */)
 #else /*_GL*/
                         if (script == 'Z' || script == 'A')
 #endif /*_GL*/
@@ -2239,8 +2233,7 @@ static void DisplayJustifiedText (PtrBox pBox, PtrBox mbox, int frame,
 #endif /* WINDOWS */
                   {
 #ifdef _GL
-                    if (script == 'Z' || script == 'A' ||
-                        !Printing || GL_TransText ())
+                    if (TRUE /* wide chars, also when printing */)
 #else /*_GL*/
                       if (script == 'Z' || script == 'A')
 #endif /*_GL*/
