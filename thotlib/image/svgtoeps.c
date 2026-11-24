@@ -78,6 +78,63 @@ static ThotBool SetBoundingBox (const char *epsName, double w, double h)
 }
 
 /*----------------------------------------------------------------------
+  ReadSVGWithNamespaces reads the SVG file svgName and returns its content
+  (to be freed with g_free), with the namespace declarations that the
+  root element needs. A drawing exported from a compound document
+  (<svg:svg> in XHTML) uses prefixes declared on the html element, not
+  in the drawing itself.
+  ----------------------------------------------------------------------*/
+static char *ReadSVGWithNamespaces (const char *svgName, gsize *length)
+{
+  gchar      *content, *start, *end, *name, *result;
+  GString    *decl;
+  gsize       len, nameLen;
+
+  if (!g_file_get_contents (svgName, &content, &len, NULL))
+    return NULL;
+  /* the start tag of the root element */
+  start = content;
+  while ((start = strchr (start, '<')) != NULL &&
+         (start[1] == '?' || start[1] == '!'))
+    start++;
+  if (start == NULL || (end = strchr (start, '>')) == NULL)
+    {
+      *length = len;
+      return content;
+    }
+  name = start + 1;
+  nameLen = strcspn (name, " \t\r\n/>");
+  decl = g_string_new (NULL);
+  if (nameLen > 4 && name[nameLen - 4] == ':' &&
+      !strncmp (&name[nameLen - 3], "svg", 3))
+    {
+      /* <prefix:svg ...>: declare the prefix */
+      gchar *attr = g_strdup_printf ("xmlns:%.*s=", (int) (nameLen - 4), name);
+      if (!g_strstr_len (start, end - start, attr))
+        g_string_append_printf (decl, " %s\"http://www.w3.org/2000/svg\"", attr);
+      g_free (attr);
+    }
+  else if (!g_strstr_len (start, end - start, "xmlns="))
+    g_string_append (decl, " xmlns=\"http://www.w3.org/2000/svg\"");
+  if (strstr (content, "xlink:") &&
+      !g_strstr_len (start, end - start, "xmlns:xlink="))
+    g_string_append (decl, " xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+  if (decl->len == 0)
+    {
+      g_string_free (decl, TRUE);
+      *length = len;
+      return content;
+    }
+  /* insert the declarations after the element name */
+  result = g_strdup_printf ("%.*s%s%s", (int) (name + nameLen - content),
+                            content, decl->str, name + nameLen);
+  *length = strlen (result);
+  g_string_free (decl, TRUE);
+  g_free (content);
+  return result;
+}
+
+/*----------------------------------------------------------------------
   SVGFileToEPS
   Render the SVG file svgName into the EPS file epsName.
   width and height (in CSS pixels) give the size of the drawing when the
@@ -93,9 +150,15 @@ ThotBool SVGFileToEPS (const char *svgName, const char *epsName,
   cairo_surface_t *surface;
   cairo_t         *cr;
   gdouble          w, h;
+  gchar           *content;
+  gsize            length;
   ThotBool         ok;
 
-  handle = rsvg_handle_new_from_file (svgName, &error);
+  content = ReadSVGWithNamespaces (svgName, &length);
+  if (content == NULL)
+    return FALSE;
+  handle = rsvg_handle_new_from_data ((const guint8 *) content, length, &error);
+  g_free (content);
   if (handle == NULL)
     {
       if (error)
