@@ -158,6 +158,9 @@ void EpsPrint (char *fn, PictureScaling pres, int xif, int yif, int wif,
      default:
        break;
      }
+   /* DSC comments of the included file must not be taken for comments
+      of the including document (pages, trailer...) */
+   fprintf (fd, "%%%%BeginDocument: %s\n", fn);
    fin = TtaReadOpen (fn);
    if (fin)
      {
@@ -170,6 +173,7 @@ void EpsPrint (char *fn, PictureScaling pres, int xif, int yif, int wif,
        TtaReadClose (fin);
      }
    fprintf (fd, "\n");
+   fprintf (fd, "%%%%EndDocument\n");
    fprintf (fd, "%%%% end of file %s\n", fn);
    fprintf (fd, "ENDEPSFILE\n");
 #endif /* _WINGUI */
