@@ -483,6 +483,11 @@ LibreOffice Draw, whose coordinates are in 1/100 mm:
   a zoom, and the arrow keys no longer move it out of the text (it went to
   hidden elements, scrolled the view to the far right, and the next
   keystrokes were lost).
+- Editing alternately in the source view and the formatted view no longer
+  crashes Amaya: the pending changes are applied before the click in the
+  other view is processed, not in the middle of it.
+- The indentation of an SVG document written by LibreOffice no longer
+  grows each time the source view is synchronized.
 
 ---
 
