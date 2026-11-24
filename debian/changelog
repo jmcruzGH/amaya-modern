@@ -1,3 +1,15 @@
+amaya (11.4.7+modern3) noble; urgency=medium
+
+  * SVG editing: typing in a text inside a group (e.g. a LibreOffice Draw
+    label) is no longer lost; no huge scrolling width with a viewBox, no
+    jump after saving; saving no longer adds line breaks in text elements.
+  * SVG printing: drawings are converted to EPS with librsvg and included
+    in the PostScript output (new dependency on librsvg).
+  * Printing: long picture file names; clean exit of the print helper;
+    included EPS files wrapped in %%BeginDocument/%%EndDocument.
+
+ -- JoseMCruz <jmcruz2k21@gmail.com>  Tue, 24 Nov 2026 09:00:00 +0000
+
 amaya (11.4.7+modern2) noble; urgency=medium
 
   * SVG drawings (e.g. exported by LibreOffice Draw):

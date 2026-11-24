@@ -71,7 +71,7 @@ from the [Releases](https://github.com/jmcruzGH/amaya-modern/releases) page,
 then:
 
 ```bash
-sudo apt install ./amaya_11.4.7+modern2_amd64.deb
+sudo apt install ./amaya_11.4.7+modern3_amd64.deb
 ```
 
 `apt` also installs the libraries and fonts Amaya needs.  Start Amaya from
@@ -102,7 +102,7 @@ dpkg-buildpackage -us -uc -b   # makes ../amaya_<version>_amd64.deb
 The packaging is in `debian/`.  It builds with CMake like a normal build,
 and installs with `make install` (see [Installing from source](#installing-from-source)).
 For a new release, add an entry to `debian/changelog`, e.g.
-`dch -v 11.4.7+modern2 "What changed"`, and build again.
+`dch -v 11.4.7+modern4 "What changed"`, and build again.
 
 ---
 
@@ -334,7 +334,9 @@ curl and wget.
   - no lost-update check when publishing.
 - **SVG:** a subset of SVG 1.1 from 2012: shapes, paths, fills, strokes,
   text, transformations, gradients and images are drawn; filters, masks,
-  patterns, SVG fonts and later SVG features are not.
+  patterns, SVG fonts and later SVG features are not.  Printed SVG is drawn by librsvg, so it may differ in details from the
+  screen.  Images referenced by a relative link inside an SVG drawing are
+  missing from the printout.
 - **Not compiled:** Annotations, WebDAV and bookmarks.  Templates, the spell
   checker, MathML, SVG and printing are compiled in.
 - **Platforms:** Linux only; a package for Ubuntu 24.04 amd64.  Other Linux
@@ -416,6 +418,22 @@ LibreOffice Draw, whose coordinates are in 1/100 mm:
   drawing;
 - text reduced by a scaling keeps all its strokes (mipmapped glyph images);
 - zooming in or out no longer scales drawings with a `viewBox` twice.
+
+**SVG editing and printing (November 2026)**
+- Typing in a text inside a group (`g`), e.g. a LibreOffice label, works:
+  a click selected the whole group, so keystrokes were lost and the label
+  could be blanked.
+- A drawing with a `viewBox` no longer gives a huge horizontal scrolling
+  width, and the view no longer jumps or goes blank after saving.
+- Saving no longer adds line breaks and indentation inside text elements
+  (they piled up at each save, as LibreOffice uses `xml:space="preserve"`).
+- **SVG is printed.**  Amaya 11.4.7 left SVG out of printed pages (since
+  2008).  When printing, each drawing — inline SVG, an `<img>` of an SVG
+  file, or an SVG document — is converted to EPS with librsvg and included
+  in the PostScript output as vector graphics, text included.  An SVG
+  document is printed within page margins, reduced to fit the page.
+- Printing also no longer truncates a page holding an image with a long
+  file name, and the print helper no longer crashes when it exits.
 
 ---
 
