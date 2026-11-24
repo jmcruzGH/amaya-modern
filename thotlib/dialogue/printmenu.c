@@ -73,6 +73,9 @@
   #include "appdialogue_wx.h"
 #endif /* _WX  && _WINDOWS */
 
+/* defined in writepivot.c */
+extern ThotBool     PivotForPrint;
+
 #ifdef _WINDOWS
 #include "thotprinter_f.h"
 #include "wininclude.h"
@@ -941,7 +944,9 @@ void TtaPrint (Document document, char *viewNames, char *cssNames)
        docReadOnly = pDoc->DocReadOnly;
        pDoc->DocReadOnly = FALSE;
 
+       PivotForPrint = TRUE;
        ok = WriteDocument (pDoc, 5);
+       PivotForPrint = FALSE;
 
        pDoc->DocReadOnly = docReadOnly;
        strncpy (pDoc->DocDirectory, dirName, MAX_PATH);

@@ -51,6 +51,7 @@
 #include "frame_f.h"
 #include "animbox_f.h"
 #include "picture_f.h"
+#include "epshandler_f.h"
 #include "tesse_f.h"
 #include "applicationapi_f.h"
 
@@ -856,6 +857,48 @@ int GLString (unsigned char *buff, int lg, int frame, int x, int y,
       NbWhiteSp = 0;
     }
   return (width);
+}
+
+/* defined in print.c */
+extern void GetPrintPageSize (int *width, int *height);
+
+/*----------------------------------------------------------------------
+  GLPrintEPS includes the EPS file fileName in the PostScript output,
+  scaled into the box (x, y, w, h).
+  ----------------------------------------------------------------------*/
+int GLPrintEPS (char *fileName, int pres, int x, int y, int w, int h)
+{
+  FILE *stream;
+
+  stream = FILE_STREAM;
+  if (!stream || w <= 0 || h <= 0)
+    return 0;
+  EpsPrint (fileName, (PictureScaling) pres, x, y, w, h, stream, 0);
+  return 1;
+}
+
+/*----------------------------------------------------------------------
+  GLPrintEPSPage includes the EPS file fileName, of size w x h, on the
+  page: it is placed within the default page margins and reduced if it
+  doesn't fit. Used for the drawing of an SVG document.
+  ----------------------------------------------------------------------*/
+int GLPrintEPSPage (char *fileName, int w, int h)
+{
+  int    pageW, pageH, margin = 57; /* points, as the default margins */
+  float  scale, s;
+
+  if (w <= 0 || h <= 0)
+    return 0;
+  GetPrintPageSize (&pageW, &pageH);
+  scale = 1.;
+  s = (float) (pageW - 2 * margin) / (float) w;
+  if (s < scale)
+    scale = s;
+  s = (float) (pageH - 2 * margin) / (float) h;
+  if (s < scale)
+    scale = s;
+  return GLPrintEPS (fileName, ReScale, margin, margin,
+                     (int) (w * scale), (int) (h * scale));
 }
 
 /*----------------------------------------------------------------------

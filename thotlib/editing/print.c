@@ -1458,6 +1458,40 @@ static void ClipOnPage (int frame, int org, int width, int height)
 }
 
 /*----------------------------------------------------------------------
+  GetPrintPageSize returns the size of the paper, in points.
+  ----------------------------------------------------------------------*/
+void GetPrintPageSize (int *width, int *height)
+{
+  int        w, h;
+
+  if (!strcmp (PageSize, "US"))
+    {
+      w = 612;
+      h = 792;
+    }
+  else if (!strcmp (PageSize, "A3"))
+    {
+      w = 842;
+      h = 1191;
+    }
+  else
+    {
+      w = 595;
+      h = 842;
+    }
+  if (Orientation && !strcmp (Orientation, "Landscape"))
+    {
+      *width = h;
+      *height = w;
+    }
+  else
+    {
+      *width = w;
+      *height = h;
+    }
+}
+
+/*----------------------------------------------------------------------
   SetMargins met a jour PageHeight et PageFooterHeight ainsi que  
   les marges du haut et du cote gauche, selon le type de page        
   auquel appartient l'element Marque Page pointe par pPageEl.        

@@ -15,7 +15,9 @@ Build-Depends: debhelper-compat (= 13),
                libssl-dev,
                zlib1g-dev,
                libpng-dev,
-               libjpeg-dev
+               libjpeg-dev,
+               librsvg2-dev,
+               libcairo2-dev
 Standards-Version: 4.6.2
 Homepage: https://github.com/jmcruzGH/amaya-modern
 Vcs-Git: https://github.com/jmcruzGH/amaya-modern.git

@@ -67,6 +67,9 @@ pkg_check_modules(FREETYPE REQUIRED freetype2)
 # FontConfig
 pkg_check_modules(FONTCONFIG REQUIRED fontconfig)
 
+# librsvg + cairo: SVG drawings are converted to EPS when printing
+pkg_check_modules(RSVG REQUIRED librsvg-2.0 cairo-ps)
+
 # GTK3 (wxWidgets on Linux uses GTK3 backend)
 pkg_check_modules(GTK3 gtk+-3.0)
 

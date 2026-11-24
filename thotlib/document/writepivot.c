@@ -58,6 +58,18 @@ document.
 #include "tree_f.h"
 #include "units_f.h"
 #include "writepivot_f.h"
+#ifndef NODISPLAY
+#include "translation_f.h"
+#include "externalref_f.h"
+#include "content.h"
+#include "svgtoeps_f.h"
+#endif /* NODISPLAY */
+
+/* TRUE while the pivot file given to the print program is written */
+ThotBool PivotForPrint = FALSE;
+#ifndef NODISPLAY
+static int SVGPrintCounter = 0;
+#endif /* NODISPLAY */
 
 /*----------------------------------------------------------------------
   Ecrit dans le fichier le numero de version pivot courant           
@@ -888,6 +900,85 @@ static void   PutPresRule (BinFile pivFile, PtrPRule pPRule)
     }
 }
 
+#ifndef NODISPLAY
+/*----------------------------------------------------------------------
+  IsOuterSVGDrawing
+  Return TRUE if pEl is the root (svg) element of an SVG drawing that is
+  not included in another SVG drawing.
+  ----------------------------------------------------------------------*/
+static ThotBool IsOuterSVGDrawing (PtrElement pEl)
+{
+  PtrSSchema   pSS = pEl->ElStructSchema;
+
+  if (pSS == NULL || strcmp (pSS->SsName, "SVG") ||
+      strcasecmp (pSS->SsRule->SrElem[pEl->ElTypeNumber - 1]->SrName, "SVG"))
+    return FALSE;
+  return (pEl->ElParent == NULL || pEl->ElParent->ElStructSchema == NULL ||
+          strcmp (pEl->ElParent->ElStructSchema->SsName, "SVG") ||
+          /* the svg element of an SVG document */
+          pEl->ElParent->ElTypeNumber == pSS->SsDocument);
+}
+
+/*----------------------------------------------------------------------
+  WriteSVGPicture
+  SVG drawings are not written in the pivot file given to the print
+  program: its formatter does not handle them. Instead, the drawing pEl
+  is exported as an SVG file, converted into an EPS file, and written as
+  a picture child of the svg element. The print program includes that
+  EPS file in the PostScript output.
+  ----------------------------------------------------------------------*/
+static void WriteSVGPicture (BinFile pivFile, PtrElement pEl,
+                             PtrDocument pDoc)
+{
+  char          svgName[MAX_PATH + 32], epsName[MAX_PATH + 32];
+  LabelString   label;
+  PtrBox        pBox;
+  double        w = 0., h = 0.;
+  int           i;
+
+  SVGPrintCounter++;
+  snprintf (svgName, sizeof (svgName), "%s%cThot_SVG%d.svg", pDoc->DocDirectory,
+            DIR_SEP, SVGPrintCounter);
+  snprintf (epsName, sizeof (epsName), "%s%cThot_SVG%d.eps", pDoc->DocDirectory,
+            DIR_SEP, SVGPrintCounter);
+  ExportTree (pEl, (Document) IdentDocument (pDoc), svgName, "SVGT");
+  if (pEl->ElAbstractBox[0] && pEl->ElAbstractBox[0]->AbBox)
+    {
+      pBox = pEl->ElAbstractBox[0]->AbBox;
+      w = pBox->BxW;
+      h = pBox->BxH;
+    }
+  if (!TtaFileExist (svgName) || !SVGFileToEPS (svgName, epsName, w, h))
+    return;
+  TtaFileUnlink (svgName);
+
+  TtaWriteByte (pivFile, (char) C_PIV_BEGIN);
+  /* a picture element */
+  TtaWriteByte (pivFile, (char) C_PIV_TYPE);
+  PutShort (pivFile, tt_Picture + 1);
+  ConvertIntToLabel (NewLabel (pDoc), label);
+  PutLabel (pivFile, label);
+  /* its picture rule: an EPS picture scaled to the svg box */
+  TtaWriteByte (pivFile, (char) C_PIV_PRESENT);
+  PutShort (pivFile, 1);
+  PutShort (pivFile, 0);
+  PutBoolean (pivFile, TRUE);
+  PutShort (pivFile, 0);
+  TtaWriteByte (pivFile, C_PR_PICTURE);
+  PutShort (pivFile, 0);
+  PutShort (pivFile, 0);
+  TtaWriteByte (pivFile, C_PIV_RESCALE);
+  PutShort (pivFile, eps_type);
+  /* its content: the file name */
+  TtaWriteByte (pivFile, (char) C_PIV_BEGIN);
+  for (i = 0; epsName[i] != EOS; i++)
+    TtaWriteWideChar (pivFile, (CHAR_T) (unsigned char) epsName[i]);
+  TtaWriteByte (pivFile, EOS);
+  TtaWriteByte (pivFile, (char) C_PIV_END);
+  TtaWriteByte (pivFile, (char) C_PIV_END);
+}
+#endif /* NODISPLAY */
+
 /*----------------------------------------------------------------------
   Externalise effectue la traduction sous forme pivot du sous-arbre  
   ou de l'element pointe par pEl.                                 
@@ -1268,11 +1359,26 @@ void Externalise (BinFile pivFile, PtrElement *pEl, PtrDocument pDoc,
                 TtaWriteByte (pivFile, (char) C_PIV_END);
             }
         }
+#ifndef NODISPLAY
+      else if (subTree && PivotForPrint && IsOuterSVGDrawing (pEl1))
+        /* the print program gets the drawing as an EPS picture */
+        WriteSVGPicture (pivFile, pEl1, pDoc);
+      else if (subTree && PivotForPrint && pSS && !strcmp (pSS->SsName, "SVG")
+               && pEl1->ElTypeNumber == pSS->SsDocument)
+        {
+          /* an SVG document: write its drawings */
+          TtaWriteByte (pivFile, (char) C_PIV_BEGIN);
+          for (pChild = pEl1->ElFirstChild; pChild; pChild = pChild->ElNext)
+            if (IsOuterSVGDrawing (pChild))
+              Externalise (pivFile, &pChild, pDoc, subTree);
+          TtaWriteByte (pivFile, (char) C_PIV_END);
+        }
+#endif /* NODISPLAY */
       else if (subTree && pSS && strcmp (pSS->SsName, "SVG"))
         {
           /* write the subtree of the element */
-          // for the moment don't export SVG elements
-          // in the future a picture should be generated
+          /* SVG elements are not exported: the print program can't
+             format them (see WriteSVGPicture) */
 
           /* ecrit une marque de debut */
           TtaWriteByte (pivFile, (char) C_PIV_BEGIN);

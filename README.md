@@ -115,7 +115,7 @@ sudo apt install build-essential cmake git pkg-config \
   libwxgtk3.2-dev libgl-dev libglu1-mesa-dev \
   libfreetype-dev libfontconfig-dev libexpat1-dev \
   libcurl4-openssl-dev libssl-dev \
-  zlib1g-dev libpng-dev libjpeg-dev
+  zlib1g-dev libpng-dev libjpeg-dev librsvg2-dev
 ```
 
 `libwxgtk3.2-dev` already includes the OpenGL canvas and pulls in GTK 3.

@@ -138,6 +138,8 @@ extern "C" {
 		int startABlock, int fg);
 
   /*Pictures*/
+  int GLPrintEPS (char *fileName, int pres, int x, int y, int w, int h);
+  int GLPrintEPSPage (char *fileName, int w, int h);
   int GLDrawPixelsPoscript(int width, int height,
 			   int xorig, int yorig,
 			   GLenum format, GLenum type, 

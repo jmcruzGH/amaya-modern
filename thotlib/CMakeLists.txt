@@ -187,6 +187,7 @@ thot_sources(EDITOR_SRCS
   document/views.c
   document/writedoc.c
   document/writepivot.c
+  image/svgtoeps.c
   editing/checkermenu.c
   editing/editcommands.c
   editing/scroll.c
@@ -247,6 +248,7 @@ target_include_directories(ThotEditor PUBLIC
   ${FONTCONFIG_INCLUDE_DIRS}
   ${GTK3_INCLUDE_DIRS}
   ${wxWidgets_INCLUDE_DIRS}
+  ${RSVG_INCLUDE_DIRS}
 )
 
 target_compile_options(ThotEditor PRIVATE

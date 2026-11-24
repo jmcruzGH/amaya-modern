@@ -1915,6 +1915,25 @@ void InitPictureHandlers (ThotBool printing)
 
 
 /*----------------------------------------------------------------------
+  IsSVGDocumentDrawing returns TRUE if the picture box is the picture
+  that the print program receives for the drawing of an SVG document.
+  ----------------------------------------------------------------------*/
+static ThotBool IsSVGDocumentDrawing (PtrBox box)
+{
+  PtrElement      pEl;
+
+  if (box == NULL || box->BxAbstractBox == NULL)
+    return FALSE;
+  pEl = box->BxAbstractBox->AbElement;
+  if (pEl == NULL || pEl->ElParent == NULL || pEl->ElParent->ElParent == NULL)
+    return FALSE;
+  pEl = pEl->ElParent->ElParent;
+  return (pEl->ElParent == NULL && pEl->ElStructSchema &&
+          !strcmp (pEl->ElStructSchema->SsName, "SVG") &&
+          pEl->ElTypeNumber == pEl->ElStructSchema->SsDocument);
+}
+
+/*----------------------------------------------------------------------
   DrawEpsBox draws the eps logo into the picture box.            
   ----------------------------------------------------------------------*/
 static void DrawEpsBox (PtrBox box, ThotPictInfo *imageDesc, int frame,
@@ -2131,7 +2150,15 @@ void DrawPicture (PtrBox box, ThotPictInfo *imageDesc, int frame,
   SetPictureClipping (&picWArea, &picHArea, w, h, imageDesc);
   if (!Printing)
     {
-      if (imageDesc->PicType == eps_type) 
+      if (imageDesc->PicType == eps_type && PrintingGL)
+        {
+          /* include the EPS file in the PostScript output */
+          if (IsSVGDocumentDrawing (box))
+            GLPrintEPSPage (fileName, w, h);
+          else
+            GLPrintEPS (fileName, pres, x, y, w, h);
+        }
+      else if (imageDesc->PicType == eps_type) 
         DrawEpsBox (box, imageDesc, frame, epsflogo_width, epsflogo_height);
       else
         {
